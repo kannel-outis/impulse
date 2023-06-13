@@ -1,4 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:impulse/services/client/sender_client.dart';
+import 'package:impulse/services/host/receiver_host.dart';
+import 'package:impulse/services/host/server.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,10 +37,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  late Receiver receiver;
+  late Sender sender;
+  @override
+  void initState() {
+    super.initState();
+    receiver = Receiver(gateWay: MyHttpServer());
+    sender = Sender();
   }
 
   @override
@@ -56,11 +64,27 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            GestureDetector(
+              onTap: () async {
+                await sender.scan();
+              },
+              child: Container(
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+              ),
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: () async {
+          await receiver.createServer();
+          // sender.scan();
+        },
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
