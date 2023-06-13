@@ -1,18 +1,21 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 abstract class GateWay<T extends Stream<K>, K extends Stream> {
-  final Function(K) listener;
+  // final Function(K) listener;
 
-  GateWay(this.listener);
-  Future<T> bind(dynamic address, int port);
+  // GateWay(this.listener);
+  const GateWay();
+  Future<T> bind(InternetAddress address, int port);
   T? get server;
 
   @mustCallSuper
-  void listen() {
-    server?.listen(listener);
-  }
+  // void listen() {
+  //   server?.listen(listener);
+  // }
+
+  void listen();
 
   void close();
 

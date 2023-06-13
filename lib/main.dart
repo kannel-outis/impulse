@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:impulse/services/client/sender_client.dart';
-import 'package:impulse/services/host/receiver_host.dart';
+import 'package:impulse/services/client/receiver_client.dart';
+import 'package:impulse/services/host/sender_host.dart';
 import 'package:impulse/services/host/server.dart';
 
 void main() {
@@ -42,8 +42,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    receiver = Receiver(gateWay: MyHttpServer());
-    sender = Sender();
+    receiver = Receiver();
+    sender = Sender(gateWay: MyHttpServer());
   }
 
   @override
@@ -66,7 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             GestureDetector(
               onTap: () async {
-                await sender.scan();
+                await receiver.scan().then((value) async =>
+                    await receiver.establishConnectionToHost());
               },
               child: Container(
                 height: 50,
@@ -82,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await receiver.createServer();
+          await sender.createServer();
           // sender.scan();
         },
         tooltip: 'Increment',

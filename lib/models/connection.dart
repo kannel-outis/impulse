@@ -5,7 +5,7 @@ import 'package:impulse/services/gateway.dart';
 import 'user.dart';
 
 class Connection {
-  final GateWay gateWay;
+  final GateWay? gateWay;
   final List<User> usersOnNetwork;
   final String hostId;
 
@@ -15,4 +15,3 @@ class Connection {
     required this.hostId,
   });
 }
-

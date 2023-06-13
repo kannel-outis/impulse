@@ -6,16 +6,16 @@ import 'package:impulse/utils/extensions.dart';
 
 import 'host.dart';
 
-class Receiver implements Host {
+class Sender implements Host {
   // final Connection connection;
   final GateWay gateWay;
 
-  Receiver({required this.gateWay});
+  Sender({required this.gateWay});
   @override
   Future<void> createServer({address, port}) async {
     // return;
     try {
-      final ip = await _getAvailableIp();
+      final ip = (await _getAvailableIp()).random;
       await gateWay.bind(ip, port ?? Constants.DEFAULT_PORT);
       print(
           "created server running on ${gateWay.address} and port ${gateWay.port}");
@@ -25,18 +25,7 @@ class Receiver implements Host {
     }
   }
 
-  @override
-  Future<List<InternetAddress>> scan() {
-    // TODO: implement scan
-    throw UnimplementedError();
-  }
-
-  // @override
-  // Future<List<InternetAddress>> scan() async{
-  //   final
-  // }
-
-  Future<InternetAddress> _getAvailableIp() async {
+  Future<List<InternetAddress>> _getAvailableIp() async {
     final usableIps = <InternetAddress>[];
     final availableAddresses =
         await NetworkInterface.list(type: InternetAddressType.IPv4);
@@ -48,6 +37,6 @@ class Receiver implements Host {
         }
       }
     }
-    return usableIps.random;
+    return usableIps;
   }
 }

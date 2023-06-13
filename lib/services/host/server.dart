@@ -3,7 +3,7 @@ import 'dart:io';
 import '../gateway.dart';
 
 class MyGateWay extends GateWay<ServerSocket, Socket> {
-  MyGateWay() : super(_listener);
+  MyGateWay();
   late final ServerSocket _serverSocket;
 
   @override
@@ -15,7 +15,7 @@ class MyGateWay extends GateWay<ServerSocket, Socket> {
   @override
   ServerSocket get server => _serverSocket;
 
-  static void _listener(Socket socket) {
+  void _listener(Socket socket) {
     socket.listen((event) {});
   }
 
@@ -27,10 +27,15 @@ class MyGateWay extends GateWay<ServerSocket, Socket> {
 
   @override
   int get port => _serverSocket.port;
+
+  @override
+  void listen() {
+    _serverSocket.listen(_listener);
+  }
 }
 
 class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
-  MyHttpServer() : super(_listener);
+  MyHttpServer() : super();
 
   late final HttpServer _httpServer;
   @override
@@ -47,7 +52,29 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
     return _httpServer = await HttpServer.bind(address, port);
   }
 
-  static void _listener(HttpRequest httpRequest) {}
+  @override
+  void listen() {
+    _httpServer.listen(_listener);
+  }
+
+  void _listener(HttpRequest httpRequest) {
+    switch (httpRequest.method) {
+      case "GET":
+        _handleGetRequest(httpRequest);
+
+        break;
+      default:
+    }
+  }
+
+  void _handleGetRequest(HttpRequest httpRequest) {
+    final url = httpRequest.requestedUri.toString();
+    if (url == "http://${address.address}:$port/impulse/connect") {
+      print("object");
+      httpRequest.response.write("impulse seen and connected");
+      httpRequest.response.close();
+    }
+  }
 
   @override
   void close() {
