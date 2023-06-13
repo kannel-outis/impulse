@@ -1,0 +1,19 @@
+import 'dart:convert';
+
+import 'package:dartz/dartz.dart';
+import 'package:http/http.dart' as http;
+import 'package:impulse/app/impulse_exception.dart';
+
+class RequestHelper {
+  static Future<Either<AppException, Map<String, dynamic>>> get(Uri url) async {
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        return Right(json.decode(response.body));
+      }
+      throw const AppException("something went wrong");
+    } on AppException catch (e) {
+      return Left(AppException(e.toString()));
+    }
+  }
+}

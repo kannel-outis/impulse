@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
-import 'package:impulse/utils/constants.dart';
+import 'package:impulse/app/impulse_exception.dart';
+import 'package:impulse/app/utils/constants.dart';
+import 'package:impulse/app/utils/request_helper.dart';
 
 import 'client.dart';
 
@@ -31,14 +34,11 @@ class Receiver implements Client {
   }
 
   @override
-  Future<void> establishConnectionToHost({String? address, int? port}) async {
+  Future<Either<AppException, Map<String, dynamic>>> establishConnectionToHost(
+      {String? address, int? port}) async {
     final uri = Uri.parse(
         "http://${address ?? _ipAddresses!.first}:${port ?? _port}/impulse/connect");
-    await http.get(uri).then(
-      (value) {
-        print(value.body);
-      },
-    );
+    return await RequestHelper.get(uri);
   }
 
   String _getIpPrefix(String ip) {

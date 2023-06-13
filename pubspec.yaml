@@ -29,9 +29,11 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   cupertino_icons: ^1.0.2
+  dartz: ^0.10.1
   flutter:
     sdk: flutter
   http: ^1.0.0
+  riverpod: ^2.3.6
   uuid: ^3.0.7
 
 dev_dependencies:

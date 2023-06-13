@@ -1,4 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
+
+import 'package:flutter/services.dart';
+import 'package:impulse/app/utils/constants.dart';
+import 'package:impulse/services/server_manager.dart';
 
 import '../gateway.dart';
 
@@ -35,7 +40,8 @@ class MyGateWay extends GateWay<ServerSocket, Socket> {
 }
 
 class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
-  MyHttpServer() : super();
+  final ServerManager serverManager;
+  MyHttpServer({required this.serverManager}) : super();
 
   late final HttpServer _httpServer;
   @override
@@ -67,11 +73,19 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
     }
   }
 
-  void _handleGetRequest(HttpRequest httpRequest) {
+  Future<void> _handleGetRequest(HttpRequest httpRequest) async {
     final url = httpRequest.requestedUri.toString();
     if (url == "http://${address.address}:$port/impulse/connect") {
       print("object");
-      httpRequest.response.write("impulse seen and connected");
+      httpRequest.response.statusCode = Constants.STATUS_OK;
+      httpRequest.response.headers.contentType = ContentType.json;
+      final hostInfo = await serverManager.hostInfo;
+      httpRequest.response.write(json.encode(
+        {
+          "user": hostInfo.toMap(),
+          "files": serverManager.getFiles(),
+        },
+      ));
       httpRequest.response.close();
     }
   }

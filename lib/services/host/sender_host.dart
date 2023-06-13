@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:dartz/dartz.dart';
+import 'package:impulse/app/impulse_exception.dart';
 import 'package:impulse/services/gateway.dart';
-import 'package:impulse/utils/constants.dart';
-import 'package:impulse/utils/extensions.dart';
+import 'package:impulse/app/utils/constants.dart';
+import 'package:impulse/app/utils/extensions.dart';
 
 import 'host.dart';
 
@@ -12,7 +14,7 @@ class Sender implements Host {
 
   Sender({required this.gateWay});
   @override
-  Future<void> createServer({address, port}) async {
+  Future<Either<AppException, String>> createServer({address, port}) async {
     // return;
     try {
       final ip = (await _getAvailableIp()).random;
@@ -20,8 +22,9 @@ class Sender implements Host {
       print(
           "created server running on ${gateWay.address} and port ${gateWay.port}");
       gateWay.listen();
+      return Right(ip.address);
     } catch (_) {
-      print(_.toString());
+      return Left(AppException(_.toString()));
     }
   }
 

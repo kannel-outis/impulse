@@ -1,9 +1,15 @@
 import 'dart:io';
 
+import 'package:dartz/dartz.dart' as d;
 import 'package:flutter/material.dart';
+import 'package:impulse/controllers/server_controller.dart';
+import 'package:impulse/services/client/client.dart';
 import 'package:impulse/services/client/receiver_client.dart';
+import 'package:impulse/services/host/host.dart';
 import 'package:impulse/services/host/sender_host.dart';
 import 'package:impulse/services/host/server.dart';
+
+import 'models/user.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,13 +43,18 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  late Receiver receiver;
-  late Sender sender;
+  late Client receiver;
+  late Host sender;
+  User? _user;
   @override
   void initState() {
     super.initState();
     receiver = Receiver();
-    sender = Sender(gateWay: MyHttpServer());
+    sender = Sender(
+      gateWay: MyHttpServer(
+        serverManager: ServerController(),
+      ),
+    );
   }
 
   @override
@@ -57,8 +68,8 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            Text(
+              'You have pushed the button this many times: ${_user?.deviceName}',
             ),
             Text(
               '$_counter',
@@ -66,8 +77,15 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             GestureDetector(
               onTap: () async {
-                await receiver.scan().then((value) async =>
-                    await receiver.establishConnectionToHost());
+                await receiver.scan().then((value) async {
+                  final response = await receiver.establishConnectionToHost();
+                  if (response is d.Right) {
+                    final result = response.map(
+                        (r) => User.fromMap(r["user"] as Map<String, dynamic>));
+                    _user = (result as d.Right).value as User;
+                    setState(() {});
+                  }
+                });
               },
               child: Container(
                 height: 50,
@@ -75,6 +93,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(100),
+                  image: _user == null
+                      ? null
+                      : DecorationImage(
+                          image: MemoryImage(_user!.displayImage),
+                        ),
                 ),
               ),
             ),
