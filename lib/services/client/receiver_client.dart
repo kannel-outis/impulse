@@ -1,34 +1,25 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:http/http.dart' as http;
 import 'package:impulse/app/impulse_exception.dart';
-import 'package:impulse/app/utils/constants.dart';
-import 'package:impulse/app/utils/request_helper.dart';
+import 'package:impulse/services/utils/request_helper.dart';
+import 'package:impulse/services/gateway.dart';
+import 'package:impulse/services/host/host.dart';
+import 'package:impulse/services/utils/services_utils.dart';
 
+import '../utils/constants.dart';
 import 'client.dart';
 
-class Receiver implements Client {
+class Receiver implements Client, Host {
+  final GateWay? gateWay;
+
+  Receiver({this.gateWay});
   static const int _port = Constants.DEFAULT_PORT;
 
-  List<String>? _ipAddresses;
+  List<String> _ipAddresses = [];
   @override
   Future<List<String>> scan() async {
-    final ipPrefix = _getIpPrefix("192.168.43.174");
-    final availableServerAddress = <String>[];
-
-    final List<Future<String?>> futures = List.generate(255, (index) {
-      final ip = "$ipPrefix.$index";
-      return _tryToEstablishConnection(ip);
-    });
-
-    await Future.wait(futures).then((value) {
-      final result =
-          List<String>.from(value.where((element) => element != null).toList());
-      availableServerAddress.addAll(result);
-      // ignore: avoid_print
-      print(availableServerAddress);
-    });
+    final availableServerAddress = await ServicesUtils.scan();
 
     return _ipAddresses = availableServerAddress;
   }
@@ -36,28 +27,29 @@ class Receiver implements Client {
   @override
   Future<Either<AppException, Map<String, dynamic>>> establishConnectionToHost(
       {String? address, int? port}) async {
+    if (_ipAddresses.isEmpty) {
+      return const Left(
+        AppException("Cannot make a connection if no host is found"),
+      );
+    }
     final uri = Uri.parse(
-        "http://${address ?? _ipAddresses!.first}:${port ?? _port}/impulse/connect");
+        "http://${address ?? _ipAddresses.first}:${port ?? _port}/impulse/connect");
     return await RequestHelper.get(uri);
   }
 
-  String _getIpPrefix(String ip) {
-    final splitList = ip.split(".");
-    splitList.removeLast();
-    return splitList.join(".");
+  @override
+  Future<Either<AppException, String>> createServer(
+      {InternetAddress? address, int? port}) {
+    if (gateWay == null) const AppException("This receiver is not a host");
+    return ServicesUtils.creatServer(
+      gateWay: gateWay!,
+      address: address,
+      port: port,
+    );
   }
-
-  Future<String?> _tryToEstablishConnection(String address) async {
-    try {
-      final socket = await Socket.connect(
-        address,
-        _port,
-        timeout: const Duration(milliseconds: 500),
-      );
-      socket.close();
-      return address;
-    } catch (e) {
-      return null;
-    }
+  
+  @override
+  Future<Either<AppException, Map<String, dynamic>>> makePostRequest({String? address, int? port}) {
+    throw UnimplementedError();
   }
 }

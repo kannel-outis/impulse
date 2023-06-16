@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/services.dart';
-import 'package:impulse/app/utils/constants.dart';
 import 'package:impulse/services/server_manager.dart';
 
 import '../gateway.dart';
+import '../utils/constants.dart';
 
 class MyGateWay extends GateWay<ServerSocket, Socket> {
   MyGateWay();
@@ -69,6 +68,8 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         _handleGetRequest(httpRequest);
 
         break;
+      case "POST":
+        _handlePostRequest(httpRequest);
       default:
     }
   }
@@ -80,13 +81,32 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;
       final hostInfo = await serverManager.hostInfo;
+      hostInfo.port = _httpServer.port;
+      hostInfo.ipAddress = _httpServer.address.address;
       httpRequest.response.write(json.encode(
         {
-          "user": hostInfo.toMap(),
-          "files": serverManager.getFiles(),
+          "hostServerInfo": hostInfo.toMap(),
         },
       ));
       httpRequest.response.close();
+    }
+  }
+
+  Future<void> _handlePostRequest(HttpRequest httpRequest) async {
+    final url = httpRequest.requestedUri.toString();
+    if (url == "http://${address.address}:$port/impulse/client_server_info") {
+      httpRequest.listen((event) {
+        final result = String.fromCharCodes(event);
+        print(result);
+
+        httpRequest.response.statusCode = Constants.STATUS_OK;
+        httpRequest.response.headers.contentType = ContentType.json;
+        httpRequest.response.write(
+          json.encode(
+            {"msg": "Successful"},
+          ),
+        );
+      });
     }
   }
 

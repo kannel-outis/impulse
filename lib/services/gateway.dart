@@ -14,7 +14,7 @@ abstract class GateWay<T extends Stream<K>, K extends Stream> {
   // void listen() {
   //   server?.listen(listener);
   // }
-
+  bool get isServerRunning => server != null;
   void listen();
 
   void close();

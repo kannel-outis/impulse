@@ -1,8 +1,6 @@
-import 'package:impulse/models/user.dart';
-
-abstract interface class ServerManager {
+abstract interface class ServerManager<T> {
   //TODO: should change to sync function later
-  Future<User> get hostInfo;
+  Future<T> get hostInfo;
   List<String> getFiles();
   List<String> getPaths();
 }

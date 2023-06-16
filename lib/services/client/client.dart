@@ -5,4 +5,6 @@ abstract interface class Client {
   Future<List<String>> scan();
   Future<Either<AppException, Map<String, dynamic>>> establishConnectionToHost(
       {String? address, int? port});
+  Future<Either<AppException, Map<String, dynamic>>> makePostRequest(
+      {String? address, int? port});
 }

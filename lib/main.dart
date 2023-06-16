@@ -2,12 +2,15 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart' as d;
 import 'package:flutter/material.dart';
+import 'package:impulse/app/impulse_exception.dart';
 import 'package:impulse/controllers/server_controller.dart';
+import 'package:impulse/models/server_info.dart';
 import 'package:impulse/services/client/client.dart';
 import 'package:impulse/services/client/receiver_client.dart';
 import 'package:impulse/services/host/host.dart';
 import 'package:impulse/services/host/sender_host.dart';
-import 'package:impulse/services/host/server.dart';
+import 'package:impulse/services/shared/server.dart';
+import 'package:impulse/services/utils/constants.dart';
 
 import 'models/user.dart';
 
@@ -23,7 +26,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -45,11 +51,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late Client receiver;
   late Host sender;
-  User? _user;
+  ServerInfo? _hostServerInfo;
   @override
   void initState() {
     super.initState();
-    receiver = Receiver();
+    receiver = Receiver(
+      gateWay: MyHttpServer(
+        serverManager: ServerController(),
+      ),
+    );
     sender = Sender(
       gateWay: MyHttpServer(
         serverManager: ServerController(),
@@ -69,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'You have pushed the button this many times: ${_user?.deviceName}',
+              'Connected to: ${_hostServerInfo?.ipAddress}, on port: ${_hostServerInfo?.port}',
             ),
             Text(
               '$_counter',
@@ -78,12 +88,19 @@ class _MyHomePageState extends State<MyHomePage> {
             GestureDetector(
               onTap: () async {
                 await receiver.scan().then((value) async {
+                  /// if any device is found, then definitely the default port is occupied,
+                  /// use the second port to create own server
+                  await (receiver as Host)
+                      .createServer(port: Constants.DEFAULT_PORT_2);
                   final response = await receiver.establishConnectionToHost();
                   if (response is d.Right) {
-                    final result = response.map(
-                        (r) => User.fromMap(r["user"] as Map<String, dynamic>));
-                    _user = (result as d.Right).value as User;
+                    final result = response.map((r) => ServerInfo.fromMap(
+                        r["hostServerInfo"] as Map<String, dynamic>));
+                    _hostServerInfo = (result as d.Right).value as ServerInfo;
                     setState(() {});
+                  } else {
+                    final result = (response as d.Left).value as AppException;
+                    print(result.message);
                   }
                 });
               },
@@ -93,10 +110,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(100),
-                  image: _user == null
+                  image: _hostServerInfo == null
                       ? null
                       : DecorationImage(
-                          image: MemoryImage(_user!.displayImage),
+                          image:
+                              MemoryImage(_hostServerInfo!.user.displayImage),
                         ),
                 ),
               ),

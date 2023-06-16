@@ -16,4 +16,14 @@ class RequestHelper {
       return Left(AppException(e.toString()));
     }
   }
+
+  static Future<Either<AppException, Map<String, dynamic>>> post(
+      Uri url, Map<String, dynamic> body) async {
+    try {
+      final response = await http.post(url, body: json.encode(body));
+      return Right(json.decode(response.body));
+    } catch (e) {
+      return Left(AppException(e.toString()));
+    }
+  }
 }
