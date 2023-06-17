@@ -24,14 +24,14 @@ class ServicesUtils {
     return usableIps;
   }
 
-  static Future<Either<AppException, String>> creatServer(
+  static Future<Either<AppException, (String, int)>> creatServer(
       {required GateWay gateWay, InternetAddress? address, int? port}) async {
     try {
       final ip = (await getAvailableIp()).random;
       await gateWay.bind(address ?? ip, port ?? Constants.DEFAULT_PORT);
       log("created server running on ${gateWay.address} and port ${gateWay.port}");
       gateWay.listen();
-      return Right(ip.address);
+      return Right((ip.address, port ?? Constants.DEFAULT_PORT));
     } catch (_) {
       print(_.toString());
       return const Left(

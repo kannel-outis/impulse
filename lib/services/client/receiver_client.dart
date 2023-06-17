@@ -38,7 +38,7 @@ class Receiver implements Client, Host {
   }
 
   @override
-  Future<Either<AppException, String>> createServer(
+  Future<Either<AppException, (String, int)>> createServer(
       {InternetAddress? address, int? port}) {
     if (gateWay == null) const AppException("This receiver is not a host");
     return ServicesUtils.creatServer(
@@ -47,9 +47,12 @@ class Receiver implements Client, Host {
       port: port,
     );
   }
-  
+
   @override
-  Future<Either<AppException, Map<String, dynamic>>> makePostRequest({String? address, int? port}) {
-    throw UnimplementedError();
+  Future<Either<AppException, Map<String, dynamic>>> makePostRequest(
+      {String? address, int? port, required Map<String, dynamic> body}) {
+    final uri = Uri.parse(
+        "http://${address ?? _ipAddresses.first}:${port ?? _port}/impulse/client_server_info");
+    return RequestHelper.post(uri, body);
   }
 }

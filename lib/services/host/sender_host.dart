@@ -12,8 +12,8 @@ class Sender implements Host, Client {
 
   Sender({required this.gateWay});
   @override
-  Future<Either<AppException, String>> createServer({address, port}) async {
-    print("object");
+  Future<Either<AppException, (String, int)>> createServer(
+      {address, port}) async {
     return ServicesUtils.creatServer(
       gateWay: gateWay,
       address: address,
@@ -24,6 +24,8 @@ class Sender implements Host, Client {
   @override
   Future<Either<AppException, Map<String, dynamic>>> establishConnectionToHost(
       {String? address, int? port}) {
+    ///sender probably wont need to establish connection.
+    ///since client will be sharing their server info
     throw UnimplementedError();
   }
 
@@ -31,9 +33,10 @@ class Sender implements Host, Client {
   Future<List<String>> scan() async {
     return await ServicesUtils.scan();
   }
-  
+
   @override
-  Future<Either<AppException, Map<String, dynamic>>> makePostRequest({String? address, int? port}) {
+  Future<Either<AppException, Map<String, dynamic>>> makePostRequest(
+      {String? address, int? port, required Map<String, dynamic> body}) {
     throw UnimplementedError();
   }
 }

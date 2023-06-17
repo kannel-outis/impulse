@@ -11,6 +11,12 @@ import 'package:uuid/uuid.dart';
 
 class ServerController extends ChangeNotifier
     implements ServerManager<ServerInfo> {
+  ServerInfo? _serverInfo;
+  ServerInfo? get serverInfo {
+    print("from : State ${_serverInfo?.user.deviceName}");
+    return _serverInfo;
+  }
+
   @override
   List<String> getFiles() {
     return <String>[];
@@ -26,7 +32,7 @@ class ServerController extends ChangeNotifier
     final bytes = await rootBundle.load(AssetsImage.DEFAULT_DISPLAY_IMAGE);
     final uint8 = bytes.buffer.asUint8List();
     final host = User(
-      name: "Emir Dilony",
+      name: "Host Server",
       id: const Uuid().v4(),
       displayImage: uint8,
       deviceName: Platform.operatingSystem,
@@ -36,5 +42,30 @@ class ServerController extends ChangeNotifier
     return ServerInfo(
       user: host,
     );
+  }
+
+  @override
+  Future<ServerInfo> get myServerInfo async {
+    final bytes = await rootBundle.load(AssetsImage.DEFAULT_DISPLAY_IMAGE_2);
+    final uint8 = bytes.buffer.asUint8List();
+    final me = User(
+      name: "Client server",
+      id: const Uuid().v4(),
+      displayImage: uint8,
+      deviceName: Platform.operatingSystem,
+      deviceOsVersion: Platform.operatingSystemVersion,
+      isHost: true,
+    );
+    return ServerInfo(
+      user: me,
+    );
+  }
+
+  @override
+  ServerInfo handlePostResult(Map<String, dynamic> map) {
+    _serverInfo = ServerInfo.fromMap(map);
+    print("Called from tecno");
+    // notifyListeners();
+    return _serverInfo!;
   }
 }

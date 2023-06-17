@@ -51,24 +51,30 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late Client receiver;
   late Host sender;
-  ServerInfo? _hostServerInfo;
+  ServerInfo? _secondDeviceServerInfo;
+  ServerInfo? _secondHost;
+  final serverController = ServerController();
   @override
   void initState() {
     super.initState();
+
+    ///this is just for testing, [Receiver] object by deafult may not implement [Host]
+    ///after assumption of its initial role as a client
     receiver = Receiver(
       gateWay: MyHttpServer(
-        serverManager: ServerController(),
+        serverManager: serverController,
       ),
     );
     sender = Sender(
       gateWay: MyHttpServer(
-        serverManager: ServerController(),
+        serverManager: serverController,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    print(_secondDeviceServerInfo?.ipAddress);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -79,29 +85,64 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Connected to: ${_hostServerInfo?.ipAddress}, on port: ${_hostServerInfo?.port}',
+              'Connected to: ${_secondDeviceServerInfo?.ipAddress}, on port: ${_secondDeviceServerInfo?.port}',
             ),
             Text(
-              '$_counter',
+              "Running on OS: ${_secondDeviceServerInfo?.user.deviceName}",
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             GestureDetector(
               onTap: () async {
+                ///each device assume a particular role of [Client] and [Host] on first connection before deciding
+                ///whether they would want the roles to go both ways.
+                ///client scans for available host.
                 await receiver.scan().then((value) async {
                   /// if any device is found, then definitely the default port is occupied,
                   /// use the second port to create own server
-                  await (receiver as Host)
-                      .createServer(port: Constants.DEFAULT_PORT_2);
+
                   final response = await receiver.establishConnectionToHost();
                   if (response is d.Right) {
                     final result = response.map((r) => ServerInfo.fromMap(
                         r["hostServerInfo"] as Map<String, dynamic>));
-                    _hostServerInfo = (result as d.Right).value as ServerInfo;
+                    _secondDeviceServerInfo =
+                        (result as d.Right).value as ServerInfo;
                     setState(() {});
                   } else {
                     final result = (response as d.Left).value as AppException;
                     print(result.message);
                   }
+
+                  ///after the client establishes a connection with the host and receives the host server information
+                  ///create client server using another port because now we already know that the first port is occupied.
+                  ///then after that, the client makes a post request to the host server to let them know about their new
+                  ///created server information including theri new port.
+                  await (receiver as Host)
+                      .createServer(port: Constants.DEFAULT_PORT_2)
+                      .then(
+                    (value) async {
+                      ///make post request to the host to update it about our new server on the client side
+                      if (value is d.Right) {
+                        final (ip, port) =
+                            ((value as d.Right).value as (String, int));
+                        final myInfo = await serverController.myServerInfo;
+                        myInfo.port = port;
+                        myInfo.ipAddress = ip;
+                        await receiver
+                            .makePostRequest(
+                          body: myInfo.toMap(),
+                          address: _secondDeviceServerInfo!.ipAddress,
+                          port: _secondDeviceServerInfo!.port,
+                        )
+                            .then((value) {
+                              //Not Updating
+                          _secondHost = serverController.serverInfo;
+                          print(_secondHost?.user.deviceName);
+                          setState(() {});
+                        });
+                        // await Future.delayed(const Duration(seconds: 5));
+                      }
+                    },
+                  );
                 });
               },
               child: Container(
@@ -110,11 +151,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(100),
-                  image: _hostServerInfo == null
+                  image: _secondDeviceServerInfo == null
                       ? null
                       : DecorationImage(
-                          image:
-                              MemoryImage(_hostServerInfo!.user.displayImage),
+                          image: MemoryImage(
+                              _secondDeviceServerInfo!.user.displayImage),
                         ),
                 ),
               ),
@@ -124,6 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          ///host creates server
           await sender.createServer();
           // sender.scan();
         },

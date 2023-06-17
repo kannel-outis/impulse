@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:impulse/services/server_manager.dart';
@@ -77,7 +78,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
   Future<void> _handleGetRequest(HttpRequest httpRequest) async {
     final url = httpRequest.requestedUri.toString();
     if (url == "http://${address.address}:$port/impulse/connect") {
-      print("object");
+      print(url);
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;
       final hostInfo = await serverManager.hostInfo;
@@ -95,18 +96,38 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
   Future<void> _handlePostRequest(HttpRequest httpRequest) async {
     final url = httpRequest.requestedUri.toString();
     if (url == "http://${address.address}:$port/impulse/client_server_info") {
-      httpRequest.listen((event) {
-        final result = String.fromCharCodes(event);
-        print(result);
+      print(url);
 
-        httpRequest.response.statusCode = Constants.STATUS_OK;
-        httpRequest.response.headers.contentType = ContentType.json;
-        httpRequest.response.write(
-          json.encode(
-            {"msg": "Successful"},
-          ),
-        );
-      });
+      ///need to wait for the result to load to memory before closing and decoding
+      ///else it may just enter in chunks. the image may make it too large
+      ///
+      ///
+      ///
+      // httpRequest.listen((event) {
+      // final result = String.fromCharCodes(event);
+      // log(result);
+
+      // httpRequest.response.statusCode = Constants.STATUS_OK;
+      // httpRequest.response.headers.contentType = ContentType.json;
+      // httpRequest.response.write(
+      //   json.encode(
+      //     {"msg": "Successful"},
+      //   ),
+      // );
+      // });
+      final result = await httpRequest.fold<List<int>>(
+          [], (previous, element) => previous..addAll(element));
+      final response = String.fromCharCodes(result);
+      serverManager.handlePostResult(json.decode(response));
+
+      httpRequest.response.statusCode = Constants.STATUS_OK;
+      httpRequest.response.headers.contentType = ContentType.json;
+      httpRequest.response.write(
+        json.encode(
+          {"msg": "Successful"},
+        ),
+      );
+      httpRequest.response.close();
     }
   }
 
