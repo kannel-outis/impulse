@@ -3,11 +3,15 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/assets/assets_images.dart';
 import 'package:impulse/models/server_info.dart';
 import 'package:impulse/models/user.dart';
 import 'package:impulse/services/server_manager.dart';
 import 'package:uuid/uuid.dart';
+
+final serverControllerProvider =
+    ChangeNotifierProvider<ServerController>((ref) => ServerController());
 
 class ServerController extends ChangeNotifier
     implements ServerManager<ServerInfo> {
@@ -65,7 +69,7 @@ class ServerController extends ChangeNotifier
   ServerInfo handlePostResult(Map<String, dynamic> map) {
     _serverInfo = ServerInfo.fromMap(map);
     print("Called from tecno");
-    // notifyListeners();
+    notifyListeners();
     return _serverInfo!;
   }
 }

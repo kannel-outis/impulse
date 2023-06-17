@@ -10,7 +10,7 @@ import 'package:impulse/services/utils/services_utils.dart';
 import '../utils/constants.dart';
 import 'client.dart';
 
-class Receiver implements Client, Host {
+class Receiver  implements Client, Host {
   final GateWay? gateWay;
 
   Receiver({this.gateWay});

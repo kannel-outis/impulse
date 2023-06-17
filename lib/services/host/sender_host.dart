@@ -6,7 +6,7 @@ import '../client/client.dart';
 import '../utils/services_utils.dart';
 import 'host.dart';
 
-class Sender implements Host, Client {
+class Sender extends Client implements Host {
   // final Connection connection;
   final GateWay gateWay;
 
@@ -21,18 +21,10 @@ class Sender implements Host, Client {
     );
   }
 
-  @override
-  Future<Either<AppException, Map<String, dynamic>>> establishConnectionToHost(
-      {String? address, int? port}) {
-    ///sender probably wont need to establish connection.
-    ///since client will be sharing their server info
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<List<String>> scan() async {
-    return await ServicesUtils.scan();
-  }
+  // @override
+  // Future<List<String>> scan() async {
+  //   return await ServicesUtils.scan();
+  // }
 
   @override
   Future<Either<AppException, Map<String, dynamic>>> makePostRequest(

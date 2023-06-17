@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart' as d;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/impulse_exception.dart';
 import 'package:impulse/controllers/server_controller.dart';
 import 'package:impulse/models/server_info.dart';
@@ -15,7 +16,11 @@ import 'package:impulse/services/utils/constants.dart';
 import 'models/user.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -37,26 +42,26 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  ConsumerState<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends ConsumerState<MyHomePage> {
   int _counter = 0;
 
   late Client receiver;
   late Host sender;
   ServerInfo? _secondDeviceServerInfo;
-  ServerInfo? _secondHost;
-  final serverController = ServerController();
+  late final ServerController serverController;
   @override
   void initState() {
     super.initState();
+    serverController = ref.read(serverControllerProvider);
 
     ///this is just for testing, [Receiver] object by deafult may not implement [Host]
     ///after assumption of its initial role as a client
@@ -74,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(_secondDeviceServerInfo?.ipAddress);
+    final provider = ref.watch(serverControllerProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -85,10 +90,10 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'Connected to: ${_secondDeviceServerInfo?.ipAddress}, on port: ${_secondDeviceServerInfo?.port}',
+              'Connected to: ${provider.serverInfo?.ipAddress ?? _secondDeviceServerInfo?.ipAddress}, on port: ${provider.serverInfo?.port ?? _secondDeviceServerInfo?.port}',
             ),
             Text(
-              "Running on OS: ${_secondDeviceServerInfo?.user.deviceName}",
+              "Running on OS: ${provider.serverInfo?.user.deviceName ?? _secondDeviceServerInfo?.user.deviceName}",
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             GestureDetector(
@@ -127,18 +132,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         final myInfo = await serverController.myServerInfo;
                         myInfo.port = port;
                         myInfo.ipAddress = ip;
-                        await receiver
-                            .makePostRequest(
+                        await receiver.makePostRequest(
                           body: myInfo.toMap(),
                           address: _secondDeviceServerInfo!.ipAddress,
                           port: _secondDeviceServerInfo!.port,
-                        )
-                            .then((value) {
-                              //Not Updating
-                          _secondHost = serverController.serverInfo;
-                          print(_secondHost?.user.deviceName);
-                          setState(() {});
-                        });
+                        );
                         // await Future.delayed(const Duration(seconds: 5));
                       }
                     },
@@ -151,11 +149,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(100),
-                  image: _secondDeviceServerInfo == null
+                  image: _secondDeviceServerInfo == null &&
+                          provider.serverInfo?.user.displayImage == null
                       ? null
                       : DecorationImage(
                           image: MemoryImage(
-                              _secondDeviceServerInfo!.user.displayImage),
+                              provider.serverInfo?.user.displayImage ??
+                                  _secondDeviceServerInfo!.user.displayImage),
                         ),
                 ),
               ),
