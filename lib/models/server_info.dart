@@ -1,13 +1,15 @@
+import 'package:equatable/equatable.dart';
+
 import 'user.dart';
 
-class ServerInfo {
+class ServerInfo extends Equatable {
   final User user;
-  String? ipAddress;
-  int? port;
+  final String? ipAddress;
+  final int? port;
 
-  ServerInfo({
-    this.ipAddress,
-    this.port,
+  const ServerInfo({
+    required this.ipAddress,
+    required this.port,
     required this.user,
   });
 
@@ -26,4 +28,11 @@ class ServerInfo {
       port: map["port"],
     );
   }
+
+  @override
+  List<Object?> get props => [
+        user,
+        ipAddress,
+        port,
+      ];
 }

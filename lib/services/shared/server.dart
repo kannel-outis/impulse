@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:impulse/controllers/shared/client_controller.dart';
 import 'package:impulse/services/server_manager.dart';
+import 'package:riverpod/riverpod.dart';
 
 import '../gateway.dart';
 import '../utils/constants.dart';
@@ -81,9 +83,9 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       print(url);
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;
-      final hostInfo = await serverManager.hostInfo;
-      hostInfo.port = _httpServer.port;
-      hostInfo.ipAddress = _httpServer.address.address;
+      final hostInfo = await serverManager.myServerInfo();
+      // hostInfo.port = _httpServer.port;
+      // hostInfo.ipAddress = _httpServer.address.address;
       httpRequest.response.write(json.encode(
         {
           "hostServerInfo": hostInfo.toMap(),
@@ -118,7 +120,8 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       final result = await httpRequest.fold<List<int>>(
           [], (previous, element) => previous..addAll(element));
       final response = String.fromCharCodes(result);
-      serverManager.handlePostResult(json.decode(response));
+      serverManager.handleClientServerNotification(json.decode(response));
+      print("object");
 
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;

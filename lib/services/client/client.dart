@@ -8,12 +8,12 @@ abstract class Client {
   }
 
   Future<Either<AppException, Map<String, dynamic>>> establishConnectionToHost(
-      {String? address, int? port}) {
+      {required String address, int? port}) {
     throw UnimplementedError();
   }
 
   Future<Either<AppException, Map<String, dynamic>>> makePostRequest(
-      {String? address, int? port, required Map<String, dynamic> body});
+      {required String address, int? port, required Map<String, dynamic> body});
 }
 
 abstract interface class ClientHost implements Client, Host {}

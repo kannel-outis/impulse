@@ -35,7 +35,8 @@ class ServicesUtils {
     } catch (_) {
       print(_.toString());
       return const Left(
-        AppException("Something went wrong. Cannot create server."),
+        AppException(
+            "Something went wrong. Cannot create server. Please connect to a network"),
       );
     }
   }

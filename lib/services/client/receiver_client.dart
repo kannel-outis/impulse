@@ -16,27 +16,22 @@ class Receiver implements ClientHost {
   static const int _port = Constants.DEFAULT_PORT;
 
   //May not be neccessary. part of TODO: 1 . this can be handled from the provider
-  List<String> _ipAddresses = [];
+  // List<String> _ipAddresses = [];
   @override
   Future<List<String>> scan() async {
     ///could just do "return ....scan();" here
-    final availableServerAddress = await ServicesUtils.scan();
-
-    return _ipAddresses = availableServerAddress;
+    return await ServicesUtils.scan();
   }
-
 
   @override
   Future<Either<AppException, Map<String, dynamic>>> establishConnectionToHost(
-      {String? address,
-      int? port}) async {
-    if (_ipAddresses.isEmpty) {
-      return const Left(
-        AppException("Cannot make a connection if no host is found"),
-      );
-    }
-    final uri = Uri.parse(
-        "http://${address ?? _ipAddresses.first}:${port ?? _port}/impulse/connect");
+      {required String address, int? port}) async {
+    // if () {
+    //   return const Left(
+    //     AppException("Cannot make a connection if no host is found"),
+    //   );
+    // }
+    final uri = Uri.parse("http://$address:${port ?? _port}/impulse/connect");
     return await RequestHelper.get(uri);
   }
 
@@ -52,10 +47,13 @@ class Receiver implements ClientHost {
   }
 
   @override
-  Future<Either<AppException, Map<String, dynamic>>> makePostRequest(
-      {String? address, int? port, required Map<String, dynamic> body}) {
+  Future<Either<AppException, Map<String, dynamic>>> makePostRequest({
+    required String address,
+    int? port,
+    required Map<String, dynamic> body,
+  }) {
     final uri = Uri.parse(
-        "http://${address ?? _ipAddresses.first}:${port ?? _port}/impulse/client_server_info");
+        "http://$address:${port ?? _port}/impulse/client_server_info");
     return RequestHelper.post(uri, body);
   }
 }
