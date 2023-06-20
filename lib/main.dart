@@ -1,178 +1,222 @@
-// import 'dart:io';
+import 'dart:async';
 
-// import 'package:dartz/dartz.dart' as d;
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:impulse/app/impulse_exception.dart';
-// import 'package:impulse/controllers/shared/server_controller.dart';
-// import 'package:impulse/models/server_info.dart';
-// import 'package:impulse/services/client/client.dart';
-// import 'package:impulse/services/client/receiver_client.dart';
-// import 'package:impulse/services/host/host.dart';
-// import 'package:impulse/services/host/sender_host.dart';
-// import 'package:impulse/services/shared/server.dart';
-// import 'package:impulse/services/utils/constants.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:impulse/controllers/shared/client_controller.dart';
+import 'package:impulse/controllers/shared/host_controller.dart';
+import 'package:impulse/controllers/shared/server_controller.dart';
 
-// import 'models/user.dart';
+void main() {
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
+}
 
-// void main() {
-//   runApp(
-//     const ProviderScope(
-//       child: MyApp(),
-//     ),
-//   );
-// }
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
+      home: const TestingHome(),
+    );
+  }
+}
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Flutter Demo',
-//       theme: ThemeData(
-//         colorScheme: ColorScheme.fromSeed(
-//           seedColor: Colors.deepPurple,
-//           brightness: Brightness.dark,
-//         ),
-//         useMaterial3: true,
-//       ),
-//       home: const MyHomePage(title: 'Flutter Demo Home Page'),
-//     );
-//   }
-// }
+class TestingHome extends ConsumerStatefulWidget {
+  const TestingHome({super.key});
 
-// class MyHomePage extends ConsumerStatefulWidget {
-//   const MyHomePage({super.key, required this.title});
+  @override
+  ConsumerState<TestingHome> createState() => _TestingHomeState();
+}
 
-//   final String title;
+class _TestingHomeState extends ConsumerState<TestingHome> {
+  String text = "";
+  bool isHost = false;
+  bool isClient = false;
 
-//   @override
-//   ConsumerState<MyHomePage> createState() => _MyHomePageState();
-// }
+  void showSnack(String? message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message ?? "Something Went wrong"),
+        duration: const Duration(seconds: 5),
+      ),
+    );
+  }
 
-// class _MyHomePageState extends ConsumerState<MyHomePage> {
-//   int _counter = 0;
+  Future<bool> _scan({int? count}) async {
+    Completer<bool> completer = Completer<bool>();
+    Timer.periodic(
+      const Duration(seconds: 3),
+      (tick) async {
+        // if (ref.read(clientProvider).availableHostServers.isNotEmpty) {
+        //   completer.complete(true);
+        //   tick.cancel();
+        // }
 
-//   late Client receiver;
-//   late Host sender;
-//   ServerInfo? _secondDeviceServerInfo;
-//   late final ServerController serverController;
-//   @override
-//   void initState() {
-//     super.initState();
-//     serverController = ref.read(serverControllerProvider);
+        await ref.read(clientProvider).getAvailableUsers();
 
-//     ///this is just for testing, [Receiver] object by deafult may not implement [Host]
-//     ///after assumption of its initial role as a client
-//     receiver = Receiver(
-//       gateWay: MyHttpServer(
-//         serverManager: serverController,
-//       ),
-//     );
-//     sender = Sender(
-//       gateWay: MyHttpServer(
-//         serverManager: serverController,
-//       ),
-//     );
-//   }
+        if (tick.tick == (count ?? 3)) {
+          tick.cancel();
+          if (ref.read(clientProvider).availableHostServers.isNotEmpty) {
+            completer.complete(true);
+          } else {
+            completer.complete(false);
+          }
+        }
+      },
+    );
+    return await completer.future;
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final provider = ref.watch(serverControllerProvider);
-//     return Scaffold(
-//       appBar: AppBar(
-//         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-//         title: Text(widget.title),
-//       ),
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: <Widget>[
-//             Text(
-//               'Connected to: ${provider.serverInfo?.ipAddress ?? _secondDeviceServerInfo?.ipAddress}, on port: ${provider.serverInfo?.port ?? _secondDeviceServerInfo?.port}',
-//             ),
-//             Text(
-//               "Running on OS: ${provider.serverInfo?.user.deviceName ?? _secondDeviceServerInfo?.user.deviceName}",
-//               style: Theme.of(context).textTheme.headlineMedium,
-//             ),
-//             GestureDetector(
-//               onTap: () async {
-//                 ///each device assume a particular role of [Client] and [Host] on first connection before deciding
-//                 ///whether they would want the roles to go both ways.
-//                 ///client scans for available host.
-//                 await receiver.scan().then((value) async {
-//                   /// if any device is found, then definitely the default port is occupied,
-//                   /// use the second port to create own server
+  @override
+  Widget build(BuildContext context) {
+    final receiverController = ref.watch(clientProvider);
+    final sendController = ref.watch(hostProvider);
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          for (final s in receiverController.availableHostServers)
+            InkWell(
+              onTap: () async {
+                receiverController.selectHost(s);
+                final d = await receiverController.createServerAndNotifyHost();
+                if (d != null) {
+                  showSnack(d.message);
+                } else {
+                  text =
+                      "Connected to: ${receiverController.selectedHost!.ipAddress!}";
+                  isClient = true;
+                  setState(() {});
+                }
+              },
+              child: Container(
+                height: 100,
+                width: 100,
+                child: Image.memory(s.user.displayImage),
+              ),
+            ),
+          if (sendController.myServer.clientServerInfo != null)
+            Container(
+              height: 100,
+              width: 100,
+              child: Image.memory(ref
+                  .watch(serverControllerProvider)
+                  .clientServerInfo!
+                  .user
+                  .displayImage),
+            ),
+          Text(sendController.myServer.clientServerInfo == null
+              ? text
+              : "Connected to : ${ref.watch(serverControllerProvider).clientServerInfo!.ipAddress!}"),
+          const SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              MyButton(
+                onTap: () async {
+                  final s = await sendController.createServer();
+                  if (s != null) {
+                    showSnack(s.message);
+                  } else {
+                    text = "Waiting for receiver...";
+                    isHost = true;
+                    setState(() {});
+                  }
+                },
+                label: "Send",
+                icon: Icons.upload,
+                disable: isClient,
+              ),
+              MyButton(
+                onTap: () async {
+                  isClient = true;
+                  text = "Scanning ....";
+                  setState(() {});
 
-//                   final response = await receiver.establishConnectionToHost(
-//                       address: value.first);
-//                   if (response is d.Right) {
-//                     final result = response.map((r) => ServerInfo.fromMap(
-//                         r["hostServerInfo"] as Map<String, dynamic>));
-//                     _secondDeviceServerInfo =
-//                         (result as d.Right).value as ServerInfo;
-//                     setState(() {});
-//                   } else {
-//                     final result = (response as d.Left).value as AppException;
-//                     print(result.message);
-//                   }
+                  final b = await _scan(count: 5);
+                  if (b == false) {
+                    showSnack("No Hosts Found");
+                    isClient = false;
+                    text = "";
+                    setState(() {});
+                  } else {
+                    text = "";
+                    setState(() {});
+                    showSnack(
+                        "${receiverController.availableHostServers.length}: Found");
+                  }
+                },
+                disable: isHost,
+                label: "Receive",
+                icon: Icons.download,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-//                   ///after the client establishes a connection with the host and receives the host server information
-//                   ///create client server using another port because now we already know that the first port is occupied.
-//                   ///then after that, the client makes a post request to the host server to let them know about their new
-//                   ///created server information including theri new port.
-//                   await (receiver as Host)
-//                       .createServer(port: Constants.DEFAULT_PORT_2)
-//                       .then(
-//                     (value) async {
-//                       ///make post request to the host to update it about our new server on the client side
-//                       if (value is d.Right) {
-//                         final (ip, port) =
-//                             ((value as d.Right).value as (String, int));
-//                         final myInfo = await serverController.myServerInfo;
-//                         myInfo.port = port;
-//                         myInfo.ipAddress = ip;
-//                         await receiver.makePostRequest(
-//                           body: myInfo.toMap(),
-//                           address: _secondDeviceServerInfo!.ipAddress!,
-//                           port: _secondDeviceServerInfo!.port,
-//                         );
-//                         // await Future.delayed(const Duration(seconds: 5));
-//                       }
-//                     },
-//                   );
-//                 });
-//               },
-//               child: Container(
-//                 height: 50,
-//                 width: 50,
-//                 decoration: BoxDecoration(
-//                   color: Colors.blue,
-//                   borderRadius: BorderRadius.circular(100),
-//                   image: _secondDeviceServerInfo == null &&
-//                           provider.serverInfo?.user.displayImage == null
-//                       ? null
-//                       : DecorationImage(
-//                           image: MemoryImage(
-//                               provider.serverInfo?.user.displayImage ??
-//                                   _secondDeviceServerInfo!.user.displayImage),
-//                         ),
-//                 ),
-//               ),
-//             ),
-//           ],
-//         ),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () async {
-//           ///host creates server
-//           await sender.createServer();
-//           // sender.scan();
-//         },
-//         tooltip: 'Increment',
-//         child: const Icon(Icons.add),
-//       ),
-//     );
-//   }
-// }
+class MyButton extends StatelessWidget {
+  final VoidCallback? onTap;
+  final IconData icon;
+  final String label;
+  final bool disable;
+  const MyButton({
+    super.key,
+    this.onTap,
+    required this.icon,
+    required this.label,
+    this.disable = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        InkWell(
+          onTap: disable ? null : onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 500),
+            height: 50,
+            width: 50,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              color: disable
+                  ? Theme.of(context).buttonTheme.colorScheme!.secondary
+                  : Theme.of(context).buttonTheme.colorScheme!.primary,
+            ),
+            child: Center(
+              child: Icon(
+                icon,
+                color: disable ? Colors.black.withOpacity(.6) : Colors.black,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 18,
+            color: disable ? Colors.white.withOpacity(.3) : Colors.white,
+          ),
+        )
+      ],
+    );
+  }
+}

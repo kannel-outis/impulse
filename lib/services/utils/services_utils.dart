@@ -4,9 +4,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:impulse/app/impulse_exception.dart';
 import 'package:impulse/app/utils/extensions.dart';
-import 'package:impulse/services/gateway.dart';
-
-import 'constants.dart';
+import '../services.dart';
 
 class ServicesUtils {
   static Future<List<InternetAddress>> getAvailableIp() async {

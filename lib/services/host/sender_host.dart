@@ -1,10 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:impulse/app/impulse_exception.dart';
-import 'package:impulse/services/gateway.dart';
 
-import '../client/client.dart';
-import '../utils/services_utils.dart';
-import 'host.dart';
+import '../services.dart';
 
 class Sender extends Client implements Host {
   // final Connection connection;
