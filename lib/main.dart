@@ -127,6 +127,14 @@ class _TestingHomeState extends ConsumerState<TestingHome> {
             children: [
               MyButton(
                 onTap: () async {
+                  if (isHost) {
+                    /// Testing
+                    await sendController.host.shareFile(
+                        filePath:
+                            "C:/Users/emirb/Videos/Algorithms and Data Structures Tutorial - Full Course for Beginners.mp4",
+                        destination: sendController.myServer.clientServerInfo!);
+                    return;
+                  }
                   final s = await sendController.createServer();
                   if (s != null) {
                     showSnack(s.message);

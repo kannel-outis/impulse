@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:impulse/app/impulse_exception.dart';
+import 'package:impulse/models/server_info.dart';
 
 import '../services.dart';
 
@@ -51,5 +52,12 @@ class Receiver implements ClientHost {
     final uri = Uri.parse(
         "http://$address:${port ?? _port}/impulse/client_server_info");
     return RequestHelper.post(uri, body);
+  }
+
+  @override
+  Future<AppException?> shareFile(
+      {required String filePath, required ServerInfo destination}) {
+    // TODO: implement shareFile
+    throw UnimplementedError();
   }
 }

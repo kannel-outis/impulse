@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import '../services.dart';
@@ -91,26 +92,11 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
   Future<void> _handlePostRequest(HttpRequest httpRequest) async {
     final url = httpRequest.requestedUri.toString();
-    if (url == "http://${address.address}:$port/impulse/client_server_info") {
+    if (url == _buildUrl("impulse/client_server_info")) {
       print(url);
 
       ///need to wait for the result to load to memory before closing and decoding
       ///else it may just enter in chunks. the image may make it too large
-      ///
-      ///
-      ///
-      // httpRequest.listen((event) {
-      // final result = String.fromCharCodes(event);
-      // log(result);
-
-      // httpRequest.response.statusCode = Constants.STATUS_OK;
-      // httpRequest.response.headers.contentType = ContentType.json;
-      // httpRequest.response.write(
-      //   json.encode(
-      //     {"msg": "Successful"},
-      //   ),
-      // );
-      // });
       final result = await httpRequest.fold<List<int>>(
           [], (previous, element) => previous..addAll(element));
       final response = String.fromCharCodes(result);
@@ -125,7 +111,28 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         ),
       );
       httpRequest.response.close();
+    } else if (url == _buildUrl("send")) {
+      ///Testing....
+      print(httpRequest.headers["filename"]);
+      final fileName =
+          List.from(httpRequest.headers["filename"] as List<String>).first;
+      final fileType =
+          List.from(httpRequest.headers["filetype"] as List<String>).first;
+      final file =
+          File("storage/emulated/0/DCIMM/$fileName.$fileType").openWrite();
+      // final result = httpRequest.listen((event) {});
+      await for (final data in httpRequest) {
+        log(data.length.toString());
+        file.add(data);
+      }
+      await file.close();
+
+      ///TODO: do a response to close the connection
     }
+  }
+
+  String _buildUrl(String path) {
+    return "http://${address.address}:$port/$path";
   }
 
   @override
