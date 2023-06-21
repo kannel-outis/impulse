@@ -1,5 +1,16 @@
 # impulse
 
+Impulse is a file sharing app between two (or eventually more) devices on thesame local network (Wi-Fi). Impulse ATM may support only windows and android devices.
+
+## Still under development.
+
+Track project here [project](https://github.com/users/kannel-outis/projects/1) || [issues](https://github.com/kannel-outis/impulse/issues)
+
+
+
+
+
+
 A new Flutter project.
 
 ## Getting Started
