@@ -16,12 +16,14 @@ class ImpulseScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     _style = AppStyle(screenSize: size);
-    print(_style.sizes);
     return KeyedSubtree(
-      key: ValueKey(_style.scale),
+      key: ValueKey($styles.scale),
       child: Theme(
         data: $styles.colors.theme,
-        child: child,
+        child: DefaultTextStyle(
+          style: $styles.text.body,
+          child: child,
+        ),
       ),
     );
   }

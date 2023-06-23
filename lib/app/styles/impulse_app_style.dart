@@ -65,24 +65,24 @@ class _Text {
   final double _scale;
 
   final Map<String, TextStyle> _titleFonts = {
-    'en': const TextStyle(fontFamily: 'Tenor'),
+    'en': const TextStyle(fontFamily: 'JosefinSans'),
   };
 
   final Map<String, TextStyle> _monoTitleFonts = {
-    'en': const TextStyle(fontFamily: 'B612Mono'),
+    'en': const TextStyle(fontFamily: 'JosefinSans'),
   };
 
   final Map<String, TextStyle> _quoteFonts = {
-    'en': const TextStyle(fontFamily: 'Cinzel'),
+    'en': const TextStyle(fontFamily: 'JosefinSans'),
     'zh': const TextStyle(fontFamily: 'MaShanZheng'),
   };
 
   final Map<String, TextStyle> _impulseTitleFonts = {
-    'en': const TextStyle(fontFamily: 'Yeseva'),
+    'en': const TextStyle(fontFamily: 'JosefinSans'),
   };
 
   final Map<String, TextStyle> _contentFonts = {
-    'en': const TextStyle(fontFamily: 'Raleway', fontFeatures: [
+    'en': const TextStyle(fontFamily: 'JosefinSans', fontFeatures: [
       FontFeature.enable('kern'),
     ]),
   };
@@ -114,7 +114,7 @@ class _Text {
   late final TextStyle h1 = _createFont(titleFont, sizePx: 64, heightPx: 62);
   late final TextStyle h2 = _createFont(titleFont, sizePx: 32, heightPx: 46);
   late final TextStyle h3 =
-      _createFont(titleFont, sizePx: 24, heightPx: 36, weight: FontWeight.w600);
+      _createFont(titleFont, sizePx: 20, heightPx: 32, weight: FontWeight.w600);
   late final TextStyle h4 = _createFont(contentFont,
       sizePx: 14, heightPx: 23, spacingPc: 5, weight: FontWeight.w600);
 
@@ -182,6 +182,7 @@ class _Corners {
   late final double sm = 4;
   late final double md = 8;
   late final double lg = 32;
+  late final double xxlg = 200;
 }
 
 // TODO: add, @immutable when design is solidified
@@ -190,6 +191,7 @@ class _Sizes {
   double get maxContentWidth2 => 600;
   double get maxContentWidth3 => 500;
   final Size minAppSize = const Size(380, 250);
+  Size get defaultAppBarSize => const Size.fromHeight(60);
 }
 
 @immutable
@@ -209,6 +211,13 @@ class _Insets {
 
 @immutable
 class _Shadows {
+  final boxShadowSmall = [
+    BoxShadow(
+      blurRadius: 5,
+      color: Colors.black.withOpacity(.2),
+      blurStyle: BlurStyle.outer,
+    ),
+  ];
   final textSoft = [
     Shadow(
         color: Colors.black.withOpacity(.25),

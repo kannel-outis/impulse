@@ -5,11 +5,14 @@ import 'package:impulse/views/home/home.dart';
 
 class ImpulseRouter {
   static const routes = _Routes();
+
   static final router = GoRouter(
     initialLocation: routes.home,
     routes: [
       ShellRoute(
-        builder: (context, state, child) => ImpulseScaffold(child: child),
+        builder: (context, state, child) {
+          return ImpulseScaffold(child: child);
+        },
         routes: [
           ImpulseRoute(routes.home, (_) => const HomePage()),
         ],

@@ -5,4 +5,10 @@ class AssetsImage {
       "assets/images/default_display_image.png";
   static const String DEFAULT_DISPLAY_IMAGE_2 =
       "assets/images/default_display_image_2.png";
+
+  ///SVGs
+  static const String setting_filled = "assets/svgs/settings_filled.svg";
+  static const String setting_filled_moon =
+      "assets/svgs/settings_filled_moon.svg";
+  static const String home_filled = "assets/svgs/home_filled.svg";
 }
