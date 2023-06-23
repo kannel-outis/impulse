@@ -1,10 +1,16 @@
-import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
+import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/views/files/file_manager.dart';
+import 'package:impulse/views/home/widgets/app_item.dart';
+import 'package:impulse/views/settings/settings_screen.dart';
 
 import 'components/bottom_app_bar.dart';
-import 'widgets/bottom_app_bar_icon.dart';
+
+part 'images.dart';
+part 'videos.dart';
+part 'apps.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,6 +22,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+  late final PageController _pageController;
+
+  int index = 0;
 
   bool tabBarTapped = false;
   @override
@@ -23,6 +32,7 @@ class _HomePageState extends State<HomePage>
     super.initState();
 
     _tabController = TabController(length: tabs.length, vsync: this);
+    _pageController = PageController();
   }
 
   List<Widget> get tabs => <Widget>[
@@ -72,38 +82,17 @@ class _HomePageState extends State<HomePage>
         ),
         body: Padding(
           padding: ($styles.insets.md, 0.0).insets,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: PageView(
+            controller: _pageController,
+            // onPageChanged: (page) {
+            //   index = page;
+            //   setState(() {});
+            // },
+            physics: const NeverScrollableScrollPhysics(),
             children: [
-              TabBar(
-                indicatorSize: TabBarIndicatorSize.label,
-                labelPadding: EdgeInsets.only(
-                  bottom: $styles.insets.xs,
-                  right: $styles.insets.md,
-                  top: $styles.insets.sm,
-                ),
-                splashFactory: NoSplash.splashFactory,
-                isScrollable: true,
-                controller: _tabController,
-                overlayColor: MaterialStateProperty.all(Colors.transparent),
-                indicatorColor: $styles.colors.fontColor1,
-                labelColor: $styles.colors.fontColor1,
-                indicatorWeight: 1,
-                tabs: tabs,
-              ),
-              const SizedBox(height: 40),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: [
-                    AppsPage(),
-                    ImagesPage(),
-                    VideosPage(),
-                  ],
-                ),
-              ),
+              Home(tabController: _tabController, tabs: tabs),
+              const FileManagerScreen(),
+              const SettingScreen(),
             ],
           ),
         ),
@@ -118,68 +107,68 @@ class _HomePageState extends State<HomePage>
             // }
           },
         ),
-        bottomNavigationBar: MyBottomAppBar(),
+        bottomNavigationBar: MyBottomAppBar(
+          index: index,
+          onChanged: (index) {
+            this.index = index;
+            setState(() {});
+            _pageController.animateToPage(
+              index,
+              duration: $styles.times.pageTransition,
+              curve: Curves.easeInOut,
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-class VideosPage extends StatelessWidget {
-  const VideosPage({
+class Home extends StatelessWidget {
+  const Home({
     super.key,
-  });
+    required TabController tabController,
+    required this.tabs,
+  }) : _tabController = tabController;
+
+  final TabController _tabController;
+  final List<Widget> tabs;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.grey,
-      child: Row(
-        children: [
-          Expanded(
-            child: Text("data 1"),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TabBar(
+          indicatorSize: TabBarIndicatorSize.label,
+          labelPadding: EdgeInsets.only(
+            bottom: $styles.insets.xs,
+            right: $styles.insets.md,
+            top: $styles.insets.sm,
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class ImagesPage extends StatelessWidget {
-  const ImagesPage({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.pink,
-      child: Row(
-        children: [
-          Expanded(
-            child: Text("data 1"),
+          splashFactory: NoSplash.splashFactory,
+          isScrollable: true,
+          controller: _tabController,
+          overlayColor: MaterialStateProperty.all(Colors.transparent),
+          indicatorColor: $styles.colors.fontColor1,
+          labelColor: $styles.colors.fontColor1,
+          indicatorWeight: 1,
+          tabs: tabs,
+        ),
+        const SizedBox(height: 20),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: const [
+              AppsPage(),
+              ImagesPage(),
+              VideosPage(),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class AppsPage extends StatelessWidget {
-  const AppsPage({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: $styles.colors.accentColor1,
-      child: Row(
-        children: [
-          Expanded(
-            child: Text("data 1"),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

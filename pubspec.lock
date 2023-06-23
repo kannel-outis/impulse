@@ -189,7 +189,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "595b02be1cb81671e5b62dc15fde233b6f09caaa"
+      resolved-ref: "17a2c714cb75cb53cbbe5677d5a48bc44b0e5184"
       url: "https://github.com/kannel-outis/impulse_utils.git"
     source: git
     version: "0.0.1"

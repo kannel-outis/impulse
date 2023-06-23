@@ -4,10 +4,12 @@ import 'package:impulse/app/app.dart';
 import '../widgets/bottom_app_bar_icon.dart';
 
 class MyBottomAppBar extends StatefulWidget {
-  final int startIndex;
+  final int index;
+  final Function(int)? onChanged;
   const MyBottomAppBar({
     super.key,
-    this.startIndex = 0,
+    this.index = 0,
+    this.onChanged,
   });
 
   @override
@@ -20,14 +22,22 @@ class _MyBottomAppBarState extends State<MyBottomAppBar> {
   @override
   void initState() {
     super.initState();
-    index = widget.startIndex;
+    index = widget.index;
   }
 
-  List<(IconData, IconData)> get bars => const [
-        (ImpulseIcons.bx_home_alt_2, ImpulseIcons.bxs_home_alt_2),
-        (ImpulseIcons.bx_folder, ImpulseIcons.bxs_folder),
-        (ImpulseIcons.bx_cog, ImpulseIcons.bxs_cog),
-      ];
+  Map<String, (IconData, IconData)> get bars => const {
+        "Home": (ImpulseIcons.bx_home_alt_2, ImpulseIcons.bxs_home_alt_2),
+        "Files": (ImpulseIcons.bx_folder, ImpulseIcons.bxs_folder),
+        "Settings": (ImpulseIcons.bx_cog, ImpulseIcons.bxs_cog),
+      };
+
+  @override
+  void didUpdateWidget(covariant MyBottomAppBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.index != widget.index) {
+      index = widget.index;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +57,7 @@ class _MyBottomAppBarState extends State<MyBottomAppBar> {
               splashFactory: NoSplash.splashFactory,
               onTap: () {
                 index = i;
+                widget.onChanged?.call(index);
                 setState(() {});
               },
               child: AnimatedSwitcher(
@@ -59,13 +70,15 @@ class _MyBottomAppBarState extends State<MyBottomAppBar> {
                 child: index == i
                     ? BottomAppBarIcon(
                         key: ValueKey(index == i),
-                        icon: bars[i].$2,
+                        icon: bars.values.toList()[i].$2,
                         color: $styles.colors.iconColor2,
+                        label: bars.keys.toList()[i],
                       )
                     : BottomAppBarIcon(
                         key: ValueKey(index == i),
-                        icon: bars[i].$1,
+                        icon: bars.values.toList()[i].$1,
                         color: null,
+                        label: bars.keys.toList()[i],
                       ),
               ),
             )

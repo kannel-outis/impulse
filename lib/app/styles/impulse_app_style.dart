@@ -128,9 +128,9 @@ class _Text {
   late final TextStyle bodyBold = _createFont(contentFont,
       sizePx: 16, heightPx: 26, weight: FontWeight.w600);
   late final TextStyle bodySmall =
-      _createFont(contentFont, sizePx: 14, heightPx: 23);
+      _createFont(contentFont, sizePx: 12, heightPx: 23);
   late final TextStyle bodySmallBold = _createFont(contentFont,
-      sizePx: 14, heightPx: 23, weight: FontWeight.w600);
+      sizePx: 12, heightPx: 23, weight: FontWeight.w600);
 
   late final TextStyle quote1 = _createFont(quoteFont,
       sizePx: 32, heightPx: 40, weight: FontWeight.w600, spacingPc: -3);

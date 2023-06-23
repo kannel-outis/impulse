@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse_utils/impulse_utils.dart';
 
 import 'app/app.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final container = ProviderContainer();
+  // container.
+  container.read(homeProvider).getAllApplications();
+  await FileManager.instance.getRootPaths(true);
   runApp(
-    const ProviderScope(
-      child: Impulse(),
+    UncontrolledProviderScope(
+      container: container,
+      child: const Impulse(),
     ),
   );
 }
