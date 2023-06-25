@@ -3,20 +3,20 @@ import 'package:impulse/app/app.dart';
 
 import '../widgets/bottom_app_bar_icon.dart';
 
-class MyBottomAppBar extends StatefulWidget {
+class MyBottomNavBar extends StatefulWidget {
   final int index;
   final Function(int)? onChanged;
-  const MyBottomAppBar({
+  const MyBottomNavBar({
     super.key,
     this.index = 0,
     this.onChanged,
   });
 
   @override
-  State<MyBottomAppBar> createState() => _MyBottomAppBarState();
+  State<MyBottomNavBar> createState() => _MyBottomNavBarState();
 }
 
-class _MyBottomAppBarState extends State<MyBottomAppBar> {
+class _MyBottomNavBarState extends State<MyBottomNavBar> {
   int index = 0;
 
   @override
@@ -32,7 +32,7 @@ class _MyBottomAppBarState extends State<MyBottomAppBar> {
       };
 
   @override
-  void didUpdateWidget(covariant MyBottomAppBar oldWidget) {
+  void didUpdateWidget(covariant MyBottomNavBar oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.index != widget.index) {
       index = widget.index;
@@ -71,13 +71,13 @@ class _MyBottomAppBarState extends State<MyBottomAppBar> {
                     ? BottomAppBarIcon(
                         key: ValueKey(index == i),
                         icon: bars.values.toList()[i].$2,
-                        color: $styles.colors.iconColor2,
+                        color: Theme.of(context).colorScheme.primary,
                         label: bars.keys.toList()[i],
                       )
                     : BottomAppBarIcon(
                         key: ValueKey(index == i),
                         icon: bars.values.toList()[i].$1,
-                        color: null,
+                        color: $styles.colors.iconColor1,
                         label: bars.keys.toList()[i],
                       ),
               ),

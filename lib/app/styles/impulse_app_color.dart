@@ -7,6 +7,7 @@ class AppColors {
   final secondaryColor = const Color(0xff04a4e3);
   final iconColor1 = const Color(0xffc4c9cf);
   final iconColor2 = const Color(0xff04a4e3);
+  final folderColor2 = const Color(0xfff7be3a);
   Color get fontColor1 => iconColor1;
   final fontColor2 = const Color(0xff7e848b);
   ColorScheme get _scheme => ColorScheme(

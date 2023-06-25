@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:impulse_utils/impulse_utils.dart';
 
 import 'globals.dart';
 
@@ -51,5 +52,25 @@ extension SymmetricInsets on (double, double) {
 
   EdgeInsets get insetsLeftRight {
     return EdgeInsets.only(left: this.$1, right: this.$2);
+  }
+}
+
+extension FileType on ImpulseFileType {
+  bool get isImage {
+    return this == ImpulseFileType.jpeg ||
+        this == ImpulseFileType.jpg ||
+        this == ImpulseFileType.png;
+  }
+
+  bool get isVideo {
+    return this == ImpulseFileType.mov || this == ImpulseFileType.mp4;
+  }
+}
+
+extension Cut on String {
+  String get cutTimeDateString {
+    final strings = split(":");
+    strings.removeLast();
+    return strings.join(":");
   }
 }

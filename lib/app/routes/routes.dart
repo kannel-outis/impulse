@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/impulse_scaffold.dart';
+import 'package:impulse/views/files/file_manager.dart';
 import 'package:impulse/views/home/home.dart';
+import 'package:impulse_utils/impulse_utils.dart';
 
 class ImpulseRouter {
   static const routes = _Routes();
@@ -15,6 +17,15 @@ class ImpulseRouter {
         },
         routes: [
           ImpulseRoute(routes.home, (_) => const HomePage()),
+
+          ///TODO: will remove later
+          ImpulseRoute(
+            routes.folder,
+            (s) => FileManagerScreen(
+              files:
+                  s.extra != null ? s.extra as List<ImpulseFileEntity> : null,
+            ),
+          ),
         ],
       ),
     ],
@@ -25,6 +36,9 @@ class _Routes {
   const _Routes();
 
   final String home = "/home";
+
+  ////
+  final String folder = "/folder";
 }
 
 class ImpulseRoute extends GoRoute {

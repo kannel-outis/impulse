@@ -6,6 +6,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:impulse/app/app.dart';
 
 import 'impulse_app_color.dart';
 
@@ -192,6 +193,7 @@ class _Sizes {
   double get maxContentWidth3 => 500;
   final Size minAppSize = const Size(380, 250);
   Size get defaultAppBarSize => const Size.fromHeight(60);
+  double get prefixIconSize => 50.scale;
 }
 
 @immutable

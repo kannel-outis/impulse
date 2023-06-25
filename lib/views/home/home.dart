@@ -5,8 +5,9 @@ import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/views/files/file_manager.dart';
 import 'package:impulse/views/home/widgets/app_item.dart';
 import 'package:impulse/views/settings/settings_screen.dart';
+import 'package:impulse/views/shared/padded_body.dart';
 
-import 'components/bottom_app_bar.dart';
+import 'components/bottom_nav_bar.dart';
 
 part 'images.dart';
 part 'videos.dart';
@@ -80,21 +81,18 @@ class _HomePageState extends State<HomePage>
             ),
           ),
         ),
-        body: Padding(
-          padding: ($styles.insets.md, 0.0).insets,
-          child: PageView(
-            controller: _pageController,
-            // onPageChanged: (page) {
-            //   index = page;
-            //   setState(() {});
-            // },
-            physics: const NeverScrollableScrollPhysics(),
-            children: [
-              Home(tabController: _tabController, tabs: tabs),
-              const FileManagerScreen(),
-              const SettingScreen(),
-            ],
-          ),
+        body: PageView(
+          controller: _pageController,
+          // onPageChanged: (page) {
+          //   index = page;
+          //   setState(() {});
+          // },
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            Home(tabController: _tabController, tabs: tabs),
+            const FileManagerScreen(),
+            const SettingScreen(),
+          ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
@@ -107,7 +105,7 @@ class _HomePageState extends State<HomePage>
             // }
           },
         ),
-        bottomNavigationBar: MyBottomAppBar(
+        bottomNavigationBar: MyBottomNavBar(
           index: index,
           onChanged: (index) {
             this.index = index;
@@ -136,39 +134,41 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TabBar(
-          indicatorSize: TabBarIndicatorSize.label,
-          labelPadding: EdgeInsets.only(
-            bottom: $styles.insets.xs,
-            right: $styles.insets.md,
-            top: $styles.insets.sm,
-          ),
-          splashFactory: NoSplash.splashFactory,
-          isScrollable: true,
-          controller: _tabController,
-          overlayColor: MaterialStateProperty.all(Colors.transparent),
-          indicatorColor: $styles.colors.fontColor1,
-          labelColor: $styles.colors.fontColor1,
-          indicatorWeight: 1,
-          tabs: tabs,
-        ),
-        const SizedBox(height: 20),
-        Expanded(
-          child: TabBarView(
+    return PaddedBody(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TabBar(
+            indicatorSize: TabBarIndicatorSize.label,
+            labelPadding: EdgeInsets.only(
+              bottom: $styles.insets.xs,
+              right: $styles.insets.md,
+              top: $styles.insets.sm,
+            ),
+            splashFactory: NoSplash.splashFactory,
+            isScrollable: true,
             controller: _tabController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            children: const [
-              AppsPage(),
-              ImagesPage(),
-              VideosPage(),
-            ],
+            overlayColor: MaterialStateProperty.all(Colors.transparent),
+            indicatorColor: $styles.colors.fontColor1,
+            labelColor: $styles.colors.fontColor1,
+            indicatorWeight: 1,
+            tabs: tabs,
           ),
-        ),
-      ],
+          const SizedBox(height: 20),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: const [
+                AppsPage(),
+                ImagesPage(),
+                VideosPage(),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
