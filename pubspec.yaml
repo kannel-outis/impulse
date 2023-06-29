@@ -95,7 +95,10 @@ flutter:
     - family: icomoon
       fonts:
         - asset: assets/fonts/icons/icomoon.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
+        
+    - family: transfer
+      fonts:
+        - asset: assets/fonts/icons/transfer_icons.ttf
   #         weight: 700
   #
   # For details regarding fonts from package dependencies,

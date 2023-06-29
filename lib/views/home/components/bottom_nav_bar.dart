@@ -25,8 +25,9 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
     index = widget.index;
   }
 
-  Map<String, (IconData, IconData)> get bars => const {
-        "Home": (ImpulseIcons.bx_home_alt_2, ImpulseIcons.bxs_home_alt_2),
+  Map<String, (IconData, IconData)> get bars => {
+        if (isAndroid)
+          "Home": (ImpulseIcons.bx_home_alt_2, ImpulseIcons.bxs_home_alt_2),
         "Files": (ImpulseIcons.bx_folder, ImpulseIcons.bxs_folder),
         "Settings": (ImpulseIcons.bx_cog, ImpulseIcons.bxs_cog),
       };

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
@@ -22,15 +24,17 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
   @override
   void initState() {
     super.initState();
-    if (widget.files != null) {
-      files = widget.files!;
-      setState(() {});
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        final controller = ref.read(fileManagerProvider);
-        files = controller.goToPath();
+    if (isAndroid) {
+      if (widget.files != null) {
+        files = widget.files!;
         setState(() {});
-      });
+      } else {
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          final controller = ref.read(fileManagerProvider);
+          files = controller.goToPath();
+          setState(() {});
+        });
+      }
     }
   }
 

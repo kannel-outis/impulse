@@ -9,8 +9,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final container = ProviderContainer();
   // container.
-  container.read(homeProvider).getAllApplications();
-  await FileManager.instance.getRootPaths(true);
+  if (isAndroid) {
+    container.read(homeProvider).getAllApplications();
+    await FileManager.instance.getRootPaths(true);
+  }
   runApp(
     UncontrolledProviderScope(
       container: container,

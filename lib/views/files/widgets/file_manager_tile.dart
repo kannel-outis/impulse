@@ -1,12 +1,11 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
+import 'package:impulse/controllers/file_manager/file_manager_controller.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
-import '../../../controllers/file_manager/file_manager_controller.dart';
 
 class FileManagerTile extends ConsumerStatefulWidget {
   final ImpulseFileEntity item;
@@ -75,10 +74,10 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
   Widget _getPreffix(ImpulseFileEntity file) {
     // log("${file.fileType?.isImage.toString()}");
     if (file.fileType != null && file.fileType!.isImage) {
-      print("object");
       return MediaThumbnail(
         file: (file as ImpulseFile).file.path,
         isVideo: false,
+        size: const Size(150, 150),
         placeHolder: Container(
           height: 50,
           width: 50,
@@ -90,7 +89,6 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
         ),
       );
     }
-    log("${file.fileType?.isVideo}");
     if (file.fileType != null && file.fileType!.isVideo) {
       return MediaThumbnail(
         file: (file as ImpulseFile).file.path,
@@ -100,7 +98,7 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
           width: 50,
           decoration: const BoxDecoration(
             image: DecorationImage(
-                image: AssetImage(AssetsImage.image_placeholder),
+                image: AssetImage(AssetsImage.video_placeholder),
                 fit: BoxFit.cover),
           ),
         ),

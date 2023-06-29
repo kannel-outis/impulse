@@ -12,5 +12,5 @@ class AssetsImage {
   static const String setting_filled_moon =
       "assets/svgs/settings_filled_moon.svg";
   static const String home_filled = "assets/svgs/home_filled.svg";
-  static const String video_placeholder = "assets/svgs/video_placeholder.svg";
+  static const String video_placeholder = "assets/images/video_placeholder.png";
 }

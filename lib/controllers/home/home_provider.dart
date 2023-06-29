@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:impulse/app/app.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
 final homeProvider = ChangeNotifierProvider<HomeController>((ref) {
@@ -24,7 +25,7 @@ class HomeController extends ChangeNotifier {
   bool get isGettingAllApplications => _isGettingAllApplications;
 
   Future<void> getAllApplications() async {
-    if (!Platform.isAndroid) return;
+    if (!isAndroid) return;
     _isGettingAllApplications = true;
     notifyListeners();
     _applications = await utils.getInstalledApplication();

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
@@ -5,9 +6,11 @@ import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/views/files/file_manager.dart';
 import 'package:impulse/views/home/widgets/app_item.dart';
 import 'package:impulse/views/settings/settings_screen.dart';
+import 'package:impulse/views/shared/custom_speed_dial.dart';
 import 'package:impulse/views/shared/padded_body.dart';
 
 import 'components/bottom_nav_bar.dart';
+import 'widgets/speed_child_item.dart';
 
 part 'images.dart';
 part 'videos.dart';
@@ -89,21 +92,39 @@ class _HomePageState extends State<HomePage>
           // },
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            Home(tabController: _tabController, tabs: tabs),
+            if (isAndroid) Home(tabController: _tabController, tabs: tabs),
             const FileManagerScreen(),
             const SettingScreen(),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // final dir = Directory("/system/fonts");
-            // if (dir.existsSync()) {
-            //   final list = dir.listSync();
-            //   for (final l in list) {
-            //     log(l.toString());
-            //   }
-            // }
-          },
+        floatingActionButton: CustomSpeedDial(
+          overlayChildrenOffset: const Offset(0.0, -10),
+          duration: const Duration(milliseconds: 500),
+          child: Container(
+            height: 50,
+            width: 50,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(100),
+              color: Theme.of(context).colorScheme.primary,
+            ),
+
+            /// This particular icon is not aligned properly
+            /// it had to be manually done
+            alignment: const Alignment(0.0, .2),
+            child: const Icon(
+              ImpulseIcons.transfer2,
+              size: 30,
+            ),
+          ),
+          // childSpacing: .4,
+          children: const [
+            SpeedChild(
+              icon: Icons.file_upload_rounded,
+            ),
+            SpeedChild(
+              icon: Icons.file_download_rounded,
+            ),
+          ],
         ),
         bottomNavigationBar: MyBottomNavBar(
           index: index,

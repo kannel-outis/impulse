@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/impulse_scaffold.dart';
+import 'package:impulse/views/shared/custom_speed_dial.dart';
 import 'package:impulse/views/files/file_manager.dart';
 import 'package:impulse/views/home/home.dart';
 import 'package:impulse_utils/impulse_utils.dart';
@@ -16,6 +17,8 @@ class ImpulseRouter {
           return ImpulseScaffold(child: child);
         },
         routes: [
+          // ImpulseRoute(routes.test, (_) => const TestPage()),
+
           ImpulseRoute(routes.home, (_) => const HomePage()),
 
           ///TODO: will remove later
@@ -36,6 +39,7 @@ class _Routes {
   const _Routes();
 
   final String home = "/home";
+  final String test = "/test";
 
   ////
   final String folder = "/folder";
