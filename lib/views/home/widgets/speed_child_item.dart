@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
+import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/impulse_scaffold.dart';
+import 'package:lottie/lottie.dart';
+
+import 'custom_dialog.dart';
 
 class SpeedChild extends StatelessWidget {
   final VoidCallback? onTap;
@@ -15,7 +21,17 @@ class SpeedChild extends StatelessWidget {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: onTap,
+        onTap: () {
+          onTap?.call();
+
+          showDialog(
+              context: context,
+              useSafeArea: true,
+              useRootNavigator: false,
+              builder: (context) {
+                return const CustomDialog();
+              });
+        },
         child: Container(
           height: 50,
           width: 50,

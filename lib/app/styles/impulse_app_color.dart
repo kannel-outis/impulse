@@ -9,6 +9,7 @@ class AppColors {
   final iconColor2 = const Color(0xff04a4e3);
   final folderColor2 = const Color(0xfff7be3a);
   Color get fontColor1 => iconColor1;
+  Color get iconColor3 => fontColor2;
   final fontColor2 = const Color(0xff7e848b);
   ColorScheme get _scheme => ColorScheme(
         brightness: Brightness.dark,

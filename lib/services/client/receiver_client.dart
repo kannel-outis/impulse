@@ -60,4 +60,7 @@ class Receiver implements ClientHost {
     // TODO: implement shareFile
     throw UnimplementedError();
   }
+
+  @override
+  bool get isServerRunning => gateWay != null && gateWay!.isServerRunning;
 }

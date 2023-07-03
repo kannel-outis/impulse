@@ -40,15 +40,15 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
   final ServerManager serverManager;
   MyHttpServer({required this.serverManager}) : super();
 
-  late final HttpServer _httpServer;
+   HttpServer? _httpServer;
   @override
-  int get port => _httpServer.port;
+  int get port => _httpServer?.port ?? 0;
 
   @override
   HttpServer? get server => _httpServer;
 
   @override
-  InternetAddress get address => _httpServer.address;
+  InternetAddress get address => _httpServer?.address ?? InternetAddress("0.0.0.0");
 
   @override
   Future<HttpServer> bind(address, int port) async {
@@ -57,7 +57,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
   @override
   void listen() {
-    _httpServer.listen(_listener);
+    _httpServer?.listen(_listener);
   }
 
   void _listener(HttpRequest httpRequest) {
@@ -137,6 +137,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
   @override
   void close() {
-    _httpServer.close(force: true);
+    _httpServer?.close(force: true);
   }
 }

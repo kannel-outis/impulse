@@ -1,6 +1,6 @@
 import 'package:impulse/models/server_info.dart';
 
-abstract mixin class ServerManager {
+abstract class ServerManager {
   //TODO: should change to sync function later
   // Future<ServerInfo> get hostInfo;
   Future<ServerInfo> myServerInfo();

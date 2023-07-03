@@ -10,4 +10,5 @@ abstract interface class Host {
 
   Future<AppException?> shareFile(
       {required String filePath, required ServerInfo destination});
+  bool get isServerRunning;
 }

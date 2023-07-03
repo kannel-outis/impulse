@@ -57,6 +57,9 @@ class AppStyle {
 
   /// Shared sizes
   late final _Sizes sizes = _Sizes();
+
+  /// Curves
+  late final _Curves curves = _Curves();
 }
 
 @immutable
@@ -162,7 +165,7 @@ class _Text {
     }
     return style.copyWith(
         fontSize: sizePx,
-        color: color,
+        color: color ?? colors.fontColor1,
         height: heightPx != null ? (heightPx / sizePx) : style.height,
         letterSpacing:
             spacingPc != null ? sizePx * spacingPc * 0.01 : style.letterSpacing,
@@ -194,6 +197,13 @@ class _Sizes {
   final Size minAppSize = const Size(380, 250);
   Size get defaultAppBarSize => const Size.fromHeight(60);
   double get prefixIconSize => 50.scale;
+  double get xxSmallIconSize => 10.scale;
+  double get xSmallIconSize => 20.scale;
+  double get smallIconSize => 40.scale;
+  double get mediumIconSize => 60.scale;
+  double get largeIconSize => 80.scale;
+  double get xLargeIconSize => 100.scale;
+  double get xxLargeIconSize => 150.scale;
 }
 
 @immutable
@@ -238,4 +248,9 @@ class _Shadows {
         offset: const Offset(0, 4),
         blurRadius: 6),
   ];
+}
+
+@immutable
+class _Curves {
+  final defaultCurve = Curves.easeOutBack;
 }

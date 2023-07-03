@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:impulse/app/app.dart';
 
 class CustomSpeedDial extends StatefulWidget {
   final Duration duration;
@@ -7,14 +8,18 @@ class CustomSpeedDial extends StatefulWidget {
   final double childSpacing;
   final Function(bool)? onToggle;
   final Offset overlayChildrenOffset;
+  final bool open;
+  final bool? disable;
   const CustomSpeedDial({
     super.key,
     required this.children,
     required this.child,
     this.onToggle,
+    this.open = false,
     this.overlayChildrenOffset = Offset.zero,
     this.childSpacing = .3,
     this.duration = const Duration(milliseconds: 500),
+    this.disable = false,
   });
 
   @override
@@ -40,8 +45,11 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
       });
     }
     if (widget.duration != oldWidget.duration) {
-      print("somthing");
       _animationController.duration = widget.duration;
+    }
+
+    if (widget.open != _isOpen) {
+      _toggleOverlay(context, close: widget.open);
     }
   }
 
@@ -60,20 +68,39 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
       vsync: this,
       duration: widget.duration,
     );
+    if (widget.open) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _toggleOverlay(context);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          // borderRadius: widget.borderRadius ?? BorderRadius.zero,
-          onTap: () {
-            _toggleOverlay(context);
-          },
-          child: widget.child,
+      child: Tooltip(
+        message: "Connect",
+        verticalOffset: -70,
+        textStyle: $styles.text.body.copyWith(
+          color: Theme.of(context).scaffoldBackgroundColor,
+        ),
+        decoration: BoxDecoration(
+          color: $styles.colors.fontColor1,
+          borderRadius: BorderRadius.circular($styles.corners.sm),
+        ),
+        waitDuration: $styles.times.slow,
+        child: MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: GestureDetector(
+            // borderRadius: widget.borderRadius ?? BorderRadius.zero,
+            onTap: widget.disable!
+                ? null
+                : () {
+                    _toggleOverlay(context);
+                  },
+            child: widget.child,
+          ),
         ),
       ),
     );
@@ -87,42 +114,38 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
     return Interval(
       i * 0.1,
       (i * 0.1) + .4,
-      curve: Curves.easeOutBack,
+      curve: $styles.curves.defaultCurve,
     );
   }
 
   OverlayEntry _createOverlayEntry(BuildContext context) {
     // print(size);
+    final size = MediaQuery.of(context).size;
     return OverlayEntry(
-      builder: (context) => Stack(
-        alignment: Alignment.center,
-        children: [
-          for (var i = 0; i < widget.children.length; i++)
-            CompositedTransformFollower(
-              link: _layerLink,
-              offset: widget.overlayChildrenOffset,
-              child: SlideTransition(
-                position: Tween<Offset>(
-                  end: Offset(0, (-i * (1 + widget.childSpacing)) - 1),
-                  begin: Offset.zero,
-                ).animate(
-                  CurvedAnimation(
-                    parent: _animationController,
-                    curve: _interval(i),
-                  ),
-                ),
-                child: ScaleTransition(
-                  scale: Tween<double>(
-                    begin: 0,
-                    end: 1,
-                  ).animate(
-                    CurvedAnimation(
-                      parent: _animationController,
-                      curve: _interval(i),
+      builder: (context) => GestureDetector(
+        onTap: () => _toggleOverlay(context, close: true),
+        child: SizedBox(
+          width: size.width,
+          height: size.height,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              for (var i = 0; i < widget.children.length; i++)
+                CompositedTransformFollower(
+                  link: _layerLink,
+                  offset: widget.overlayChildrenOffset,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      end: Offset(0, (-i * (1 + widget.childSpacing)) - 1),
+                      begin: Offset.zero,
+                    ).animate(
+                      CurvedAnimation(
+                        parent: _animationController,
+                        curve: _interval(i),
+                      ),
                     ),
-                  ),
-                  child: FadeTransition(
-                      opacity: Tween<double>(
+                    child: ScaleTransition(
+                      scale: Tween<double>(
                         begin: 0,
                         end: 1,
                       ).animate(
@@ -131,11 +154,23 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
                           curve: _interval(i),
                         ),
                       ),
-                      child: widget.children[i]),
+                      child: FadeTransition(
+                          opacity: Tween<double>(
+                            begin: 0,
+                            end: 1,
+                          ).animate(
+                            CurvedAnimation(
+                              parent: _animationController,
+                              curve: _interval(i),
+                            ),
+                          ),
+                          child: widget.children[i]),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -144,19 +179,17 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
     BuildContext context, {
     bool close = false,
   }) async {
-    widget.onToggle?.call(false);
     if (_isOpen || close) {
       await _animationController.reverse();
       _overlayEntry?.remove();
-      setState(() {
-        _isOpen = false;
-      });
+      setState(() => _isOpen = false);
+      widget.onToggle?.call(false);
     } else {
-      widget.onToggle?.call(true);
       _overlayEntry = _createOverlayEntry(context);
       Overlay.of(context).insert(_overlayEntry!);
       setState(() => _isOpen = true);
       await _animationController.forward();
+      widget.onToggle?.call(true);
     }
   }
 }

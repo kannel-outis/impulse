@@ -65,4 +65,7 @@ class Sender extends Client implements Host {
       return AppException(e.toString());
     }
   }
+
+  @override
+  bool get isServerRunning => gateWay.isServerRunning;
 }

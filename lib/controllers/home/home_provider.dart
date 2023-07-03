@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -22,7 +21,10 @@ class HomeController extends ChangeNotifier {
   }
 
   bool _isGettingAllApplications = false;
-  bool get isGettingAllApplications => _isGettingAllApplications;
+
+  bool _isWaitingForReceiver = false;
+
+  bool _shouldShowTopStack = false;
 
   Future<void> getAllApplications() async {
     if (!isAndroid) return;
@@ -34,4 +36,19 @@ class HomeController extends ChangeNotifier {
     _isGettingAllApplications = false;
     notifyListeners();
   }
+
+  // set isWaitingForReceiver(bool isWaiting) {
+  //   _isWaitingForReceiver = isWaiting;
+  //   notifyListeners();
+  // }
+
+  set shouldShowTopStack(bool topStack) {
+    _shouldShowTopStack = topStack;
+    notifyListeners();
+  }
+
+  ////
+  bool get isGettingAllApplications => _isGettingAllApplications;
+  bool get shouldShowTopStack => _shouldShowTopStack;
+  bool get isWaitingForReceiver => _isWaitingForReceiver;
 }
