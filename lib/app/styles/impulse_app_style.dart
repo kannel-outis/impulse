@@ -199,6 +199,7 @@ class _Sizes {
   double get prefixIconSize => 50.scale;
   double get xxSmallIconSize => 10.scale;
   double get xSmallIconSize => 20.scale;
+  double get smallIconSize2 => 30.scale;
   double get smallIconSize => 40.scale;
   double get mediumIconSize => 60.scale;
   double get largeIconSize => 80.scale;

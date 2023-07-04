@@ -34,6 +34,7 @@ class _HomePageState extends ConsumerState<HomePage>
 
   bool tabBarTapped = false;
   bool isOverlayOpen = false;
+  bool waitForOverlayReverseAnimation = true;
   @override
   void initState() {
     super.initState();
@@ -57,9 +58,14 @@ class _HomePageState extends ConsumerState<HomePage>
     return offset.translate(size.width, size.height);
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void closeOverlay() {
+    isOverlayOpen = false;
+    setState(() {});
+    waitforOverlayReverseAnimation(false);
+  }
+
+  void waitforOverlayReverseAnimation(bool wait) {
+    waitForOverlayReverseAnimation = wait;
   }
 
   @override
@@ -125,7 +131,12 @@ class _HomePageState extends ConsumerState<HomePage>
             floatingActionButton: CustomSpeedDial(
               open: isOverlayOpen,
               disable: hostController.host.isServerRunning,
+              toolTipMessage: homeController.isWaitingForReceiver
+                  ? "Waiting for connection"
+                  : "Connect",
+              waitForReverseAnimation: waitForOverlayReverseAnimation,
               onToggle: (isOpen) {
+                waitforOverlayReverseAnimation(true);
                 if (isOpen != isOverlayOpen) {
                   isOverlayOpen = isOpen;
                   setState(() {});
@@ -153,22 +164,22 @@ class _HomePageState extends ConsumerState<HomePage>
               children: [
                 SpeedChild(
                   onTap: () {
-                    isOverlayOpen = false;
-                    setState(() {});
-                  },
-                  icon: Icons.file_download_rounded,
-                ),
-                SpeedChild(
-                  onTap: () {
-                    isOverlayOpen = false;
-                    setState(() {});
+                    closeOverlay();
                     hostController.createServer().then((value) {
+                      homeController.isWaitingForReceiver = true;
                       print(hostController.myServer);
                     });
                   },
                   icon: Icons.file_upload_rounded,
                 ),
-              ],
+                SpeedChild(
+                  isHost: false,
+                  onTap: () {
+                    closeOverlay();
+                  },
+                  icon: Icons.file_download_rounded,
+                ),
+              ].reversed.toList(),
             ),
             bottomNavigationBar: MyBottomNavBar(
               index: index,

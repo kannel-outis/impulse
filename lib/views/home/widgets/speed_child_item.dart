@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:impulse/app/app.dart';
-import 'package:impulse/controllers/controllers.dart';
-import 'package:impulse/impulse_scaffold.dart';
-import 'package:lottie/lottie.dart';
 
-import 'custom_dialog.dart';
+import 'custom_modal.dart';
 
 class SpeedChild extends StatelessWidget {
+  final bool isHost;
   final VoidCallback? onTap;
   final IconData icon;
   const SpeedChild({
     super.key,
     required this.icon,
     this.onTap,
+    this.isHost = true,
   });
 
   @override
@@ -23,14 +20,26 @@ class SpeedChild extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           onTap?.call();
+          // if (isHost == false) {
+          //   showModalBottomSheet(
+          //       context: context,
+          //       useRootNavigator: false,
+          //       useSafeArea: true,
+          //       builder: (context) {
+          //         return CustomDialog();
+          //       });
+          //   return;
+          // }
 
-          showDialog(
-              context: context,
-              useSafeArea: true,
-              useRootNavigator: false,
-              builder: (context) {
-                return const CustomDialog();
-              });
+          showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              if (isHost) {
+                return const CustomHostBottomModalSheet();
+              }
+              return const CustomClientBottomModalSheet();
+            },
+          );
         },
         child: Container(
           height: 50,

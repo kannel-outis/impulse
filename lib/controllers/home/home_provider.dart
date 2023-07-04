@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
@@ -37,10 +36,10 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // set isWaitingForReceiver(bool isWaiting) {
-  //   _isWaitingForReceiver = isWaiting;
-  //   notifyListeners();
-  // }
+  set isWaitingForReceiver(bool isWaiting) {
+    _isWaitingForReceiver = isWaiting;
+    notifyListeners();
+  }
 
   set shouldShowTopStack(bool topStack) {
     _shouldShowTopStack = topStack;

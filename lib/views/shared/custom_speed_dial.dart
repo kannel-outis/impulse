@@ -10,6 +10,8 @@ class CustomSpeedDial extends StatefulWidget {
   final Offset overlayChildrenOffset;
   final bool open;
   final bool? disable;
+  final String toolTipMessage;
+  final bool waitForReverseAnimation;
   const CustomSpeedDial({
     super.key,
     required this.children,
@@ -20,6 +22,8 @@ class CustomSpeedDial extends StatefulWidget {
     this.childSpacing = .3,
     this.duration = const Duration(milliseconds: 500),
     this.disable = false,
+    this.toolTipMessage = "Connect",
+    this.waitForReverseAnimation = false,
   });
 
   @override
@@ -51,6 +55,9 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
     if (widget.open != _isOpen) {
       _toggleOverlay(context, close: widget.open);
     }
+    if (widget.toolTipMessage != oldWidget.toolTipMessage) {
+      setState(() {});
+    }
   }
 
   @override
@@ -80,8 +87,8 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
     return CompositedTransformTarget(
       link: _layerLink,
       child: Tooltip(
-        message: "Connect",
-        verticalOffset: -70,
+        message: widget.toolTipMessage,
+        // verticalOffset: -70,
         textStyle: $styles.text.body.copyWith(
           color: Theme.of(context).scaffoldBackgroundColor,
         ),
@@ -180,10 +187,14 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
     bool close = false,
   }) async {
     if (_isOpen || close) {
-      await _animationController.reverse();
-      _overlayEntry?.remove();
       setState(() => _isOpen = false);
       widget.onToggle?.call(false);
+      if (widget.waitForReverseAnimation) {
+        await _animationController.reverse();
+      } else {
+        _animationController.reverse();
+      }
+      _overlayEntry?.remove();
     } else {
       _overlayEntry = _createOverlayEntry(context);
       Overlay.of(context).insert(_overlayEntry!);
@@ -193,3 +204,8 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
     }
   }
 }
+
+
+// class SpeedDialController extends ChangeNotifier{
+
+// }
