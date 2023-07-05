@@ -54,8 +54,8 @@ class _HomePageState extends ConsumerState<HomePage>
     final size = renderBox!.size;
 
     final offset = renderBox.localToGlobal(Offset.zero);
-
-    return offset.translate(size.width, size.height);
+    print(offset.dy);
+    return offset;
   }
 
   void closeOverlay() {

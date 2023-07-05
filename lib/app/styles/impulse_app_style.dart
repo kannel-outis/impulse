@@ -194,8 +194,16 @@ class _Sizes {
   double get maxContentWidth1 => 800;
   double get maxContentWidth2 => 600;
   double get maxContentWidth3 => 500;
+
+  double get maxContentHeight1 => 300;
+  double get maxContentHeight2 => 500;
+  double get maxContentHeight3 => 700;
+
+  /////
   final Size minAppSize = const Size(380, 250);
   Size get defaultAppBarSize => const Size.fromHeight(60);
+
+  ///icons sizes
   double get prefixIconSize => 50.scale;
   double get xxSmallIconSize => 10.scale;
   double get xSmallIconSize => 20.scale;

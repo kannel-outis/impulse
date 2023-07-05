@@ -74,3 +74,18 @@ extension Cut on String {
     return strings.join(":");
   }
 }
+
+extension Contains on Offset {
+  bool contains(Offset outerOffset, double size) {
+    final size1 = Size(size, size);
+    final size2 = Size(size, size);
+
+    final position1 = this;
+    final position2 = outerOffset;
+
+    return (position1.dx < position2.dx + size2.width &&
+        position1.dx + size1.width > position2.dx &&
+        position1.dy < position2.dy + size2.height &&
+        position1.dy + size1.height > position2.dy);
+  }
+}

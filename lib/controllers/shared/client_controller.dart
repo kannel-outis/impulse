@@ -67,6 +67,8 @@ class ClientProvider extends ChangeNotifier {
     }
   }
 
+  void clearAvailableUsers() => _availableHostsServers.clear();
+
   Future<void> getAvailableUsers() async {
     ///Scan for available ip addresses
     final availableHostIps = await _scan();

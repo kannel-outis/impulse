@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:impulse/app/app.dart';
 
 import 'custom_modal.dart';
 
@@ -18,8 +19,7 @@ class SpeedChild extends StatelessWidget {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: () {
-          onTap?.call();
+        onTap: () async {
           // if (isHost == false) {
           //   showModalBottomSheet(
           //       context: context,
@@ -31,8 +31,13 @@ class SpeedChild extends StatelessWidget {
           //   return;
           // }
 
+          onTap?.call();
           showModalBottomSheet(
             context: context,
+            constraints: BoxConstraints(
+              maxWidth: $styles.sizes.maxContentWidth1,
+              maxHeight: $styles.sizes.maxContentHeight1,
+            ),
             builder: (context) {
               if (isHost) {
                 return const CustomHostBottomModalSheet();
