@@ -116,6 +116,8 @@ class _CustomClientBottomModalSheetState
   final GlobalKey _searchKey = GlobalKey();
   Timer? _scanTick = null;
 
+  double get _modalInnerPadding => 50.0;
+
   @override
   void initState() {
     super.initState();
@@ -127,11 +129,12 @@ class _CustomClientBottomModalSheetState
 
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
-        for (var i = 0; i < 7; i++) {
+        for (var i = 0; i < 3; i++) {
           randomOffsets
               .add(checkIfOffsetOccupied(randomOffset(context), context));
         }
         setState(() {});
+        // print();
       },
     );
     // _scan(count: 40);
@@ -183,6 +186,7 @@ class _CustomClientBottomModalSheetState
 
     /// for large devices like desktop whose modal sheets dont take the whole width
     final double width = () {
+          return modalConstraints.maxWidth;
           if (MediaQuery.of(context).size.width > modalConstraints.maxWidth) {
             return modalConstraints.maxWidth;
           } else {
@@ -191,15 +195,26 @@ class _CustomClientBottomModalSheetState
 
           ///add padding
         }() -
-        50;
+        _modalInnerPadding;
 
     ///add padding
-    final height = modalConstraints.maxHeight - 50;
+    final height = modalConstraints.maxHeight - _modalInnerPadding;
     final offset = Offset(
       random.nextInt(width.toInt()).toDouble(),
       random.nextInt(height.toInt()).toDouble(),
     );
     return offset;
+  }
+
+  Alignment _convertOffsetToAlignment(Offset offset, Size size, context) {
+    ///add the padding to the size
+    final width = (size.width) - (_modalInnerPadding);
+    // print(MediaQuery.of(context).size.width);
+    final height = (size.height - _modalInnerPadding);
+    final x = (offset.dx / (width / 2)) - 1;
+    final y = (offset.dy / (height / 2)) - 1;
+    final s = Alignment(x, y);
+    return s;
   }
 
   @override
@@ -208,7 +223,7 @@ class _CustomClientBottomModalSheetState
 
     return ImpulseScaffold(
       child: Container(
-        height: $styles.sizes.maxContentHeight1,
+        height: $styles.constraints.modalConstraints.maxHeight,
         width: double.infinity,
         color: $styles.colors.accentColor1,
         child: Stack(
@@ -253,25 +268,25 @@ class _CustomClientBottomModalSheetState
                 ),
               ),
             ),
-            // for (var i = 0;
-            //     i < clientController.availableHostServers.length;
-            //     i++)
-            // Positioned(
-            //   top: randomOffsets[i].dy,
-            //   left: randomOffsets[i].dx,
-            //   child: Container(
-            //     height: 50,
-            //     width: 50,
-            //     decoration: BoxDecoration(
-            //       image: DecorationImage(
-            //         image: MemoryImage(
-            //           clientController
-            //               .availableHostServers[i].user.displayImage,
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // )
+            for (var i = 0; i < randomOffsets.length; i++)
+              Align(
+                // top: randomOffsets[i].dy,
+                // left: randomOffsets[i].dx,
+                alignment: _convertOffsetToAlignment(
+                    randomOffsets[i], $styles.sizes.modalBoxSize, context),
+                child: Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(color: colors[i]
+                      // image: DecorationImage(
+                      //   image: MemoryImage(
+                      //     clientController
+                      //         .availableHostServers[i].user.displayImage,
+                      //   ),
+                      // ),
+                      ),
+                ),
+              )
           ],
         ),
       ),

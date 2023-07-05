@@ -34,10 +34,7 @@ class SpeedChild extends StatelessWidget {
           onTap?.call();
           showModalBottomSheet(
             context: context,
-            constraints: BoxConstraints(
-              maxWidth: $styles.sizes.maxContentWidth1,
-              maxHeight: $styles.sizes.maxContentHeight1,
-            ),
+            constraints: $styles.constraints.modalConstraints,
             builder: (context) {
               if (isHost) {
                 return const CustomHostBottomModalSheet();

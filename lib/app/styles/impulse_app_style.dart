@@ -60,6 +60,8 @@ class AppStyle {
 
   /// Curves
   late final _Curves curves = _Curves();
+
+  late final constraints = _Constraints(sizes);
 }
 
 @immutable
@@ -201,6 +203,7 @@ class _Sizes {
 
   /////
   final Size minAppSize = const Size(380, 250);
+  Size get modalBoxSize => Size(maxContentWidth1, maxContentHeight1);
   Size get defaultAppBarSize => const Size.fromHeight(60);
 
   ///icons sizes
@@ -262,4 +265,15 @@ class _Shadows {
 @immutable
 class _Curves {
   final defaultCurve = Curves.easeOutBack;
+}
+
+@immutable
+class _Constraints {
+  final _Sizes _sizes;
+
+  const _Constraints(this._sizes);
+  BoxConstraints get modalConstraints => BoxConstraints(
+        maxWidth: _sizes.maxContentWidth1,
+        maxHeight: _sizes.maxContentHeight1,
+      );
 }
