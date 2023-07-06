@@ -44,19 +44,31 @@ class ServicesUtils {
     final ipPrefix = _getIpPrefix(myIp.address);
     final availableServerAddress = <String>[];
 
-    final List<Future<String?>> futures = List.generate(255, (index) {
-      final ip = "$ipPrefix.$index";
-      return _tryToEstablishConnection(ip);
-    });
+    final List<String?> futures = [];
+    // final e = List.generate(255, (index) async {
+    //   final ip = "$ipPrefix.$index";
+    //   return await _tryToEstablishConnection(ip);
+    // });
+    for (var i = 0; i < 255; i++) {
+      final ip = "$ipPrefix.$i";
+      final s = await _tryToEstablishConnection(ip);
+      if (s != null) {
+        print(s);
+      }
+      futures.add(s);
+    }
 
-    await Future.wait(futures).then((value) {
-      final result =
-          List<String>.from(value.where((element) => element != null).toList());
-      availableServerAddress.addAll(result);
-      availableServerAddress.removeWhere((element) => element == myIp.address);
-      // ignore: avoid_print
-      print(availableServerAddress);
-    });
+    // await Future.wait(futures).then((value) {
+    //   final result =
+    //       List<String>.from(value.where((element) => element != null).toList());
+    //   availableServerAddress.addAll(result);
+    //   availableServerAddress.removeWhere((element) => element == myIp.address);
+    //   // ignore: avoid_print
+    //   print(availableServerAddress);
+    // });
+    availableServerAddress.addAll(
+        futures.where((element) => element != null).map((e) => e!).toList());
+    availableServerAddress.removeWhere((element) => element == myIp.address);
     return availableServerAddress;
   }
 
@@ -71,7 +83,7 @@ class ServicesUtils {
       final socket = await Socket.connect(
         address,
         Constants.DEFAULT_PORT /*_port*/,
-        timeout: const Duration(milliseconds: 500),
+        timeout: const Duration(milliseconds: 10),
       );
       socket.close();
       return address;

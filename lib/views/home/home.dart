@@ -165,10 +165,6 @@ class _HomePageState extends ConsumerState<HomePage>
                 SpeedChild(
                   onTap: () {
                     closeOverlay();
-                    hostController.createServer().then((value) {
-                      homeController.isWaitingForReceiver = true;
-                      print(hostController.myServer);
-                    });
                   },
                   icon: Icons.file_upload_rounded,
                 ),

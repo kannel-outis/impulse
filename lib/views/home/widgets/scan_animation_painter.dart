@@ -10,7 +10,7 @@ class ScanCustomPainter extends CustomPainter {
 
   ScanCustomPainter(
     this._animationController, {
-    this.circles = 7,
+    this.circles = 20,
     this.setPosition = 0.0,
   });
   @override

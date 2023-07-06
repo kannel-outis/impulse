@@ -26,6 +26,14 @@ class _CustomHostBottomModalSheetState
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final homeController = ref.read(homeProvider);
+      final hostController = ref.read(hostProvider);
+      hostController.createServer().then((value) {
+        homeController.isWaitingForReceiver = true;
+        print(hostController.myServer);
+      });
+    });
   }
 
   @override
@@ -118,9 +126,12 @@ class _CustomClientBottomModalSheetState
 
   double get _modalInnerPadding => 50.0;
 
+  int called = 0;
+
   @override
   void initState() {
     super.initState();
+    ref.read(clientProvider).clearAvailableUsers();
     _animationController = AnimationController(
       vsync: this,
       duration: $styles.times.slow,
@@ -129,7 +140,7 @@ class _CustomClientBottomModalSheetState
 
     WidgetsBinding.instance.addPostFrameCallback(
       (timeStamp) {
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < 7; i++) {
           randomOffsets
               .add(checkIfOffsetOccupied(randomOffset(context), context));
         }
@@ -137,7 +148,7 @@ class _CustomClientBottomModalSheetState
         // print();
       },
     );
-    // _scan(count: 40);
+    _scan(count: 5);
   }
 
   @override
@@ -147,74 +158,32 @@ class _CustomClientBottomModalSheetState
     super.dispose();
   }
 
-  Offset _getSearchIconOffset() {
-    final searchBox =
-        _searchKey.currentContext!.findRenderObject() as RenderBox;
-    final parentStack =
-        _parentStackKey.currentContext!.findRenderObject() as RenderBox;
-
-    ///find global offset of the search container since we cant directly find localoffset
-    final localOffset = searchBox.localToGlobal(Offset.zero);
-
-    ///find local offset of the search container using the parent which is stack
-    return parentStack.globalToLocal(localOffset);
-  }
-
-  Offset checkIfOffsetOccupied(Offset offset, BuildContext context) {
-    final searchOffset = _getSearchIconOffset();
-    final contains = randomOffsets.where((element) {
-      /// box size + margin
-      final rect = element.contains(offset, 50 + 20);
-      return rect;
-    });
-
-    //// makes sure that it doesnt appear on the seacrh icon
-    ///The search icon conatiner size is 70
-    if (contains.isEmpty && !searchOffset.contains(offset, 70)) {
-      return offset;
-    } else {
-      return checkIfOffsetOccupied(randomOffset(context), context);
-    }
-  }
-
-  Offset randomOffset(BuildContext context) {
-    final random = Random();
-    final modalConstraints = BoxConstraints(
-      maxWidth: $styles.sizes.maxContentWidth1,
-      maxHeight: $styles.sizes.maxContentHeight1,
-    );
-
-    /// for large devices like desktop whose modal sheets dont take the whole width
-    final double width = () {
-          return modalConstraints.maxWidth;
-          if (MediaQuery.of(context).size.width > modalConstraints.maxWidth) {
-            return modalConstraints.maxWidth;
-          } else {
-            return MediaQuery.of(context).size.width;
+  ////Scan for a particular time
+  Future<bool> _scan({int? count}) async {
+    int calledNumOf = 1;
+    Completer<bool> completer = Completer<bool>();
+    final clientController = ref.read(clientProvider);
+    clientController.clearAvailableUsers();
+    _scanTick = Timer.periodic(
+      const Duration(seconds: 3),
+      (tick) async {
+        if (calledNumOf == (count ?? 3)) {
+          tick.cancel();
+          if (!tick.isActive) {
+            if (ref.read(clientProvider).availableHostServers.isNotEmpty) {
+              completer.complete(true);
+            } else {
+              completer.complete(false);
+            }
+            return;
           }
-
-          ///add padding
-        }() -
-        _modalInnerPadding;
-
-    ///add padding
-    final height = modalConstraints.maxHeight - _modalInnerPadding;
-    final offset = Offset(
-      random.nextInt(width.toInt()).toDouble(),
-      random.nextInt(height.toInt()).toDouble(),
+        } else {
+          calledNumOf++;
+          await clientController.getAvailableUsers();
+        }
+      },
     );
-    return offset;
-  }
-
-  Alignment _convertOffsetToAlignment(Offset offset, Size size, context) {
-    ///add the padding to the size
-    final width = (size.width) - (_modalInnerPadding);
-    // print(MediaQuery.of(context).size.width);
-    final height = (size.height - _modalInnerPadding);
-    final x = (offset.dx / (width / 2)) - 1;
-    final y = (offset.dy / (height / 2)) - 1;
-    final s = Alignment(x, y);
-    return s;
+    return completer.future;
   }
 
   @override
@@ -268,23 +237,44 @@ class _CustomClientBottomModalSheetState
                 ),
               ),
             ),
-            for (var i = 0; i < randomOffsets.length; i++)
+            for (var i = 0;
+                i < clientController.availableHostServers.length;
+                i++)
               Align(
                 // top: randomOffsets[i].dy,
                 // left: randomOffsets[i].dx,
                 alignment: _convertOffsetToAlignment(
-                    randomOffsets[i], $styles.sizes.modalBoxSize, context),
+                    randomOffsets.random, $styles.sizes.modalBoxSize, context),
                 child: Container(
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(color: colors[i]
-                      // image: DecorationImage(
-                      //   image: MemoryImage(
-                      //     clientController
-                      //         .availableHostServers[i].user.displayImage,
-                      //   ),
-                      // ),
+                  height: _modalInnerPadding + 30.scale,
+                  width: _modalInnerPadding + 20.scale,
+                  // color: Colors.yellow,
+                  child: Column(
+                    children: [
+                      Container(
+                        height: _modalInnerPadding,
+                        width: _modalInnerPadding,
+                        decoration: BoxDecoration(
+                          color: colors[i],
+                          borderRadius:
+                              BorderRadius.circular($styles.corners.lg),
+                          image: DecorationImage(
+                            image: MemoryImage(
+                              clientController
+                                  .availableHostServers[i].user.displayImage,
+                            ),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
+                      FittedBox(
+                        child: Text(
+                          clientController.availableHostServers[i].user.name,
+                          // style: $styles.text.bodySmall,
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               )
           ],
@@ -293,27 +283,81 @@ class _CustomClientBottomModalSheetState
     );
   }
 
-  ////Scan for a particular time
-  Future<bool> _scan({int? count}) async {
-    Completer<bool> completer = Completer<bool>();
-    final clientController = ref.read(clientProvider);
-    clientController.clearAvailableUsers();
-    Timer.periodic(
-      const Duration(seconds: 1),
-      (tick) async {
-        _scanTick = tick;
-        await clientController.getAvailableUsers();
+  Offset _getSearchIconOffset() {
+    final searchBox =
+        _searchKey.currentContext!.findRenderObject() as RenderBox;
+    final parentStack =
+        _parentStackKey.currentContext!.findRenderObject() as RenderBox;
 
-        if (tick.tick == (count ?? 3)) {
-          tick.cancel();
-          if (ref.read(clientProvider).availableHostServers.isNotEmpty) {
-            completer.complete(true);
-          } else {
-            completer.complete(false);
-          }
-        }
-      },
+    ///find global offset of the search container since we cant directly find localoffset
+    final localOffset = searchBox.localToGlobal(Offset.zero);
+
+    ///find local offset of the search container using the parent which is stack
+    return parentStack.globalToLocal(localOffset);
+  }
+
+  Offset checkIfOffsetOccupied(Offset offset, BuildContext context) {
+    final searchOffset = _getSearchIconOffset();
+    final contains = randomOffsets.where((element) {
+      /// box size + margin
+      final rect = element.contains(offset, 50 + 20);
+      return rect;
+    });
+
+    //// makes sure that it doesnt appear on the seacrh icon
+    ///The search icon conatiner size is 70
+    if (contains.isEmpty && !searchOffset.contains(offset, 70)) {
+      return offset;
+    } else {
+      return checkIfOffsetOccupied(randomOffset(context), context);
+    }
+  }
+
+  Offset randomOffset(BuildContext context) {
+    final random = Random();
+    final modalConstraints = BoxConstraints(
+      maxWidth: $styles.sizes.maxContentWidth1,
+      maxHeight: $styles.sizes.maxContentHeight1,
     );
-    return await completer.future;
+
+    /// for large devices like desktop whose modal sheets dont take the whole width
+    final double width = () {
+          // return MediaQuery.of(context).size.width;
+          // return modalConstraints.maxWidth;
+          if (MediaQuery.of(context).size.width > modalConstraints.maxWidth) {
+            return modalConstraints.maxWidth;
+          } else {
+            return MediaQuery.of(context).size.width;
+          }
+
+          ///add padding
+        }() -
+        _modalInnerPadding;
+
+    ///add padding
+    final height = modalConstraints.maxHeight - _modalInnerPadding;
+    final offset = Offset(
+      random.nextInt(width.toInt()).toDouble(),
+      random.nextInt(height.toInt()).toDouble(),
+    );
+    return offset;
+  }
+
+  Alignment _convertOffsetToAlignment(Offset offset, Size size, context) {
+    ///add the padding to the size
+    double width = 0.0;
+
+    if (MediaQuery.of(context).size.width > size.width) {
+      width = size.width;
+    } else {
+      width = MediaQuery.of(context).size.width;
+    }
+    width = size.width - _modalInnerPadding;
+    // print(MediaQuery.of(context).size.width);
+    final height = (size.height - _modalInnerPadding);
+    final x = (offset.dx / (width / 2)) - 1;
+    final y = (offset.dy / (height / 2)) - 1;
+    final s = Alignment(x, y);
+    return s;
   }
 }

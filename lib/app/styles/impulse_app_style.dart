@@ -17,6 +17,7 @@ class AppStyle {
       scale = 1;
       return;
     }
+    _screenSize = screenSize;
     final shortestSide = screenSize.shortestSide;
     const tabletXl = 1000;
     const tabletLg = 800;
@@ -35,6 +36,8 @@ class AppStyle {
     }
     //debugPrint('screenSize=$screenSize, scale=$scale');
   }
+
+  late final Size _screenSize;
 
   late final double scale;
 
@@ -61,7 +64,7 @@ class AppStyle {
   /// Curves
   late final _Curves curves = _Curves();
 
-  late final constraints = _Constraints(sizes);
+  late final constraints = _Constraints(sizes, _screenSize);
 }
 
 @immutable
@@ -270,10 +273,14 @@ class _Curves {
 @immutable
 class _Constraints {
   final _Sizes _sizes;
+  final Size screenSize;
 
-  const _Constraints(this._sizes);
+  const _Constraints(this._sizes, this.screenSize);
   BoxConstraints get modalConstraints => BoxConstraints(
         maxWidth: _sizes.maxContentWidth1,
-        maxHeight: _sizes.maxContentHeight1,
+        // maxHeight: _sizes.maxContentHeight1,
+        maxHeight:
+            screenSize.width < 420 ? 200 : (screenSize.height / 100) * 30,
+        minHeight: 150,
       );
 }
