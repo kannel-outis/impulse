@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
@@ -31,7 +30,7 @@ class _CustomHostBottomModalSheetState
       final hostController = ref.read(hostProvider);
       hostController.createServer().then((value) {
         homeController.isWaitingForReceiver = true;
-        print(hostController.myServer);
+        print(hostController.clientServerInfo);
       });
     });
   }
@@ -244,7 +243,7 @@ class _CustomClientBottomModalSheetState
                 // top: randomOffsets[i].dy,
                 // left: randomOffsets[i].dx,
                 alignment: _convertOffsetToAlignment(
-                    randomOffsets.random, $styles.sizes.modalBoxSize, context),
+                    randomOffsets.last, $styles.sizes.modalBoxSize, context),
                 child: Container(
                   height: _modalInnerPadding + 30.scale,
                   width: _modalInnerPadding + 20.scale,
@@ -352,7 +351,7 @@ class _CustomClientBottomModalSheetState
     } else {
       width = MediaQuery.of(context).size.width;
     }
-    width = size.width - _modalInnerPadding;
+    width = (size.width / 2) - _modalInnerPadding;
     // print(MediaQuery.of(context).size.width);
     final height = (size.height - _modalInnerPadding);
     final x = (offset.dx / (width / 2)) - 1;

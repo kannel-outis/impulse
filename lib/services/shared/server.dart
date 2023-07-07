@@ -40,7 +40,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
   final ServerManager serverManager;
   MyHttpServer({required this.serverManager}) : super();
 
-   HttpServer? _httpServer;
+  HttpServer? _httpServer;
   @override
   int get port => _httpServer?.port ?? 0;
 
@@ -48,7 +48,8 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
   HttpServer? get server => _httpServer;
 
   @override
-  InternetAddress get address => _httpServer?.address ?? InternetAddress("0.0.0.0");
+  InternetAddress get address =>
+      _httpServer?.address ?? InternetAddress("0.0.0.0");
 
   @override
   Future<HttpServer> bind(address, int port) async {
@@ -100,14 +101,15 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       final result = await httpRequest.fold<List<int>>(
           [], (previous, element) => previous..addAll(element));
       final response = String.fromCharCodes(result);
-      serverManager.handleClientServerNotification(json.decode(response));
+      final accepted = await serverManager
+          .handleClientServerNotification(json.decode(response));
       print("object");
 
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;
       httpRequest.response.write(
         json.encode(
-          {"msg": "Successful"},
+          {"msg": accepted ? "Successful" : "Denied"},
         ),
       );
       httpRequest.response.close();

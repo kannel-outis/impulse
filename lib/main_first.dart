@@ -109,7 +109,7 @@ class _TestingHomeState extends ConsumerState<TestingHome> {
                 child: Image.memory(s.user.displayImage),
               ),
             ),
-          if (sendController.myServer.clientServerInfo != null)
+          if (sendController.clientServerInfo != null)
             Container(
               height: 100,
               width: 100,
@@ -119,7 +119,7 @@ class _TestingHomeState extends ConsumerState<TestingHome> {
                   .user
                   .displayImage),
             ),
-          Text(sendController.myServer.clientServerInfo == null
+          Text(sendController.clientServerInfo == null
               ? text
               : "Connected to : ${ref.watch(serverControllerProvider).clientServerInfo!.ipAddress!}"),
           const SizedBox(height: 15),
@@ -133,7 +133,7 @@ class _TestingHomeState extends ConsumerState<TestingHome> {
                     await sendController.host.shareFile(
                         filePath:
                             "C:/Users/emirb/Videos/Algorithms and Data Structures Tutorial - Full Course for Beginners.mp4",
-                        destination: sendController.myServer.clientServerInfo!);
+                        destination: sendController.clientServerInfo!);
                     return;
                   }
                   final s = await sendController.createServer();

@@ -12,7 +12,7 @@ final clientProvider = ChangeNotifierProvider<ClientProvider>(
   (ref) {
     final servermanager = ref.watch(serverControllerProvider);
     return ClientProvider(
-      myServer: servermanager,
+       servermanager,
       client: Receiver(
         gateWay: MyHttpServer(serverManager: servermanager),
       ),
@@ -22,11 +22,12 @@ final clientProvider = ChangeNotifierProvider<ClientProvider>(
 
 class ClientProvider extends ChangeNotifier {
   final Client client;
-  final ServerManager myServer;
+  final ServerManager _myServer;
 
-  ClientProvider({
+  ClientProvider(
+    this._myServer,
+    {
     required this.client,
-    required this.myServer,
   });
 
   String? _address;
@@ -60,8 +61,8 @@ class ClientProvider extends ChangeNotifier {
       return exception;
     } else {
       final addressAndPort = (result as Right).value as (String, int);
-      myServer.ipAddress = _address = addressAndPort.$1;
-      myServer.port = _port = addressAndPort.$2;
+      _myServer.ipAddress = _address = addressAndPort.$1;
+      _myServer.port = _port = addressAndPort.$2;
       notifyListeners();
       return null;
     }
@@ -120,7 +121,7 @@ class ClientProvider extends ChangeNotifier {
       /// if [selectedHost] is not null that means we have the host ipAddress and port
       /// make a post request to the host with our (the client) info as body
       print("object force");
-      final myInfo = await myServer.myServerInfo();
+      final myInfo = await _myServer.myServerInfo();
       print(selectedHost!.ipAddress);
       print(selectedHost!.port);
       log("object make");

@@ -12,10 +12,25 @@ import 'package:impulse/models/user.dart';
 import 'package:impulse/services/server_manager.dart';
 import 'package:uuid/uuid.dart';
 
+import 'alert_state_controller.dart';
+
 final serverControllerProvider =
-    ChangeNotifierProvider<ServerController>((ref) => ServerController());
+    ChangeNotifierProvider<ServerController>((ref) {
+  final alert = ref.read(alertStateNotifier.notifier);
+  return ServerController(alert);
+});
 
 class ServerController extends ServerManager with ChangeNotifier {
+  final AlertState alertState;
+
+  ServerController(this.alertState);
+
+  final alertResponder = Completer<bool>();
+
+  // bool _showAcceptDeclineAlert = false;
+
+  // bool get showAcceptDeclineAlert => _showAcceptDeclineAlert;
+
   String? _ipAddress;
   @override
   String? get ipAddress => _ipAddress;
@@ -32,6 +47,7 @@ class ServerController extends ServerManager with ChangeNotifier {
     _port = port;
   }
 
+////TODO: use statenotifier for client server info
   ServerInfo? _clientServerInfo;
   @override
   ServerInfo? get clientServerInfo {
@@ -70,10 +86,20 @@ class ServerController extends ServerManager with ChangeNotifier {
   }
 
   @override
-  handleClientServerNotification(Map<String, dynamic> serverMap) {
+  Future<bool> handleClientServerNotification(
+      Map<String, dynamic> serverMap) async {
+    // _showAcceptDeclineAlert = true;
+    alertState.updateState(true);
     _clientServerInfo = ServerInfo.fromMap(serverMap);
-    print("Called from tecno");
-    notifyListeners();
-    return _clientServerInfo;
+    final result = await alertResponder.future;
+    if (result == false) {
+      _clientServerInfo = null;
+    }
+    // _showAcceptDeclineAlert = false;
+    return result;
+  }
+
+  void handleAlertResponse(bool response) {
+    alertResponder.complete(response);
   }
 }

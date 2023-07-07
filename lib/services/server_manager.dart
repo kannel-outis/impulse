@@ -13,7 +13,7 @@ abstract class ServerManager {
 
   //subject to removal later
   ServerInfo? get clientServerInfo;
-  dynamic handleClientServerNotification(Map<String, dynamic> serverMap) {
+  Future<bool> handleClientServerNotification(Map<String, dynamic> serverMap) {
     throw UnimplementedError();
   }
 }

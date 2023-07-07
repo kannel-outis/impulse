@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// import 'package:impulse/app/utils/alert.dart';
 
 import 'app/app.dart';
 
@@ -16,13 +17,15 @@ class ImpulseScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     _style = AppStyle(screenSize: size);
-    return KeyedSubtree(
-      key: ValueKey($styles.scale),
-      child: Theme(
-        data: $styles.colors.theme,
-        child: DefaultTextStyle(
-          style: $styles.text.body,
-          child: child,
+    return AlertOverlay(
+      child: KeyedSubtree(
+        key: ValueKey($styles.scale),
+        child: Theme(
+          data: $styles.colors.theme,
+          child: DefaultTextStyle(
+            style: $styles.text.body,
+            child: child,
+          ),
         ),
       ),
     );

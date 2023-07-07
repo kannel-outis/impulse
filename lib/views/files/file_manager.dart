@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
+import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/controllers/file_manager/file_manager_controller.dart';
 import 'package:impulse/views/shared/padded_body.dart';
 import 'package:impulse_utils/impulse_utils.dart';
@@ -44,10 +45,19 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
 
     if (files.isEmpty) {
       return Center(
-        child: Icon(
-          Icons.inventory_2,
-          size: $styles.sizes.prefixIconSize * 4,
-          color: $styles.colors.iconColor1,
+        child: InkWell(
+          onTap: () {
+            if (ref.read(alertStateNotifier) == false) {
+              ref.read(alertStateNotifier.notifier).updateState(true);
+              return;
+            }
+            ref.read(alertStateNotifier.notifier).updateState(false);
+          },
+          child: Icon(
+            Icons.inventory_2,
+            size: $styles.sizes.prefixIconSize * 4,
+            color: $styles.colors.iconColor1,
+          ),
         ),
       );
     }
