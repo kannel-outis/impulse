@@ -52,16 +52,6 @@ class ServerController extends ServerManager with ChangeNotifier {
     _port = port;
   }
 
-  /////
-
-////TODO: use statenotifier for client server info
-  // ServerInfo? _clientServerInfo;
-  // @override
-  // ServerInfo? get clientServerInfo {
-  //   print("from : State ${_clientServerInfo?.user.deviceName}");
-  //   return _clientServerInfo;
-  // }
-
   @override
   List<String> getFiles() {
     return <String>[];

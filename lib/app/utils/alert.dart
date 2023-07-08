@@ -34,7 +34,6 @@ class _AlertOverlayState extends ConsumerState<AlertOverlay>
     );
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ref.watch(alertStateNotifier.notifier).addListener((state) {
-        print(state);
         if (state == true) {
           toggleOverlay();
         } else {
@@ -59,7 +58,6 @@ class _AlertOverlayState extends ConsumerState<AlertOverlay>
   }
 
   OverlayEntry _createOverlayEntry() {
-    // print(size);
     return OverlayEntry(
       builder: (context) {
         return _OverlayChild(
@@ -116,6 +114,7 @@ class _OverlayChild extends ConsumerStatefulWidget {
 class _OverlayChildState extends ConsumerState<_OverlayChild> {
   @override
   Widget build(BuildContext context) {
+    final flingServerInfo = ref.watch(connectUserStateProvider);
     final size = MediaQuery.of(context).size;
     final style = AppStyle(screenSize: size);
     return KeyedSubtree(
@@ -165,7 +164,7 @@ class _OverlayChildState extends ConsumerState<_OverlayChild> {
                               Column(
                                 children: [
                                   Text(
-                                    "Someone is Asking to connect to you,",
+                                    "${flingServerInfo?.user.name} is Asking to connect to you,",
                                     style: style.text.h4,
                                     textAlign: TextAlign.center,
                                   ),

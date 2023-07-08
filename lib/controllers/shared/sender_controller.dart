@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/impulse_exception.dart';
 import 'package:impulse/controllers/shared/server_controller.dart';
-import 'package:impulse/models/server_info.dart';
 import 'package:impulse/services/services.dart';
 
 final senderProvider = ChangeNotifierProvider<SenderProvider>(

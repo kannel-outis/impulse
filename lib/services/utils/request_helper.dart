@@ -21,7 +21,6 @@ class RequestHelper {
       Uri url, Map<String, dynamic> body) async {
     try {
       final response = await http.post(url, body: json.encode(body));
-      print(json.decode(response.body));
       return Right(json.decode(response.body));
     } catch (e) {
       return Left(AppException(e.toString()));

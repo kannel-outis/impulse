@@ -39,7 +39,6 @@ class _CustomOverlayNotState extends ConsumerState<CustomOverlayNot>
 
     final provider = ref.watch(homeProvider);
     provider.addListener(() {
-      print(provider.isWaitingForReceiver);
       if (provider.isWaitingForReceiver == true) {
         _toggleOverlay(context, close: false, forceClose: false);
       }

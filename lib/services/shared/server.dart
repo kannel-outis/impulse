@@ -76,7 +76,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
   Future<void> _handleGetRequest(HttpRequest httpRequest) async {
     final url = httpRequest.requestedUri.toString();
     if (url == "http://${address.address}:$port/impulse/connect") {
-      print(url);
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;
       final hostInfo = await serverManager.myServerInfo();
@@ -94,8 +93,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
   Future<void> _handlePostRequest(HttpRequest httpRequest) async {
     final url = httpRequest.requestedUri.toString();
     if (url == _buildUrl("impulse/client_server_info")) {
-      print(url);
-
       ///need to wait for the result to load to memory before closing and decoding
       ///else it may just enter in chunks. the image may make it too large
       final result = await httpRequest.fold<List<int>>(
@@ -103,7 +100,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       final response = String.fromCharCodes(result);
       final accepted = await serverManager
           .handleClientServerNotification(json.decode(response));
-      print("object");
 
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;
@@ -140,7 +136,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
   @override
   void close() {
     _httpServer?.close(force: true);
-    print("SErver Close: ${serverManager.ipAddress}:${serverManager.port}");
+    print("Server Close: ${serverManager.ipAddress}:${serverManager.port}");
     serverManager.port = null;
     serverManager.ipAddress = null;
   }

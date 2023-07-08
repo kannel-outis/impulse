@@ -1,7 +1,5 @@
 part of 'home.dart';
 
-
-
 class ImagesPage extends StatelessWidget {
   const ImagesPage({
     super.key,
@@ -11,7 +9,7 @@ class ImagesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.pink,
-      child: Row(
+      child: const Row(
         children: [
           Expanded(
             child: Text("data 1"),

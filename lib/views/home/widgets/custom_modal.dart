@@ -72,17 +72,16 @@ class _CustomHostBottomModalSheetState
               height: $styles.sizes.xxLargeIconSize,
               width: $styles.sizes.xxLargeIconSize,
               delegates: LottieDelegates(
-                values: [
-                  ValueDelegate.color(
-                    ['bout', 'bout 3', 'bmid'],
-                    callback: (s) {
-                      print(s);
+                  // values: [
+                  //   ValueDelegate.color(
+                  //     ['bout', 'bout 3', 'bmid'],
+                  //     callback: (s) {
 
-                      return Color(0xff78ee34);
-                    },
-                  )
-                ],
-              ),
+                  //       return Color(0xff78ee34);
+                  //     },
+                  // )
+                  // ],
+                  ),
             ),
             Text(
               "Waitng for receivers....",

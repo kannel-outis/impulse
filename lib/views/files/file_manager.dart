@@ -51,10 +51,9 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
             // }
             // ref.read(alertStateNotifier.notifier).updateState(false);
 
-            ref
-                .read(connectionStateProvider.notifier)
-                .setState(ConnectionState.connected);
-            print(ref.read(connectionStateProvider));
+            // ref
+            //     .read(connectionStateProvider.notifier)
+            //     .setState(ConnectionState.connected);
           },
           child: Icon(
             Icons.inventory_2,

@@ -37,7 +37,6 @@ class _TopStackState extends ConsumerState<TopStack>
   Widget build(BuildContext context) {
     final connectionState = ref.watch(connectionStateProvider);
     final isConnected = connectionState == ConnectionState.connected;
-    print("$connectionState: ffff");
     return SlideTransition(
       position:
           Tween<Offset>(begin: Offset.zero, end: const Offset(0, 1)).animate(
