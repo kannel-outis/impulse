@@ -1,6 +1,4 @@
-import 'dart:io';
-
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
@@ -52,6 +50,11 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
             //   return;
             // }
             // ref.read(alertStateNotifier.notifier).updateState(false);
+
+            ref
+                .read(connectionStateProvider.notifier)
+                .setState(ConnectionState.connected);
+            print(ref.read(connectionStateProvider));
           },
           child: Icon(
             Icons.inventory_2,

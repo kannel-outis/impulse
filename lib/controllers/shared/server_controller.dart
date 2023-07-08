@@ -95,7 +95,8 @@ class ServerController extends ServerManager with ChangeNotifier {
   @override
   Future<bool> handleClientServerNotification(
       Map<String, dynamic> serverMap) async {
-    // _showAcceptDeclineAlert = true;
+    //TODO: remove alertstate entirely and use connectedUserState.setUserState(serverInfo, fling: true)
+    // to show alert instead
     alertState.updateState(true);
     final serverInfo = ServerInfo.fromMap(serverMap);
     connectedUserState.setUserState(serverInfo, fling: true);

@@ -29,6 +29,7 @@ class _CustomHostBottomModalSheetState
       final hostController = ref.read(senderProvider);
       hostController.createServer().then((value) {
         homeController.isWaitingForReceiver = true;
+        ref.read(userProvider.notifier).setUserState(User.host);
         // print(hostController.clientServerInfo);
       });
     });
@@ -241,11 +242,15 @@ class _CustomClientBottomModalSheetState
               alignment: _convertOffsetToAlignment(
                   randomOffsets.last, $styles.sizes.modalBoxSize, context),
               child: GestureDetector(
-                onTap: () {
+                onTap: () async {
                   final provider = ref.read(receiverProvider);
                   provider
                       .selectHost(receiverController.availableHostServers[i]);
-                  provider.createServerAndNotifyHost();
+                  final result = await provider.createServerAndNotifyHost();
+                  if (result == null) {
+                    ref.read(userProvider.notifier).setUserState(User.client);
+                    ref.read(homeProvider).shouldShowTopStack = true;
+                  }
                 },
                 child: SizedBox(
                   height: _modalInnerPadding + 30.scale,

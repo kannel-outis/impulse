@@ -15,4 +15,15 @@ enum ConnectionState {
 
   const ConnectionState(this.label);
   final String label;
+
+  @override
+  String toString() {
+    return label;
+  }
+}
+
+enum User {
+  host,
+  client,
+  undecided,
 }

@@ -1,13 +1,12 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/views/files/file_manager.dart';
 import 'package:impulse/views/home/widgets/app_item.dart';
 import 'package:impulse/views/settings/settings_screen.dart';
-import 'package:impulse/views/shared/custom_overlay_not.dart';
 import 'package:impulse/views/shared/custom_speed_dial.dart';
 import 'package:impulse/views/shared/padded_body.dart';
 
@@ -43,6 +42,13 @@ class _HomePageState extends ConsumerState<HomePage>
 
     _tabController = TabController(length: tabs.length, vsync: this);
     _pageController = PageController();
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   ref.read(connectionStateProvider.notifier).addListener((state) {
+    //     if(state == ConnectionState.connected){
+
+    //     }
+    //   });
+    // });
   }
 
   List<Widget> get tabs => <Widget>[
@@ -53,9 +59,8 @@ class _HomePageState extends ConsumerState<HomePage>
 
   Offset get getPositionOffset {
     final renderBox = _key.currentContext!.findRenderObject() as RenderBox?;
-    final size = renderBox!.size;
 
-    final offset = renderBox.localToGlobal(Offset.zero);
+    final offset = renderBox!.localToGlobal(Offset.zero);
     return offset;
   }
 
@@ -191,13 +196,15 @@ class _HomePageState extends ConsumerState<HomePage>
               },
             ),
           ),
+
+          ///TODO: change to overlay later
           if (homeController.shouldShowTopStack)
             Positioned(
               ///plus the size of the top stack
               top: getPositionOffset.dy + (Platform.isAndroid ? -40 : 20),
               right: 0,
               // top: $styles.sizes.defaultAppBarSize.height,
-              width:  MediaQuery.of(context).size.width,
+              // width: MediaQuery.of(context).size.width,
               child: const TopStack(),
             ),
         ],

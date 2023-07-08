@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
+import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/views/shared/padded_body.dart';
 
 class TopStack extends ConsumerStatefulWidget {
@@ -34,6 +35,9 @@ class _TopStackState extends ConsumerState<TopStack>
 
   @override
   Widget build(BuildContext context) {
+    final connectionState = ref.watch(connectionStateProvider);
+    final isConnected = connectionState == ConnectionState.connected;
+    print("$connectionState: ffff");
     return SlideTransition(
       position:
           Tween<Offset>(begin: Offset.zero, end: const Offset(0, 1)).animate(
@@ -42,10 +46,11 @@ class _TopStackState extends ConsumerState<TopStack>
           curve: $styles.curves.defaultCurve,
         ),
       ),
-      child: Container(
+      child: AnimatedContainer(
+        duration: $styles.times.fast,
         height: 30,
-        width: double.infinity,
-        color: $styles.colors.iconColor3,
+        width: MediaQuery.of(context).size.width,
+        color: isConnected ? Colors.green : $styles.colors.iconColor3,
         child: PaddedBody(
           child: Row(
             children: [
@@ -56,7 +61,7 @@ class _TopStackState extends ConsumerState<TopStack>
               ),
               const SizedBox(width: 10),
               Text(
-                "Waiting for Connection...",
+                isConnected ? "Connected" : "Waiting for Connection...",
                 style: $styles.text.bodySmall,
               ),
             ],
