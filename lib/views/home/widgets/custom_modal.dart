@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
-import 'package:impulse/impulse_scaffold.dart';
 import 'package:lottie/lottie.dart';
 
 import 'scan_animation_painter.dart';
@@ -27,10 +26,10 @@ class _CustomHostBottomModalSheetState
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final homeController = ref.read(homeProvider);
-      final hostController = ref.read(hostProvider);
+      final hostController = ref.read(senderProvider);
       hostController.createServer().then((value) {
         homeController.isWaitingForReceiver = true;
-        print(hostController.clientServerInfo);
+        // print(hostController.clientServerInfo);
       });
     });
   }
@@ -55,42 +54,40 @@ class _CustomHostBottomModalSheetState
 
         return true;
       },
-      child: ImpulseScaffold(
-        child: Container(
-          height: $styles.sizes.maxContentHeight1,
-          width: double.infinity,
-          color: $styles.colors.accentColor1,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Icon(
-              //   Icons.wifi_tethering,
-              //   color: $styles.colors.iconColor3,
-              //   size: $styles.sizes.xLargeIconSize,
-              // ),
-              LottieBuilder.asset(
-                "assets/lottie/waiting.json",
-                height: $styles.sizes.xxLargeIconSize,
-                width: $styles.sizes.xxLargeIconSize,
-                delegates: LottieDelegates(
-                  values: [
-                    ValueDelegate.color(
-                      ['bout', 'bout 3', 'bmid'],
-                      callback: (s) {
-                        print(s);
+      child: Container(
+        height: $styles.sizes.maxContentHeight1,
+        width: double.infinity,
+        color: $styles.colors.accentColor1,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Icon(
+            //   Icons.wifi_tethering,
+            //   color: $styles.colors.iconColor3,
+            //   size: $styles.sizes.xLargeIconSize,
+            // ),
+            LottieBuilder.asset(
+              "assets/lottie/waiting.json",
+              height: $styles.sizes.xxLargeIconSize,
+              width: $styles.sizes.xxLargeIconSize,
+              delegates: LottieDelegates(
+                values: [
+                  ValueDelegate.color(
+                    ['bout', 'bout 3', 'bmid'],
+                    callback: (s) {
+                      print(s);
 
-                        return Color(0xff78ee34);
-                      },
-                    )
-                  ],
-                ),
+                      return Color(0xff78ee34);
+                    },
+                  )
+                ],
               ),
-              Text(
-                "Waitng for receivers....",
-                style: $styles.text.h3,
-              ),
-            ],
-          ),
+            ),
+            Text(
+              "Waitng for receivers....",
+              style: $styles.text.h3,
+            ),
+          ],
         ),
       ),
     );
@@ -130,7 +127,7 @@ class _CustomClientBottomModalSheetState
   @override
   void initState() {
     super.initState();
-    ref.read(clientProvider).clearAvailableUsers();
+    ref.read(receiverProvider).clearAvailableUsers();
     _animationController = AnimationController(
       vsync: this,
       duration: $styles.times.slow,
@@ -161,7 +158,7 @@ class _CustomClientBottomModalSheetState
   Future<bool> _scan({int? count}) async {
     int calledNumOf = 1;
     Completer<bool> completer = Completer<bool>();
-    final clientController = ref.read(clientProvider);
+    final clientController = ref.read(receiverProvider);
     clientController.clearAvailableUsers();
     _scanTick = Timer.periodic(
       const Duration(seconds: 3),
@@ -169,7 +166,7 @@ class _CustomClientBottomModalSheetState
         if (calledNumOf == (count ?? 3)) {
           tick.cancel();
           if (!tick.isActive) {
-            if (ref.read(clientProvider).availableHostServers.isNotEmpty) {
+            if (ref.read(receiverProvider).availableHostServers.isNotEmpty) {
               completer.complete(true);
             } else {
               completer.complete(false);
@@ -187,64 +184,70 @@ class _CustomClientBottomModalSheetState
 
   @override
   Widget build(BuildContext context) {
-    final clientController = ref.watch(clientProvider);
+    final receiverController = ref.watch(receiverProvider);
 
-    return ImpulseScaffold(
-      child: Container(
-        height: $styles.constraints.modalConstraints.maxHeight,
-        width: double.infinity,
-        color: $styles.colors.accentColor1,
-        child: Stack(
-          key: _parentStackKey,
-          alignment: Alignment.center,
-          // fit: StackFit.expand,
-          children: [
-            Positioned.fill(
-              child: AnimatedBuilder(
-                animation: _animationController,
-                builder: (context, child) {
-                  return CustomPaint(
-                    painter: ScanCustomPainter(
-                      _animationController,
+    return Container(
+      height: $styles.constraints.modalConstraints.maxHeight,
+      width: double.infinity,
+      color: $styles.colors.accentColor1,
+      child: Stack(
+        key: _parentStackKey,
+        alignment: Alignment.center,
+        // fit: StackFit.expand,
+        children: [
+          Positioned.fill(
+            child: AnimatedBuilder(
+              animation: _animationController,
+              builder: (context, child) {
+                return CustomPaint(
+                  painter: ScanCustomPainter(
+                    _animationController,
 
-                      ///
-                      setPosition: 15,
-                    ),
-                  );
-                },
-              ),
-            ),
-            Positioned(
-              /// -(half of container size) + setPosition
-              /// it gives the perfect animation position
-              /// e.g: -(70/2) + 15 == -20
-              bottom: -20,
-              child: Container(
-                key: _searchKey,
-                height: 70,
-                width: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular($styles.corners.xxlg),
-                  color: $styles.colors.secondaryColor,
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.search,
-                    color: $styles.colors.iconColor1,
-                    size: $styles.sizes.smallIconSize2,
+                    ///
+                    setPosition: 15,
                   ),
+                );
+              },
+            ),
+          ),
+          Positioned(
+            /// -(half of container size) + setPosition
+            /// it gives the perfect animation position
+            /// e.g: -(70/2) + 15 == -20
+            bottom: -20,
+            child: Container(
+              key: _searchKey,
+              height: 70,
+              width: 70,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular($styles.corners.xxlg),
+                color: $styles.colors.secondaryColor,
+              ),
+              child: Center(
+                child: Icon(
+                  Icons.search,
+                  color: $styles.colors.iconColor1,
+                  size: $styles.sizes.smallIconSize2,
                 ),
               ),
             ),
-            for (var i = 0;
-                i < clientController.availableHostServers.length;
-                i++)
-              Align(
-                // top: randomOffsets[i].dy,
-                // left: randomOffsets[i].dx,
-                alignment: _convertOffsetToAlignment(
-                    randomOffsets.last, $styles.sizes.modalBoxSize, context),
-                child: Container(
+          ),
+          for (var i = 0;
+              i < receiverController.availableHostServers.length;
+              i++)
+            Align(
+              // top: randomOffsets[i].dy,
+              // left: randomOffsets[i].dx,
+              alignment: _convertOffsetToAlignment(
+                  randomOffsets.last, $styles.sizes.modalBoxSize, context),
+              child: GestureDetector(
+                onTap: () {
+                  final provider = ref.read(receiverProvider);
+                  provider
+                      .selectHost(receiverController.availableHostServers[i]);
+                  provider.createServerAndNotifyHost();
+                },
+                child: SizedBox(
                   height: _modalInnerPadding + 30.scale,
                   width: _modalInnerPadding + 20.scale,
                   // color: Colors.yellow,
@@ -259,7 +262,7 @@ class _CustomClientBottomModalSheetState
                               BorderRadius.circular($styles.corners.lg),
                           image: DecorationImage(
                             image: MemoryImage(
-                              clientController
+                              receiverController
                                   .availableHostServers[i].user.displayImage,
                             ),
                             fit: BoxFit.cover,
@@ -268,16 +271,16 @@ class _CustomClientBottomModalSheetState
                       ),
                       FittedBox(
                         child: Text(
-                          clientController.availableHostServers[i].user.name,
-                          // style: $styles.text.bodySmall,
+                          receiverController.availableHostServers[i].user.name,
+                          style: $styles.text.body,
                         ),
                       )
                     ],
                   ),
                 ),
-              )
-          ],
-        ),
+              ),
+            )
+        ],
       ),
     );
   }

@@ -1,5 +1,10 @@
+export 'file_manager/file_manager_controller.dart';
 export 'home/home_provider.dart';
-export 'shared/client_controller.dart';
-export 'shared/host_controller.dart';
-export 'shared/server_controller.dart';
+export 'home/selected_item_provider.dart';
 export 'shared/alert_state_controller.dart';
+export 'shared/connected_user.dart';
+export 'shared/connection_state_provider.dart';
+export 'shared/receiver_controller.dart';
+export 'shared/selecting_item_provider.dart';
+export 'shared/sender_controller.dart';
+export 'shared/server_controller.dart';

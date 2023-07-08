@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
@@ -54,7 +56,6 @@ class _HomePageState extends ConsumerState<HomePage>
     final size = renderBox!.size;
 
     final offset = renderBox.localToGlobal(Offset.zero);
-    print(offset.dy);
     return offset;
   }
 
@@ -71,7 +72,7 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   Widget build(BuildContext context) {
     final homeController = ref.watch(homeProvider);
-    final hostController = ref.watch(hostProvider);
+    final hostController = ref.watch(senderProvider);
 
     return SafeArea(
       child: Stack(
@@ -192,9 +193,11 @@ class _HomePageState extends ConsumerState<HomePage>
           ),
           if (homeController.shouldShowTopStack)
             Positioned(
-              ///minus the size of the top stack
-              top: getPositionOffset.dy - 30,
-              width: MediaQuery.of(context).size.width,
+              ///plus the size of the top stack
+              top: getPositionOffset.dy + (Platform.isAndroid ? -40 : 20),
+              right: 0,
+              // top: $styles.sizes.defaultAppBarSize.height,
+              width:  MediaQuery.of(context).size.width,
               child: const TopStack(),
             ),
         ],

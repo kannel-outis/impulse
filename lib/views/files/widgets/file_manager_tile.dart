@@ -1,11 +1,9 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/file_manager/file_manager_controller.dart';
 import 'package:impulse_utils/impulse_utils.dart';
-
 
 class FileManagerTile extends ConsumerStatefulWidget {
   final ImpulseFileEntity item;
@@ -25,7 +23,7 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
   double get leftItemPadding => 15;
   @override
   Widget build(BuildContext context) {
-    final fileManagerController = ref.read(fileManagerProvider);
+    final fileManagerController = ref.watch(fileManagerProvider);
 
     return GestureDetector(
       onTap: () {

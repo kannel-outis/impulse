@@ -8,6 +8,8 @@ abstract interface class Host {
   Future<Either<AppException, (String, int)>> createServer(
       {InternetAddress? address, int? port});
 
+  void closeServer();
+
   Future<AppException?> shareFile(
       {required String filePath, required ServerInfo destination});
   bool get isServerRunning;

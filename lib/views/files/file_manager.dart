@@ -47,11 +47,11 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
       return Center(
         child: InkWell(
           onTap: () {
-            if (ref.read(alertStateNotifier) == false) {
-              ref.read(alertStateNotifier.notifier).updateState(true);
-              return;
-            }
-            ref.read(alertStateNotifier.notifier).updateState(false);
+            // if (ref.read(alertStateNotifier) == false) {
+            //   ref.read(alertStateNotifier.notifier).updateState(true);
+            //   return;
+            // }
+            // ref.read(alertStateNotifier.notifier).updateState(false);
           },
           child: Icon(
             Icons.inventory_2,

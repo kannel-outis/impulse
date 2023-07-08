@@ -1,17 +1,18 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
-
-import 'globals.dart';
 
 class AlertOverlay extends ConsumerStatefulWidget {
   final Widget child;
   const AlertOverlay({super.key, required this.child});
 
   // ignore: library_private_types_in_public_api
-  static _AlertOverlayState of(BuildContext context) {
-    return context.findRootAncestorStateOfType<_AlertOverlayState>()!;
-  }
+  // static _AlertOverlayState of(BuildContext context) {
+  //   return context.findRootAncestorStateOfType<_AlertOverlayState>()!;
+  // }
 
   @override
   ConsumerState<AlertOverlay> createState() => _AlertOverlayState();
@@ -62,9 +63,6 @@ class _AlertOverlayState extends ConsumerState<AlertOverlay>
     return OverlayEntry(
       builder: (context) {
         return _OverlayChild(
-          toggle: () {
-            toggleOverlay(close: true);
-          },
           layerLink: _layerLink,
           animationController: _animationController,
         );
@@ -99,11 +97,9 @@ class _AlertOverlayState extends ConsumerState<AlertOverlay>
   }
 }
 
-class _OverlayChild extends StatelessWidget {
-  final Function() toggle;
+class _OverlayChild extends ConsumerStatefulWidget {
   const _OverlayChild({
     Key? key,
-    required this.toggle,
     required LayerLink layerLink,
     required AnimationController animationController,
   })  : _layerLink = layerLink,
@@ -114,41 +110,147 @@ class _OverlayChild extends StatelessWidget {
   final AnimationController _animationController;
 
   @override
+  ConsumerState<_OverlayChild> createState() => _OverlayChildState();
+}
+
+class _OverlayChildState extends ConsumerState<_OverlayChild> {
+  @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.topCenter,
-      children: [
-        GestureDetector(
-          onTap: () => toggle(),
-          child: CompositedTransformFollower(
-            link: _layerLink,
-            offset: Offset(0.0, -(10).toDouble()),
-            child: SlideTransition(
-              position: Tween<Offset>(
-                end: const Offset(0, 1),
-                begin: Offset.zero,
-              ).animate(
-                CurvedAnimation(
-                  parent: _animationController,
-                  curve: $styles.curves.defaultCurve,
+    final size = MediaQuery.of(context).size;
+    final style = AppStyle(screenSize: size);
+    return KeyedSubtree(
+      key: ValueKey(style.scale),
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          GestureDetector(
+            child: CompositedTransformFollower(
+              link: widget._layerLink,
+              offset: Offset(
+                  0.0,
+                  (-size.height + 10 + MediaQuery.of(context).padding.top)
+                      .toDouble()),
+              child: SlideTransition(
+                position: Tween<Offset>(
+                  end: const Offset(0, 1),
+                  begin: Offset.zero,
+                ).animate(
+                  CurvedAnimation(
+                    parent: widget._animationController,
+                    curve: style.curves.defaultCurve,
+                  ),
                 ),
-              ),
-              child: FadeTransition(
-                opacity: _animationController,
-                child: Container(
-                  height: 50,
-                  width: 500,
-                  constraints: BoxConstraints(
-                      maxWidth: $styles.constraints.modalConstraints.maxWidth),
-                  alignment: Alignment.center,
-                  // decoration: BoxDecoration(),
-                  color: $styles.colors.iconColor2,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ClipRect(
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Container(
+                          height: 150,
+                          width: double.infinity,
+                          constraints: const BoxConstraints(maxWidth: 500),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .scaffoldBackgroundColor
+                                .withOpacity(.7),
+                            // color: Color(0xff010b13),
+                            boxShadow: style.shadows.boxShadowSmall,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    "Someone is Asking to connect to you,",
+                                    style: style.text.h4,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  Text(
+                                    "do you wish to proceed?",
+                                    style: style.text.h4,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  ButtonChild(
+                                    style: style,
+                                    color: Colors.red,
+                                    label: "Decline",
+                                    callback: () {
+                                      ref
+                                          .read(senderProvider)
+                                          .handleAlertResponse(false);
+                                    },
+                                  ),
+                                  ButtonChild(
+                                    style: style,
+                                    color: style.colors.secondaryColor,
+                                    label: "Accept",
+                                    callback: () {
+                                      ref
+                                          .read(senderProvider)
+                                          .handleAlertResponse(true);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class ButtonChild extends StatelessWidget {
+  const ButtonChild({
+    super.key,
+    required this.style,
+    required this.color,
+    required this.label,
+    required this.callback,
+  });
+  final String label;
+  final AppStyle style;
+  final Color color;
+  final VoidCallback callback;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      mouseCursor: SystemMouseCursors.click,
+      borderRadius: BorderRadius.circular(style.corners.md),
+      onTap: callback,
+      child: Container(
+        height: 40,
+        width: 140,
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(style.corners.sm),
         ),
-      ],
+        child: Center(
+          child: Text(
+            label,
+            style: style.text.h4,
+          ),
+        ),
+      ),
     );
   }
 }

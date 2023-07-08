@@ -6,22 +6,22 @@ import 'package:impulse/controllers/shared/server_controller.dart';
 import 'package:impulse/models/server_info.dart';
 import 'package:impulse/services/services.dart';
 
-final hostProvider = ChangeNotifierProvider<HostProvider>(
+final senderProvider = ChangeNotifierProvider<SenderProvider>(
   (ref) {
     final servermanager = ref.watch(serverControllerProvider);
-    return HostProvider(
+    return SenderProvider(
       servermanager,
-      host: Sender(
+      host: HostImpl(
         gateWay: MyHttpServer(serverManager: servermanager),
       ),
     );
   },
 );
 
-class HostProvider extends ChangeNotifier {
+class SenderProvider extends ChangeNotifier {
   final ServerManager _myServer;
   final Host host;
-  HostProvider(
+  SenderProvider(
     this._myServer, {
     required this.host,
   });
@@ -61,6 +61,4 @@ class HostProvider extends ChangeNotifier {
   void handleAlertResponse(bool response) {
     _myServerController.handleAlertResponse(response);
   }
-
-  ServerInfo? get clientServerInfo => _myServer.clientServerInfo;
 }

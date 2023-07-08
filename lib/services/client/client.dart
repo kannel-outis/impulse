@@ -12,7 +12,7 @@ abstract class Client {
     throw UnimplementedError();
   }
 
-  Future<Either<AppException, Map<String, dynamic>>> makePostRequest(
+  Future<Either<AppException, bool>> createServerAndNotifyHost(
       {required String address, int? port, required Map<String, dynamic> body});
 }
 

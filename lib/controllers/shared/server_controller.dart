@@ -7,30 +7,35 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/assets/assets_images.dart';
+import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/server_info.dart';
 import 'package:impulse/models/user.dart';
 import 'package:impulse/services/server_manager.dart';
 import 'package:uuid/uuid.dart';
 
-import 'alert_state_controller.dart';
-
 final serverControllerProvider =
     ChangeNotifierProvider<ServerController>((ref) {
-  final alert = ref.read(alertStateNotifier.notifier);
-  return ServerController(alert);
+  final alert = ref.watch(alertStateNotifier.notifier);
+  final connectedUser = ref.watch(connectUserStateProvider.notifier);
+  return ServerController(alertState: alert, connectedUserState: connectedUser);
 });
 
 class ServerController extends ServerManager with ChangeNotifier {
   final AlertState alertState;
+  final ConnectedUserState connectedUserState;
 
-  ServerController(this.alertState);
+  ServerController(
+      {required this.alertState, required this.connectedUserState});
 
-  final alertResponder = Completer<bool>();
+  Completer<bool> alertResponder = Completer<bool>();
+  Timer? _timer;
 
   // bool _showAcceptDeclineAlert = false;
 
   // bool get showAcceptDeclineAlert => _showAcceptDeclineAlert;
 
+  /////
+  /// The Senders/Hosts ip address and port that needs to be set after server creation
   String? _ipAddress;
   @override
   String? get ipAddress => _ipAddress;
@@ -47,13 +52,15 @@ class ServerController extends ServerManager with ChangeNotifier {
     _port = port;
   }
 
+  /////
+
 ////TODO: use statenotifier for client server info
-  ServerInfo? _clientServerInfo;
-  @override
-  ServerInfo? get clientServerInfo {
-    print("from : State ${_clientServerInfo?.user.deviceName}");
-    return _clientServerInfo;
-  }
+  // ServerInfo? _clientServerInfo;
+  // @override
+  // ServerInfo? get clientServerInfo {
+  //   print("from : State ${_clientServerInfo?.user.deviceName}");
+  //   return _clientServerInfo;
+  // }
 
   @override
   List<String> getFiles() {
@@ -90,10 +97,20 @@ class ServerController extends ServerManager with ChangeNotifier {
       Map<String, dynamic> serverMap) async {
     // _showAcceptDeclineAlert = true;
     alertState.updateState(true);
-    _clientServerInfo = ServerInfo.fromMap(serverMap);
+    final serverInfo = ServerInfo.fromMap(serverMap);
+    connectedUserState.setUserState(serverInfo, fling: true);
+
+    //// so that users wont take too long
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      handleAlertResponse(false);
+    });
+
+    ////
     final result = await alertResponder.future;
     if (result == false) {
-      _clientServerInfo = null;
+      connectedUserState.setUserState(null);
+    } else {
+      connectedUserState.setUserState(serverInfo);
     }
     // _showAcceptDeclineAlert = false;
     return result;
@@ -101,5 +118,9 @@ class ServerController extends ServerManager with ChangeNotifier {
 
   void handleAlertResponse(bool response) {
     alertResponder.complete(response);
+
+    alertState.updateState(false);
+    _timer?.cancel();
+    alertResponder = Completer();
   }
 }

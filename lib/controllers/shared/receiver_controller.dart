@@ -1,33 +1,34 @@
-import 'dart:developer';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/impulse_exception.dart';
-import 'package:impulse/controllers/shared/server_controller.dart';
+import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/server_info.dart';
 import 'package:impulse/services/services.dart';
 
-final clientProvider = ChangeNotifierProvider<ClientProvider>(
+final receiverProvider = ChangeNotifierProvider<ReceiverProvider>(
   (ref) {
     final servermanager = ref.watch(serverControllerProvider);
-    return ClientProvider(
-       servermanager,
-      client: Receiver(
+    final connectedUserState = ref.watch(connectUserStateProvider.notifier);
+    return ReceiverProvider(
+      servermanager,
+      connectedUserState: connectedUserState,
+      client: ClientImpl(
         gateWay: MyHttpServer(serverManager: servermanager),
       ),
     );
   },
 );
 
-class ClientProvider extends ChangeNotifier {
+class ReceiverProvider extends ChangeNotifier {
   final Client client;
   final ServerManager _myServer;
+  final ConnectedUserState connectedUserState;
 
-  ClientProvider(
-    this._myServer,
-    {
+  ReceiverProvider(
+    this._myServer, {
     required this.client,
+    required this.connectedUserState,
   });
 
   String? _address;
@@ -89,7 +90,6 @@ class ClientProvider extends ChangeNotifier {
             .contains(user.ipAddress)) {
           _availableHostsServers.add(user);
         }
-        print(_availableHostsServers.length);
       }
       notifyListeners();
     }
@@ -120,12 +120,10 @@ class ClientProvider extends ChangeNotifier {
     } else {
       /// if [selectedHost] is not null that means we have the host ipAddress and port
       /// make a post request to the host with our (the client) info as body
-      print("object force");
       final myInfo = await _myServer.myServerInfo();
       print(selectedHost!.ipAddress);
       print(selectedHost!.port);
-      log("object make");
-      final notifyHost = await client.makePostRequest(
+      final notifyHost = await client.createServerAndNotifyHost(
         address: selectedHost!.ipAddress!,
         port: selectedHost?.port,
         body: myInfo.toMap(),
@@ -133,31 +131,18 @@ class ClientProvider extends ChangeNotifier {
       if (notifyHost is Left) {
         final exception = (notifyHost as Left).value as AppException;
         return exception;
-      } else {
-        return null;
+      } else if (notifyHost is Right) {
+        final result = (notifyHost as Right).value as bool;
+        if (result == false) {
+          (client as Host).closeServer();
+          return const AppException("Request Denied");
+        } else {
+          /// we have successfully connected to the select host/sender
+          connectedUserState.setUserState(_selectedHost);
+          return null;
+        }
       }
+      return null;
     }
   }
-
-  // @override
-  // Future<ServerInfo> get myServerInfo async {
-  //   final bytes = await rootBundle.load(AssetsImage.DEFAULT_DISPLAY_IMAGE_2);
-  //   final uint8 = bytes.buffer.asUint8List();
-  //   final me = User(
-  //     name: Platform.localHostname,
-  //     id: const Uuid().v4(),
-  //     displayImage: uint8,
-  //     deviceName: Platform.operatingSystem,
-  //     deviceOsVersion: Platform.operatingSystemVersion,
-  //     isHost: false,
-  //     ipAddress: _address!,
-  //   );
-  //   return ServerInfo(
-  //     user: me,
-  //     ipAddress: _address!,
-  //     port: _port!,
-  //   );
-  // }
-
-  // Future<void>
 }

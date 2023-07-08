@@ -39,6 +39,8 @@ class AppStyle {
 
   late final Size _screenSize;
 
+  Size get screenSize => _screenSize;
+
   late final double scale;
 
   /// The current theme colors for the app

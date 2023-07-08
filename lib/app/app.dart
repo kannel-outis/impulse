@@ -7,3 +7,4 @@ export 'utils/extensions.dart';
 export 'utils/globals.dart';
 export 'utils/my_icons.dart';
 export 'utils/alert.dart';
+export 'utils/enums.dart';

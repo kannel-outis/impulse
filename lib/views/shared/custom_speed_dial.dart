@@ -186,9 +186,6 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
     BuildContext context, {
     bool close = false,
   }) async {
-    
-    await AlertOverlay.of(context).toggleOverlay();
-    return;
     if (_isOpen || close) {
       setState(() => _isOpen = false);
       widget.onToggle?.call(false);

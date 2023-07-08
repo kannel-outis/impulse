@@ -6,10 +6,10 @@ import 'package:impulse/models/server_info.dart';
 
 import '../services.dart';
 
-class Receiver implements ClientHost {
+class ClientImpl implements ClientHost {
   final GateWay? gateWay;
 
-  Receiver({this.gateWay});
+  ClientImpl({this.gateWay});
   static const int _port = Constants.DEFAULT_PORT;
 
   //May not be neccessary. part of TODO: 1 . this can be handled from the provider
@@ -44,16 +44,18 @@ class Receiver implements ClientHost {
   }
 
   @override
-  Future<Either<AppException, Map<String, dynamic>>> makePostRequest({
+  Future<Either<AppException, bool>> createServerAndNotifyHost({
     required String address,
     int? port,
     required Map<String, dynamic> body,
-  }) {
-
+  }) async {
     ///seperate uri builder
     final uri = Uri.parse(
         "http://$address:${port ?? _port}/impulse/client_server_info");
-    return RequestHelper.post(uri, body);
+    final s = await RequestHelper.post(uri, body);
+    final result =
+        s.map((r) => (r["msg"] as String) == "Denied" ? false : true);
+    return result;
   }
 
   @override
@@ -65,4 +67,9 @@ class Receiver implements ClientHost {
 
   @override
   bool get isServerRunning => gateWay != null && gateWay!.isServerRunning;
+
+  @override
+  void closeServer() {
+    gateWay?.close();
+  }
 }

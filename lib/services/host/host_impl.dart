@@ -8,11 +8,11 @@ import 'package:impulse/models/server_info.dart';
 
 import '../services.dart';
 
-class Sender extends Client implements Host {
+class HostImpl extends Client implements Host {
   // final Connection connection;
   final GateWay gateWay;
 
-  Sender({required this.gateWay});
+  HostImpl({required this.gateWay});
   @override
   Future<Either<AppException, (String, int)>> createServer(
       {address, port}) async {
@@ -29,7 +29,7 @@ class Sender extends Client implements Host {
   // }
 
   @override
-  Future<Either<AppException, Map<String, dynamic>>> makePostRequest(
+  Future<Either<AppException, bool>> createServerAndNotifyHost(
       {String? address, int? port, required Map<String, dynamic> body}) {
     throw UnimplementedError();
   }
@@ -68,4 +68,9 @@ class Sender extends Client implements Host {
 
   @override
   bool get isServerRunning => gateWay.isServerRunning;
+
+  @override
+  void closeServer() {
+    gateWay.close();
+  }
 }

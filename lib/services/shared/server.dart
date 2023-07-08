@@ -140,5 +140,8 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
   @override
   void close() {
     _httpServer?.close(force: true);
+    print("SErver Close: ${serverManager.ipAddress}:${serverManager.port}");
+    serverManager.port = null;
+    serverManager.ipAddress = null;
   }
 }

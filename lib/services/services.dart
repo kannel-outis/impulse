@@ -1,8 +1,8 @@
 export 'client/client.dart';
-export 'client/receiver_client.dart';
+export 'client/client_impl.dart';
 export 'gateway.dart';
 export 'host/host.dart';
-export 'host/sender_host.dart';
+export 'host/host_impl.dart';
 export 'server_manager.dart';
 export 'shared/server.dart';
 export 'utils/constants.dart';
