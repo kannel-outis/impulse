@@ -27,7 +27,6 @@ class SelectedItems extends StateNotifier<List<File>> {
       }
     }
     state = [...items];
-    log(items.length.toString());
   }
 
   void removeSelected({String? path, File? file}) {

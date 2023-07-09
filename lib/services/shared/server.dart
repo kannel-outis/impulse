@@ -126,7 +126,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       await file.close();
 
       ///TODO: do a response to close the connection
-    }
+    } else if (url == _buildUrl("send/files")) {}
   }
 
   String _buildUrl(String path) {
