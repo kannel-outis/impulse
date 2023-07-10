@@ -3,11 +3,13 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
+import 'package:impulse/models/models.dart';
+import 'package:impulse/services/services.dart';
 
 final selectedItemsProvider =
-    StateNotifierProvider<SelectedItems, List<File>>((ref) => SelectedItems());
+    StateNotifierProvider<SelectedItems, List<Item>>((ref) => SelectedItems());
 
-class SelectedItems extends StateNotifier<List<File>> {
+class SelectedItems extends StateNotifier<List<Item>> {
   SelectedItems({List<File> initialList = const []}) : super([]);
   final items = <File>[];
 

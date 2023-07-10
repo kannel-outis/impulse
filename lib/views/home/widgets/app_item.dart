@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
-import 'package:impulse/controllers/home/selected_item_provider.dart';
+import 'package:impulse/controllers/shared/selected_item_provider.dart';
 import 'package:impulse/controllers/shared/selecting_item_provider.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 

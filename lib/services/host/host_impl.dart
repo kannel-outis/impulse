@@ -1,10 +1,10 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:impulse/app/impulse_exception.dart';
-import 'package:impulse/models/server_info.dart';
 
 import '../services.dart';
 
@@ -35,17 +35,19 @@ class HostImpl extends Client implements Host {
   }
 
   @override
-  Future<AppException?> shareFile(
-      {required String filePath, required ServerInfo destination}) async {
+  Future<Either<AppException?, Map<String, dynamic>>> shareFile({
+    required File file,
+    required (String ip, int port) destination,
+    Function(int, int)? onProgress,
+  }) async {
     try {
-      final uri = "http://${destination.ipAddress}:${destination.port}/send";
-      final file = File(filePath);
+      final uri = "http://${destination.$1}:${destination.$2}/send";
       if (!file.existsSync()) {
         throw const AppException("File does not exist");
       }
       // final stream = file.openRead();
       final dio = Dio();
-      await dio.post(
+     final response =  await dio.post<Map<String, dynamic>>(
         uri,
         data: file.openRead(),
         options: Options(
@@ -54,15 +56,16 @@ class HostImpl extends Client implements Host {
         ),
         onSendProgress: (count, total) {
           log((count / total).toString());
+          onProgress?.call(count, total);
         },
         onReceiveProgress: (e, r) {
           log("Receiving: $e/$r");
         },
       );
-      return null;
+      return Right(jsonDecode(response.data.toString()));
     } catch (e) {
       print(e.toString());
-      return AppException(e.toString());
+      return Left(AppException(e.toString()));
     }
   }
 

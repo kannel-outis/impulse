@@ -1,9 +1,9 @@
 import 'dart:developer';
 import 'dart:io';
+import 'extensions.dart';
 
 import 'package:dartz/dartz.dart';
 import 'package:impulse/app/impulse_exception.dart';
-import 'package:impulse/app/utils/extensions.dart';
 import '../services.dart';
 
 class ServicesUtils {

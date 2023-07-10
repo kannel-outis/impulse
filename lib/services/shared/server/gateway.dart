@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
-
 abstract class GateWay<T extends Stream<K>, K extends Stream> {
   // final Function(K) listener;
 
@@ -10,7 +8,6 @@ abstract class GateWay<T extends Stream<K>, K extends Stream> {
   Future<T> bind(InternetAddress address, int port);
   T? get server;
 
-  @mustCallSuper
   // void listen() {
   //   server?.listen(listener);
   // }

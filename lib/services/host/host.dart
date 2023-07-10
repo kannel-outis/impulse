@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:impulse/app/impulse_exception.dart';
-import 'package:impulse/models/server_info.dart';
 
 abstract interface class Host {
   Future<Either<AppException, (String, int)>> createServer(
@@ -10,7 +9,10 @@ abstract interface class Host {
 
   void closeServer();
 
-  Future<AppException?> shareFile(
-      {required String filePath, required ServerInfo destination});
+  Future<Either<AppException?, Map<String, dynamic>>> shareFile({
+    required File file,
+    required (String, int) destination,
+    Function(int, int)? onProgress,
+  });
   bool get isServerRunning;
 }

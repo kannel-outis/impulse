@@ -10,7 +10,7 @@ import 'package:impulse/app/assets/assets_images.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/server_info.dart';
 import 'package:impulse/models/user.dart';
-import 'package:impulse/services/server_manager.dart';
+import 'package:impulse/services/shared/server/server_manager.dart';
 import 'package:uuid/uuid.dart';
 
 final serverControllerProvider =

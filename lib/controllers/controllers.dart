@@ -1,6 +1,6 @@
 export 'file_manager/file_manager_controller.dart';
 export 'home/home_provider.dart';
-export 'home/selected_item_provider.dart';
+export 'shared/selected_item_provider.dart';
 export 'shared/alert_state_controller.dart';
 export 'shared/connected_user.dart';
 export 'shared/connection_state_provider.dart';

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dartz/dartz.dart';
 import 'package:impulse/app/impulse_exception.dart';
-import 'package:impulse/models/server_info.dart';
 
 import '../services.dart';
 
@@ -60,7 +59,7 @@ class ClientImpl implements ClientHost {
 
   @override
   Future<AppException?> shareFile(
-      {required String filePath, required ServerInfo destination}) {
+      {required File file, required (String ip, int port) destination}) {
     // TODO: implement shareFile
     throw UnimplementedError();
   }
