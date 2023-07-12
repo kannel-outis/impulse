@@ -114,13 +114,13 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       //     File("/storage/emulated/0/Movies/ScreenRecord/20220304081125.mp4");
       // final rangeHeader = httpRequest.headers.value(HttpHeaders.rangeHeader);
 
-      if (await item.file!.exists()) {
+      if (await item.file.exists()) {
         httpRequest.response
           ..headers.set("Content-Type", item.mime ?? "application/octat-stream")
           ..headers
               .set("Content-Disposition", "attachment; filename=${item.name}")
-          ..headers.set("Content-Length", "${item.file!.lengthSync()}");
-        await httpRequest.response.addStream(item.file!.openRead());
+          ..headers.set("Content-Length", "${item.file.lengthSync()}");
+        await httpRequest.response.addStream(item.file.openRead());
         httpRequest.response.close();
         // print("Done");
       } else {
@@ -143,9 +143,9 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       ///else it may just enter in chunks. the image may make it too large
       final result = await httpRequest.fold<List<int>>(
           [], (previous, element) => previous..addAll(element));
-      final response = String.fromCharCodes(result);
+      final bodyEncoded = String.fromCharCodes(result);
       final accepted = await serverManager
-          .handleClientServerNotification(json.decode(response));
+          .handleClientServerNotification(json.decode(bodyEncoded));
 
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;
@@ -157,7 +157,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       httpRequest.response.close();
     } else if (url == _buildUrl("send")) {
       ///Testing....
-      print(httpRequest.headers["filename"]);
       final fileName =
           List.from(httpRequest.headers["filename"] as List<String>).first;
       final fileType =
@@ -171,8 +170,28 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       }
       await file.close();
 
-      ///TODO: do a response to close the connection
-    } else if (url == _buildUrl("send/files")) {}
+      // ignore: todo
+      // /TODO: do a response to close the connection
+      httpRequest.response.close();
+    } else if (url == _buildUrl("sharables")) {
+      final result = await httpRequest.fold<List<int>>(
+          [], (previous, element) => previous..addAll(element));
+      final bodyEncoded = String.fromCharCodes(result);
+      final List<Map<String, dynamic>> list =
+          List<Map<String, dynamic>>.from(json.decode(bodyEncoded));
+      for (var el in list) {
+        serverManager.receivablesStreamController.add(el);
+      }
+
+      httpRequest.response.statusCode = Constants.STATUS_OK;
+      httpRequest.response.headers.contentType = ContentType.json;
+      httpRequest.response.write(
+        json.encode(
+          {"msg": "Reveived"},
+        ),
+      );
+      httpRequest.response.close();
+    }
   }
 
   String _buildUrl(String path) {
@@ -182,6 +201,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
   @override
   void close() {
     _httpServer?.close(force: true);
+    // ignore: avoid_print
     print("Server Close: ${serverManager.ipAddress}:${serverManager.port}");
     serverManager.port = null;
     serverManager.ipAddress = null;

@@ -36,6 +36,8 @@ class ServerController extends ServerManager with ChangeNotifier {
       required this.selectedItems});
 
   Completer<bool> alertResponder = Completer<bool>();
+  StreamController<Map<String, dynamic>> _receivableStreamController =
+      StreamController<Map<String, dynamic>>();
   Timer? _timer;
 
   /////
@@ -118,4 +120,12 @@ class ServerController extends ServerManager with ChangeNotifier {
     _timer?.cancel();
     alertResponder = Completer();
   }
+
+  void reset() {
+    _receivableStreamController = StreamController<Map<String, dynamic>>();
+  }
+
+  @override
+  StreamController<Map<String, dynamic>> get receivablesStreamController =>
+      _receivableStreamController;
 }

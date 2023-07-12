@@ -24,12 +24,14 @@ abstract class Item {
   final int fileSize;
   final OnProgressCallBack? onProgressCallback;
   final OnStateChange? onStateChange;
+  final String authorId;
 
   Item({
     required this.file,
     required this.fileType,
     required this.fileSize,
     required this.id,
+    required this.authorId,
     this.onProgressCallback,
     this.onStateChange,
   });
@@ -51,4 +53,6 @@ abstract class Item {
   String? get mime => lookupMimeType(file.path);
 
   String get name => file.path.split("/").last;
+
+  Map<String, dynamic> toMap();
 }

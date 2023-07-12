@@ -99,7 +99,7 @@ class ServicesUtils {
       bool validate = true,
       int start = 0,
       required int end,
-      Function(int)? contentLengthCallBack,
+      Function(int, IClient)? init,
       int errorCount = 0}) async* {
     var client = http.Client();
     try {
@@ -112,8 +112,9 @@ class ServicesUtils {
         }
       });
       final response = await client.send(request);
-      contentLengthCallBack?.call(
+      init?.call(
         int.parse(response.headers[HttpHeaders.contentLengthHeader]!),
+        IClient(client),
       );
 
       final stream = StreamController<List<int>>();
@@ -133,4 +134,9 @@ class ServicesUtils {
     'user-agent':
         'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101 Firefox/68.0'
   };
+}
+
+class IClient {
+  final http.Client client;
+  IClient(this.client);
 }

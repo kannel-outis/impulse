@@ -1,9 +1,6 @@
 import 'dart:io';
 
 import 'package:impulse/services/services.dart';
-import 'package:impulse/services/utils/enums.dart';
-
-import 'item.dart';
 
 class ReceiveableItem extends Item {
   final OnProgressCallBack? progressCallBack;
@@ -22,10 +19,12 @@ class ReceiveableItem extends Item {
     this.progressCallBack,
     this.stateChange,
     required this.destination,
+    required String authorId,
   }) : super(
           id: id,
           file: file,
           fileSize: fileSize,
+          authorId: authorId,
           fileType: fileType,
           onProgressCallback: progressCallBack,
           onStateChange: stateChange,
@@ -34,7 +33,10 @@ class ReceiveableItem extends Item {
     _output = file.openWrite(mode: FileMode.writeOnlyAppend);
   }
 
+  late final Client _client = ClientImpl();
+
   late final IOSink _output;
+  late final IClient _iClient;
 
   bool _downloadCanceled = false;
   bool _downloadCompleted = false;
@@ -75,8 +77,10 @@ class ReceiveableItem extends Item {
     _downloadPaused = false;
     try {
       downloadedBytes = start;
-      final stream =
-          ServicesUtils.getStream(destination, start: start, end: fileLength);
+      final stream = _client.getFileStreamFromHostServer(destination, id,
+          start: start, end: fileLength, init: (length, client) {
+        _iClient = client;
+      });
       _downloading = true;
       final streamSize = fileLength;
 
@@ -84,6 +88,7 @@ class ReceiveableItem extends Item {
       } else {
         await for (final data in stream) {
           downloadedBytes += data.length;
+          // ignore: unused_local_variable
           final progress = _progress;
           if (_downloadCanceled || _downloadPaused) {
             return;
@@ -110,13 +115,16 @@ class ReceiveableItem extends Item {
   @override
   Future<void> pause() async {
     _downloadPaused = true;
-    await _closeOutputStreams();
+    await _closeOutputStreams().then(
+      (value) => _iClient.client.close(),
+    );
   }
 
   @override
   Future<void> cancel() async {
     await _closeOutputStreams().then((value) {
       file.deleteSync();
+      _iClient.client.close();
     });
   }
 
@@ -127,5 +135,11 @@ class ReceiveableItem extends Item {
     if (_downloading) return DownloadState.inProgress;
     if (_downloadPaused) return DownloadState.paused;
     return DownloadState.pending;
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    // TODO: implement toMap
+    throw UnimplementedError();
   }
 }

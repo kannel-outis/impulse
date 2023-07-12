@@ -14,5 +14,7 @@ abstract interface class Host {
     required (String, int) destination,
     Function(int, int)? onProgress,
   });
+  Future<Either<AppException?, Map<String, dynamic>>> shareDownloadableFiles(
+      List<Map<String, dynamic>> files, (String, int) destination);
   bool get isServerRunning;
 }

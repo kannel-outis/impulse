@@ -11,11 +11,8 @@ class ClientImpl implements ClientHost {
   ClientImpl({this.gateWay});
   static const int _port = Constants.DEFAULT_PORT;
 
-  //May not be neccessary. part of TODO: 1 . this can be handled from the provider
-  // List<String> _ipAddresses = [];
   @override
   Future<List<String>> scan() async {
-    ///could just do "return ....scan();" here
     return await ServicesUtils.scan();
   }
 
@@ -63,8 +60,24 @@ class ClientImpl implements ClientHost {
     required (String ip, int port) destination,
     Function(int, int)? onProgress,
   }) {
-    // TODO: implement shareFile
     throw UnimplementedError();
+  }
+
+  @override
+  Stream<List<int>> getFileStreamFromHostServer(
+      (String, int) destination, String fileId,
+      {Map<String, String>? headers,
+      int start = 0,
+      required int end,
+      Function(int p1, IClient p2)? init}) {
+    final url = "http://${destination.$1}:${destination.$2}/download?id=$id";
+    return ServicesUtils.getStream(
+      url,
+      end: end,
+      headers: headers,
+      init: init,
+      start: start,
+    );
   }
 
   @override
@@ -73,5 +86,12 @@ class ClientImpl implements ClientHost {
   @override
   void closeServer() {
     gateWay?.close();
+  }
+
+  @override
+  Future<Either<AppException?, Map<String, dynamic>>> shareDownloadableFiles(
+      List<Map<String, dynamic>> files, (String, int) destination) {
+    // TODO: implement shareDownloadableFiles
+    throw UnimplementedError();
   }
 }

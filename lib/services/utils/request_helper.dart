@@ -26,4 +26,8 @@ class RequestHelper {
       return Left(AppException(e.toString()));
     }
   }
+
+  // static Future<AppException?> postListBody(List<Map<String, dynamic>> list, Uri url)async{
+
+  // }
 }

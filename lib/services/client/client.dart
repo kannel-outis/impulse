@@ -14,6 +14,15 @@ abstract class Client {
 
   Future<Either<AppException, bool>> createServerAndNotifyHost(
       {required String address, int? port, required Map<String, dynamic> body});
+
+  Stream<List<int>> getFileStreamFromHostServer(
+    (String, int) destination,
+    String fileId, {
+    Map<String, String>? headers,
+    int start = 0,
+    required int end,
+    Function(int, IClient)? init,
+  });
 }
 
 abstract interface class ClientHost implements Client, Host {}
