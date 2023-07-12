@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:impulse/services/services.dart';
 import 'package:impulse/services/utils/enums.dart';
 
 import 'item.dart';
@@ -67,10 +68,56 @@ class ReceiveableItem extends Item {
     });
   }
 
+  double get _progress => (downloadedBytes / fileLength) * 100;
+
   @override
-  Future<void> receive() {
-    print("object");
-    return super.receive();
+  Future<void> receive() async {
+    _downloadPaused = false;
+    try {
+      downloadedBytes = start;
+      final stream =
+          ServicesUtils.getStream(destination, start: start, end: fileLength);
+      _downloading = true;
+      final streamSize = fileLength;
+
+      if (downloadedBytes >= streamSize) {
+      } else {
+        await for (final data in stream) {
+          downloadedBytes += data.length;
+          final progress = _progress;
+          if (_downloadCanceled || _downloadPaused) {
+            return;
+          }
+          onProgressCallback?.call(
+            downloadedBytes,
+            fileLength,
+            state,
+          );
+          _output.add(data);
+        }
+      }
+      await _closeOutputStreams(true);
+      return;
+    } catch (e) {
+      _downloading = false;
+      _downloadFailed = true;
+      onStateChange?.call(
+          downloadedBytes, fileLength, file, e.toString(), state);
+      return;
+    }
+  }
+
+  @override
+  Future<void> pause() async {
+    _downloadPaused = true;
+    await _closeOutputStreams();
+  }
+
+  @override
+  Future<void> cancel() async {
+    await _closeOutputStreams().then((value) {
+      file.deleteSync();
+    });
   }
 
   DownloadState get state {
