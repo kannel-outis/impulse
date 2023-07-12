@@ -32,6 +32,8 @@ class _AlertOverlayState extends ConsumerState<AlertOverlay>
       vsync: this,
       duration: $styles.times.med,
     );
+
+    //TODO: use ref.listen
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       ref.watch(alertStateNotifier.notifier).addListener((state) {
         if (state == true) {

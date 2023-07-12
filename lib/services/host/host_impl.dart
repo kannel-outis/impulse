@@ -34,6 +34,7 @@ class HostImpl extends Client implements Host {
     throw UnimplementedError();
   }
 
+  ///TODO: shareFiles -  route to share the list of files the receiver will download
   @override
   Future<Either<AppException?, Map<String, dynamic>>> shareFile({
     required File file,
@@ -47,7 +48,7 @@ class HostImpl extends Client implements Host {
       }
       // final stream = file.openRead();
       final dio = Dio();
-     final response =  await dio.post<Map<String, dynamic>>(
+      final response = await dio.post<Map<String, dynamic>>(
         uri,
         data: file.openRead(),
         options: Options(
@@ -62,6 +63,7 @@ class HostImpl extends Client implements Host {
           log("Receiving: $e/$r");
         },
       );
+
       return Right(jsonDecode(response.data.toString()));
     } catch (e) {
       print(e.toString());

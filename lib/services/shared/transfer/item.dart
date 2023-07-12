@@ -1,11 +1,12 @@
 import 'dart:io';
 
 import 'package:impulse/services/utils/enums.dart';
+import 'package:mime/mime.dart';
 
 typedef OnProgressCallBack = Function(
   int received,
   int totalSize,
-  TransferState state,
+  DownloadState state,
 );
 
 typedef OnStateChange = Function(
@@ -13,7 +14,7 @@ typedef OnStateChange = Function(
   int totalSize,
   File? file,
   String? reason,
-  TransferState state,
+  DownloadState state,
 );
 
 abstract class Item {
@@ -33,7 +34,7 @@ abstract class Item {
     this.onStateChange,
   });
 
-  Future<void> share() async {
+  Future<void> receive() async {
     throw UnimplementedError();
   }
 
@@ -45,5 +46,9 @@ abstract class Item {
     throw UnimplementedError();
   }
 
-  TransferState get state;
+  // DownloadState get state;
+
+  String? get mime => lookupMimeType(file.path);
+
+  String get name => file.path.split("/").last;
 }

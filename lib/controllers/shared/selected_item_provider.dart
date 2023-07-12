@@ -28,7 +28,7 @@ class SelectedItems extends StateNotifier<List<Item>> {
         items.add(file);
       }
     }
-    state = [...items];
+    // state = [...items];
   }
 
   void removeSelected({String? path, File? file}) {
@@ -37,7 +37,7 @@ class SelectedItems extends StateNotifier<List<Item>> {
     } else {
       items.removeWhere((element) => element.path == file!.path);
     }
-    state = [...items];
+    // state = [...items];
     log(items.length.toString());
   }
 

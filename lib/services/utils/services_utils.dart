@@ -1,7 +1,8 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
-import 'extensions.dart';
 
+import 'package:http/http.dart' as http;
 import 'package:dartz/dartz.dart';
 import 'package:impulse/app/impulse_exception.dart';
 import '../services.dart';
@@ -92,4 +93,44 @@ class ServicesUtils {
       return null;
     }
   }
+
+  static Stream<List<int>> getStream(String url,
+      {Map<String, String>? headers,
+      bool validate = true,
+      int start = 0,
+      required int end,
+      Function(int)? contentLengthCallBack,
+      int errorCount = 0}) async* {
+    var client = http.Client();
+    try {
+      final request = http.Request('get', Uri.parse(url));
+
+      request.headers[HttpHeaders.rangeHeader] = 'bytes=$start-${end - 1}';
+      _defaultHeaders.forEach((key, value) {
+        if (request.headers[key] == null) {
+          request.headers[key] = _defaultHeaders[key]!;
+        }
+      });
+      final response = await client.send(request);
+      contentLengthCallBack?.call(
+        int.parse(response.headers[HttpHeaders.contentLengthHeader]!),
+      );
+
+      final stream = StreamController<List<int>>();
+      response.stream.listen((data) {
+        stream.add(data);
+      }, onError: (_) => null, onDone: stream.close, cancelOnError: false);
+      yield* stream.stream;
+    } on Exception catch (e) {
+      print(e.toString());
+      client.close();
+    }
+    // }
+    client.close();
+  }
+
+  static const Map<String, String> _defaultHeaders = {
+    'user-agent':
+        'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101 Firefox/68.0'
+  };
 }

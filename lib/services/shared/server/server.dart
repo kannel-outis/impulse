@@ -87,6 +87,52 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         },
       ));
       httpRequest.response.close();
+    } else if (url.contains("http://${address.address}:$port/download")) {
+      final fileId = httpRequest.requestedUri.queryParameters["id"];
+      final items = serverManager
+          .getSelectedItems()
+          .where((element) => element.id == fileId);
+      if (fileId == null || items.isEmpty) {
+        httpRequest.response.write(
+          json.encode(
+            {
+              "msg": items.isEmpty
+                  ? "File id: $fileId not Found"
+                  : "File not available",
+            },
+          ),
+        );
+        httpRequest.response.close();
+        return;
+      }
+      final item = items.single;
+
+      // final file = File(
+      //     "C:/Users/emirb/Downloads/Guardians of the Galaxy Vol. 3 (2023) (NetNaija.com).mkv");
+      // final file2 = File("C:/Users/emirb/Downloads/placeholder.png");
+      // final file3 =
+      //     File("/storage/emulated/0/Movies/ScreenRecord/20220304081125.mp4");
+      // final rangeHeader = httpRequest.headers.value(HttpHeaders.rangeHeader);
+
+      if (await item.file!.exists()) {
+        httpRequest.response
+          ..headers.set("Content-Type", item.mime ?? "application/octat-stream")
+          ..headers
+              .set("Content-Disposition", "attachment; filename=${item.name}")
+          ..headers.set("Content-Length", "${item.file!.lengthSync()}");
+        await httpRequest.response.addStream(item.file!.openRead());
+        httpRequest.response.close();
+        // print("Done");
+      } else {
+        httpRequest.response.write(
+          json.encode(
+            {
+              "msg": "Something Went Wrong",
+            },
+          ),
+        );
+        httpRequest.response.close();
+      }
     }
   }
 

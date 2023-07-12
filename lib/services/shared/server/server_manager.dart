@@ -1,10 +1,11 @@
 import 'package:impulse/models/server_info.dart';
+import 'package:impulse/services/services.dart';
 
 abstract class ServerManager {
   //TODO: should change to sync function later
   // Future<ServerInfo> get hostInfo;
   Future<ServerInfo> myServerInfo();
-  List<String> getFiles();
+  List<Item> getSelectedItems();
   List<String> getPaths();
   set ipAddress(String? ipAddress);
   String? get ipAddress;

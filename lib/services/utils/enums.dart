@@ -1,10 +1,11 @@
-enum TransferState {
+enum DownloadState {
   failed("Failed"),
   inProgress("In Progress"),
   paused("Paused"),
   pending("Pending"),
+  completed("Completed"),
   canceled("Canceled");
 
-  const TransferState(this.label);
+  const DownloadState(this.label);
   final String label;
 }

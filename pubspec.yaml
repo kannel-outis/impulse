@@ -44,6 +44,7 @@ dependencies:
       url: https://github.com/kannel-outis/impulse_utils.git
       ref: master
   lottie: ^2.4.0
+  mime: ^1.0.4
   riverpod: ^2.3.6
   uuid: ^3.0.7
 

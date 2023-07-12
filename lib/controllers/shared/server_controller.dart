@@ -10,29 +10,33 @@ import 'package:impulse/app/assets/assets_images.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/server_info.dart';
 import 'package:impulse/models/user.dart';
-import 'package:impulse/services/shared/server/server_manager.dart';
+import 'package:impulse/services/services.dart';
 import 'package:uuid/uuid.dart';
 
 final serverControllerProvider =
     ChangeNotifierProvider<ServerController>((ref) {
   final alert = ref.watch(alertStateNotifier.notifier);
   final connectedUser = ref.watch(connectUserStateProvider.notifier);
-  return ServerController(alertState: alert, connectedUserState: connectedUser);
+  final selectedItems = ref.watch(selectedItemsProvider);
+  return ServerController(
+    alertState: alert,
+    connectedUserState: connectedUser,
+    selectedItems: selectedItems,
+  );
 });
 
 class ServerController extends ServerManager with ChangeNotifier {
   final AlertState alertState;
   final ConnectedUserState connectedUserState;
+  final List<Item> selectedItems;
 
   ServerController(
-      {required this.alertState, required this.connectedUserState});
+      {required this.alertState,
+      required this.connectedUserState,
+      required this.selectedItems});
 
   Completer<bool> alertResponder = Completer<bool>();
   Timer? _timer;
-
-  // bool _showAcceptDeclineAlert = false;
-
-  // bool get showAcceptDeclineAlert => _showAcceptDeclineAlert;
 
   /////
   /// The Senders/Hosts ip address and port that needs to be set after server creation
@@ -53,8 +57,8 @@ class ServerController extends ServerManager with ChangeNotifier {
   }
 
   @override
-  List<String> getFiles() {
-    return <String>[];
+  List<Item> getSelectedItems() {
+    return selectedItems;
   }
 
   @override

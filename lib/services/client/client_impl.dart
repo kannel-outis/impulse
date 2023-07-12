@@ -58,8 +58,11 @@ class ClientImpl implements ClientHost {
   }
 
   @override
-  Future<AppException?> shareFile(
-      {required File file, required (String ip, int port) destination}) {
+  Future<Either<AppException?, Map<String, dynamic>>> shareFile({
+    required File file,
+    required (String ip, int port) destination,
+    Function(int, int)? onProgress,
+  }) {
     // TODO: implement shareFile
     throw UnimplementedError();
   }
