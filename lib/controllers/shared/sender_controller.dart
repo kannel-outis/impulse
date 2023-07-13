@@ -57,6 +57,18 @@ class SenderProvider extends ChangeNotifier {
     }
   }
 
+  Future<AppException?> shareDownloadableFiles(
+      List<Map<String, dynamic>> files, (String, int) destination) async {
+    if (files.isEmpty) return const AppException("Nothing has been selected");
+    final result = await host.shareDownloadableFiles(files, destination);
+    if (result is Left) {
+      final exception = (result as Left).value as AppException;
+      return exception;
+    } else {
+      return null;
+    }
+  }
+
   void handleAlertResponse(bool response) {
     _myServerController.handleAlertResponse(response);
   }

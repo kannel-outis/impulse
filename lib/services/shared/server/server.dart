@@ -154,6 +154,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           {"msg": accepted ? "Successful" : "Denied"},
         ),
       );
+      log(accepted.toString());
       httpRequest.response.close();
     } else if (url == _buildUrl("send")) {
       ///Testing....

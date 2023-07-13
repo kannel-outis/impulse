@@ -111,13 +111,26 @@ class _HomePageState extends ConsumerState<HomePage>
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      Container(
-                        height: 40.scale,
-                        width: 40.scale,
-                        decoration: BoxDecoration(
-                          color: $styles.colors.fontColor2,
-                          borderRadius:
-                              BorderRadius.circular($styles.corners.xxlg),
+                      GestureDetector(
+                        onTap: () async {
+                          final files = ref
+                              .read(selectedItemsProvider)
+                              .map((e) => e.toMap())
+                              .toList();
+                          final destination =
+                              ref.read(connectUserStateProvider);
+                          if (destination == null) return;
+                          await hostController.shareDownloadableFiles(files,
+                              (destination.ipAddress!, destination.port!));
+                        },
+                        child: Container(
+                          height: 40.scale,
+                          width: 40.scale,
+                          decoration: BoxDecoration(
+                            color: $styles.colors.fontColor2,
+                            borderRadius:
+                                BorderRadius.circular($styles.corners.xxlg),
+                          ),
                         ),
                       ),
                     ],

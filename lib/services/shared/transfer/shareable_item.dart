@@ -5,18 +5,18 @@ import 'package:impulse/services/services.dart';
 class ShareableItem extends Item {
   final OnProgressCallBack? progressCallBack;
   final OnStateChange? stateChange;
-  final (String, int) destination;
+  final (String, int)? destination;
   final Host? host;
 
   ShareableItem({
     required File file,
     required String fileType,
-    required this.host,
+    this.host,
     required int fileSize,
     required String id,
     this.progressCallBack,
     this.stateChange,
-    required this.destination,
+    this.destination,
     required String authorId,
   }) : super(
           id: id,
@@ -58,8 +58,7 @@ class ShareableItem extends Item {
   @override
   DownloadState get state => _state;
 
-
-  String get  fileName => file.path.split("/").last;
+  String get fileName => file.path.split("/").last;
 
   @override
   Map<String, dynamic> toMap() {
@@ -69,7 +68,6 @@ class ShareableItem extends Item {
       "fileId": id,
       "senderId": authorId,
       "fileName": fileName,
-
     };
   }
 }

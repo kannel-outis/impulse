@@ -91,11 +91,13 @@ class ServerController extends ServerManager with ChangeNotifier {
   @override
   Future<bool> handleClientServerNotification(
       Map<String, dynamic> serverMap) async {
+    // ignore: todo
     //TODO: remove alertstate entirely and use connectedUserState.setUserState(serverInfo, fling: true)
     // to show alert instead
     alertState.updateState(true);
     final serverInfo = ServerInfo.fromMap(serverMap);
     connectedUserState.setUserState(serverInfo, fling: true);
+    print(serverInfo.ipAddress);
 
     //// so that users wont take too long
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
@@ -104,6 +106,8 @@ class ServerController extends ServerManager with ChangeNotifier {
 
     ////
     final result = await alertResponder.future;
+    print(alertResponder.future);
+    print("$result and the rest ddd");
     if (result == false) {
       connectedUserState.setUserState(null);
     } else {
@@ -113,12 +117,13 @@ class ServerController extends ServerManager with ChangeNotifier {
     return result;
   }
 
-  void handleAlertResponse(bool response) {
+  void handleAlertResponse(bool response) async {
     alertResponder.complete(response);
-
     alertState.updateState(false);
+    print(_timer?.isActive);
     _timer?.cancel();
-    alertResponder = Completer();
+    print(await alertResponder.future);
+    alertResponder = Completer<bool>();
   }
 
   void reset() {

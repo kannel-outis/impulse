@@ -131,6 +131,7 @@ class ReceiverProvider extends ChangeNotifier {
         return exception;
       } else if (notifyHost is Right) {
         final result = (notifyHost as Right).value as bool;
+        print(result);
         if (result == false) {
           (client as Host).closeServer();
           return const AppException("Request Denied");
