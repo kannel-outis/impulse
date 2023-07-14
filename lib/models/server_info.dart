@@ -1,3 +1,5 @@
+
+
 import 'package:equatable/equatable.dart';
 
 import 'user.dart';

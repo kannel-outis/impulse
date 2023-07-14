@@ -12,6 +12,7 @@ import 'package:impulse/views/shared/padded_body.dart';
 
 import 'components/bottom_nav_bar.dart';
 import 'widgets/speed_child_item.dart';
+import 'widgets/spinner.dart';
 import 'widgets/top_stack.dart';
 
 part 'images.dart';
@@ -117,6 +118,8 @@ class _HomePageState extends ConsumerState<HomePage>
                               .read(selectedItemsProvider)
                               .map((e) => e.toMap())
                               .toList();
+                          // print(files);
+                          // return;
                           final destination =
                               ref.read(connectUserStateProvider);
                           if (destination == null) return;
@@ -151,72 +154,74 @@ class _HomePageState extends ConsumerState<HomePage>
                 const SettingScreen(),
               ],
             ),
-            floatingActionButton: CustomSpeedDial(
-              open: isOverlayOpen,
-              disable: hostController.host.isServerRunning ||
-                  connectionState == ConnectionState.connected,
-              toolTipMessage: homeController.isWaitingForReceiver
-                  ? connectionState == ConnectionState.connected
-                      ? "Connected"
-                      : "Waiting for connection"
-                  : "Connect",
-              waitForReverseAnimation: waitForOverlayReverseAnimation,
-              onToggle: (isOpen) {
-                waitforOverlayReverseAnimation(true);
-                if (isOpen != isOverlayOpen) {
-                  isOverlayOpen = isOpen;
-                  setState(() {});
-                }
-              },
-              overlayChildrenOffset: const Offset(0.0, -10),
-              duration: $styles.times.med,
-              child: Stack(
-                children: [
-                  Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
+            floatingActionButton: connectionState == ConnectionState.connected
+                ? const Spinner()
+                : CustomSpeedDial(
+                    open: isOverlayOpen,
+                    disable: hostController.host.isServerRunning ||
+                        connectionState == ConnectionState.connected,
+                    toolTipMessage: homeController.isWaitingForReceiver
+                        ? connectionState == ConnectionState.connected
+                            ? "Connected"
+                            : "Waiting for connection"
+                        : "Connect",
+                    waitForReverseAnimation: waitForOverlayReverseAnimation,
+                    onToggle: (isOpen) {
+                      waitforOverlayReverseAnimation(true);
+                      if (isOpen != isOverlayOpen) {
+                        isOverlayOpen = isOpen;
+                        setState(() {});
+                      }
+                    },
+                    overlayChildrenOffset: const Offset(0.0, -10),
+                    duration: $styles.times.med,
+                    child: Stack(
+                      children: [
+                        Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
 
-                    /// This particular icon is not aligned properly
-                    /// it had to be manually done
-                    alignment: const Alignment(0.0, .2),
-                    child: const Icon(
-                      ImpulseIcons.transfer5,
-                      size: 30,
+                          /// This particular icon is not aligned properly
+                          /// it had to be manually done
+                          alignment: const Alignment(0.0, .2),
+                          child: const Icon(
+                            ImpulseIcons.transfer5,
+                            size: 30,
+                          ),
+                        ),
+                        if (hostController.host.isServerRunning ||
+                            connectionState == ConnectionState.connected)
+                          Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              color: Colors.black.withOpacity(.5),
+                            ),
+                          ),
+                      ],
                     ),
-                  ),
-                  if (hostController.host.isServerRunning ||
-                      connectionState == ConnectionState.connected)
-                    Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Colors.black.withOpacity(.5),
+                    // childSpacing: .4,
+                    children: [
+                      SpeedChild(
+                        onTap: () {
+                          closeOverlay();
+                        },
+                        icon: Icons.file_upload_rounded,
                       ),
-                    ),
-                ],
-              ),
-              // childSpacing: .4,
-              children: [
-                SpeedChild(
-                  onTap: () {
-                    closeOverlay();
-                  },
-                  icon: Icons.file_upload_rounded,
-                ),
-                SpeedChild(
-                  isHost: false,
-                  onTap: () {
-                    closeOverlay();
-                  },
-                  icon: Icons.file_download_rounded,
-                ),
-              ].reversed.toList(),
-            ),
+                      SpeedChild(
+                        isHost: false,
+                        onTap: () {
+                          closeOverlay();
+                        },
+                        icon: Icons.file_download_rounded,
+                      ),
+                    ].reversed.toList(),
+                  ),
             bottomNavigationBar: MyBottomNavBar(
               index: index,
               onChanged: (index) {

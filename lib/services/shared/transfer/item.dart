@@ -22,9 +22,11 @@ abstract class Item {
   final File file;
   final String fileType;
   final int fileSize;
+  final String? fileName;
   final OnProgressCallBack? onProgressCallback;
   final OnStateChange? onStateChange;
   final String authorId;
+  final (String, int) homeDestination;
 
   Item({
     required this.file,
@@ -32,8 +34,10 @@ abstract class Item {
     required this.fileSize,
     required this.id,
     required this.authorId,
+    required this.homeDestination,
     this.onProgressCallback,
     this.onStateChange,
+    this.fileName,
   });
 
   Future<void> receive() async {
@@ -52,7 +56,7 @@ abstract class Item {
 
   String? get mime => lookupMimeType(file.path);
 
-  String get name => file.path.split("/").last;
+  String get name => fileName ?? file.path.split("/").last;
 
   Map<String, dynamic> toMap();
 }

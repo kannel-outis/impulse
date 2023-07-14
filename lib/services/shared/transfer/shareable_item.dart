@@ -5,7 +5,6 @@ import 'package:impulse/services/services.dart';
 class ShareableItem extends Item {
   final OnProgressCallBack? progressCallBack;
   final OnStateChange? stateChange;
-  final (String, int)? destination;
   final Host? host;
 
   ShareableItem({
@@ -16,7 +15,7 @@ class ShareableItem extends Item {
     required String id,
     this.progressCallBack,
     this.stateChange,
-    this.destination,
+    required (String, int) homeDestination,
     required String authorId,
   }) : super(
           id: id,
@@ -26,6 +25,8 @@ class ShareableItem extends Item {
           onProgressCallback: progressCallBack,
           onStateChange: stateChange,
           authorId: authorId,
+          homeDestination: homeDestination,
+          fileName: file.path.split("/").last,
         );
 
   DownloadState _state = DownloadState.pending;
@@ -58,8 +59,6 @@ class ShareableItem extends Item {
   @override
   DownloadState get state => _state;
 
-  String get fileName => file.path.split("/").last;
-
   @override
   Map<String, dynamic> toMap() {
     return {
@@ -68,6 +67,10 @@ class ShareableItem extends Item {
       "fileId": id,
       "senderId": authorId,
       "fileName": fileName,
+      "homeDestination": {
+        "ip": homeDestination.$1,
+        "port": homeDestination.$2,
+      }
     };
   }
 }

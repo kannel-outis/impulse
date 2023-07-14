@@ -7,6 +7,7 @@ abstract class ServerManager {
   //TODO: should change to sync function later
   // Future<ServerInfo> get hostInfo;
   Future<ServerInfo> myServerInfo();
+  void setSelectedItems(List<Item> items);
   List<Item> getSelectedItems();
   List<String> getPaths();
   set ipAddress(String? ipAddress);

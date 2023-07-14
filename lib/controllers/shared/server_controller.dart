@@ -17,28 +17,26 @@ final serverControllerProvider =
     ChangeNotifierProvider<ServerController>((ref) {
   final alert = ref.watch(alertStateNotifier.notifier);
   final connectedUser = ref.watch(connectUserStateProvider.notifier);
-  final selectedItems = ref.watch(selectedItemsProvider);
   return ServerController(
     alertState: alert,
     connectedUserState: connectedUser,
-    selectedItems: selectedItems,
   );
 });
 
 class ServerController extends ServerManager with ChangeNotifier {
   final AlertState alertState;
   final ConnectedUserState connectedUserState;
-  final List<Item> selectedItems;
 
-  ServerController(
-      {required this.alertState,
-      required this.connectedUserState,
-      required this.selectedItems});
+  ServerController({
+    required this.alertState,
+    required this.connectedUserState,
+  });
 
   Completer<bool> alertResponder = Completer<bool>();
   StreamController<Map<String, dynamic>> _receivableStreamController =
       StreamController<Map<String, dynamic>>();
   Timer? _timer;
+  List<Item> _items = [];
 
   /////
   /// The Senders/Hosts ip address and port that needs to be set after server creation
@@ -58,9 +56,16 @@ class ServerController extends ServerManager with ChangeNotifier {
     _port = port;
   }
 
+  ///This is called everytime we select an file or item
+  ///cleed from [SelectedItems] provider
+  @override
+  void setSelectedItems(List<Item> items) {
+    _items = items;
+  }
+
   @override
   List<Item> getSelectedItems() {
-    return selectedItems;
+    return _items;
   }
 
   @override
@@ -97,7 +102,6 @@ class ServerController extends ServerManager with ChangeNotifier {
     alertState.updateState(true);
     final serverInfo = ServerInfo.fromMap(serverMap);
     connectedUserState.setUserState(serverInfo, fling: true);
-    print(serverInfo.ipAddress);
 
     //// so that users wont take too long
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
@@ -106,8 +110,6 @@ class ServerController extends ServerManager with ChangeNotifier {
 
     ////
     final result = await alertResponder.future;
-    print(alertResponder.future);
-    print("$result and the rest ddd");
     if (result == false) {
       connectedUserState.setUserState(null);
     } else {
@@ -120,9 +122,7 @@ class ServerController extends ServerManager with ChangeNotifier {
   void handleAlertResponse(bool response) async {
     alertResponder.complete(response);
     alertState.updateState(false);
-    print(_timer?.isActive);
     _timer?.cancel();
-    print(await alertResponder.future);
     alertResponder = Completer<bool>();
   }
 

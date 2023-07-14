@@ -5,6 +5,7 @@ import 'package:impulse/test.dart';
 import 'package:impulse/views/shared/custom_speed_dial.dart';
 import 'package:impulse/views/files/file_manager.dart';
 import 'package:impulse/views/home/home.dart';
+import 'package:impulse/views/transfer/transfer_page.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
 class ImpulseRouter {
@@ -30,6 +31,10 @@ class ImpulseRouter {
                   s.extra != null ? s.extra as List<ImpulseFileEntity> : null,
             ),
           ),
+          ImpulseRoute(
+            routes.transfer,
+            (s) => const TransferPage(),
+          )
         ],
       ),
     ],
@@ -41,6 +46,7 @@ class _Routes {
 
   final String home = "/home";
   final String test = "/test";
+  final String transfer = "/transfer";
 
   ////
   final String folder = "/folder";

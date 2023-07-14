@@ -5,20 +5,19 @@ import 'package:impulse/services/services.dart';
 class ReceiveableItem extends Item {
   final OnProgressCallBack? progressCallBack;
   final OnStateChange? stateChange;
-  final (String, int) destination;
   final int start;
-  final int fileLength;
+  // final int fileLength;
 
   ReceiveableItem({
     required File file,
     required String fileType,
     required int fileSize,
     required String id,
-    required this.fileLength,
+    // required this.fileLength,
     this.start = 0,
     this.progressCallBack,
     this.stateChange,
-    required this.destination,
+    required (String, int) homeDestination,
     required String authorId,
   }) : super(
           id: id,
@@ -26,11 +25,24 @@ class ReceiveableItem extends Item {
           fileSize: fileSize,
           authorId: authorId,
           fileType: fileType,
-          onProgressCallback: progressCallBack,
           onStateChange: stateChange,
-        ) {
-    _cleanPath();
-    _output = file.openWrite(mode: FileMode.writeOnlyAppend);
+          homeDestination: homeDestination,
+          onProgressCallback: progressCallBack,
+          fileName: file.path.split("/").last,
+        );
+
+  factory ReceiveableItem.fromShareableMap(Map<String, dynamic> map) {
+    return ReceiveableItem(
+      file: File("/storage/emulated/0/impulse/${map["fileName"] as String}"),
+      fileType: map["fileType"] as String,
+      fileSize: map["fileSize"] as int,
+      id: map["fileId"] as String,
+      homeDestination: (
+        map["homeDestination"]["ip"] as String,
+        map["homeDestination"]["port"] as int
+      ),
+      authorId: map["senderId"],
+    );
   }
 
   late final Client _client = ClientImpl();
@@ -45,6 +57,11 @@ class ReceiveableItem extends Item {
   bool _downloadPaused = false;
 
   int downloadedBytes = 0;
+
+  void readyFileForDownload() {
+    _cleanPath();
+    _output = file.openWrite(mode: FileMode.writeOnlyAppend);
+  }
 
   void _cleanPath() {
     if (start == 0 && file.existsSync()) {
@@ -66,23 +83,23 @@ class ReceiveableItem extends Item {
       final totalBytes = downloadedBytes;
       // final contentSize = _contentSize(totalBytes);
 
-      onStateChange?.call(totalBytes, fileLength, file, "", state);
+      onStateChange?.call(totalBytes, fileSize, file, "", state);
     });
   }
 
-  double get _progress => (downloadedBytes / fileLength) * 100;
+  double get _progress => (downloadedBytes / fileSize) * 100;
 
   @override
   Future<void> receive() async {
     _downloadPaused = false;
     try {
       downloadedBytes = start;
-      final stream = _client.getFileStreamFromHostServer(destination, id,
-          start: start, end: fileLength, init: (length, client) {
+      final stream = _client.getFileStreamFromHostServer(homeDestination, id,
+          start: start, end: fileSize, init: (length, client) {
         _iClient = client;
       });
       _downloading = true;
-      final streamSize = fileLength;
+      final streamSize = fileSize;
 
       if (downloadedBytes >= streamSize) {
       } else {
@@ -95,7 +112,7 @@ class ReceiveableItem extends Item {
           }
           onProgressCallback?.call(
             downloadedBytes,
-            fileLength,
+            fileSize,
             state,
           );
           _output.add(data);
@@ -106,8 +123,7 @@ class ReceiveableItem extends Item {
     } catch (e) {
       _downloading = false;
       _downloadFailed = true;
-      onStateChange?.call(
-          downloadedBytes, fileLength, file, e.toString(), state);
+      onStateChange?.call(downloadedBytes, fileSize, file, e.toString(), state);
       return;
     }
   }
