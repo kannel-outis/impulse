@@ -24,7 +24,7 @@ class SelectedItems extends StateNotifier<List<Item>> {
   }) : super([]);
   final items = <ShareableItem>[];
 
-  void addSelected({File? file, String? path}) {
+  void addSelected({File? file, String? path}) async {
     if (path == null && file == null) {
       onError?.call(const AppException("Invalid Selected item"), null);
       return;
@@ -32,12 +32,12 @@ class SelectedItems extends StateNotifier<List<Item>> {
     if (path != null) {
       final file = File(path);
       if (file.existsSync()) {
-        final item = itemFromFile(file);
+        final item = await itemFromFile(file);
         items.add(item);
       }
     } else {
       if (file != null) {
-        final item = itemFromFile(file);
+        final item = await itemFromFile(file);
         items.add(item);
         // items.add(file);
       }
@@ -61,17 +61,50 @@ class SelectedItems extends StateNotifier<List<Item>> {
     serverManager.setSelectedItems(state);
   }
 
-  ShareableItem itemFromFile(File file) {
-    return ShareableItem(
-        file: file,
-        fileType: file.path.getFileType.type,
-        fileSize: file.lengthSync(),
-        id: const Uuid().v4(),
+  void clear() {
+    state = [];
+  }
 
-        ///Home destination is my server
-        homeDestination: (serverManager.ipAddress!, serverManager.port!),
-        authorId: "22002222000");
+  Future<ShareableItem> itemFromFile(File file) async {
+    final myInfo = await serverManager.myServerInfo();
+    return ShareableItem(
+      file: file,
+      fileType: file.path.getFileType.type,
+      fileSize: file.lengthSync(),
+      id: const Uuid().v4(),
+
+      ///Home destination is my server
+      homeDestination: (serverManager.ipAddress!, serverManager.port!),
+      authorId: myInfo.user.id,
+    );
   }
 
   bool get selectedIsEmpty => items.isEmpty;
+}
+
+final shareableItemsProvider =
+    StateNotifierProvider<ShareableItemsProvider, List<ShareableItem>>(
+        (ref) => ShareableItemsProvider());
+
+class ShareableItemsProvider extends StateNotifier<List<ShareableItem>> {
+  ShareableItemsProvider() : super([]);
+  List<Item> _filtered = [];
+
+  void addAllItems(List<Item> items) {
+    state = [...state, ..._filteredList(items)];
+    print(state);
+  }
+
+  List<Item> get filteredList => _filtered;
+
+  ///filter list so that they are not sent more than once
+  List<ShareableItem> _filteredList(List<Item> items) {
+    return _filtered = items
+        .map((e) => e as ShareableItem)
+        .toList()
+        .where((element) =>
+            !state.map((e) => e.id).toList().contains(element.id) &&
+            !state.map((e) => e.filePath).toList().contains(element.filePath))
+        .toList();
+  }
 }

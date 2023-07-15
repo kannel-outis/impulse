@@ -114,17 +114,27 @@ class _HomePageState extends ConsumerState<HomePage>
                       ),
                       GestureDetector(
                         onTap: () async {
-                          final files = ref
-                              .read(selectedItemsProvider)
+                          ///TODO: To be removed,
+                          final files = ref.read(selectedItemsProvider);
+                          ref
+                              .read(shareableItemsProvider.notifier)
+                              .addAllItems(files);
+                          final shareableFiles = ref
+                              .read(shareableItemsProvider.notifier)
+                              .filteredList
                               .map((e) => e.toMap())
                               .toList();
                           // print(files);
+                          print(shareableFiles.length);
+
                           // return;
                           final destination =
                               ref.read(connectUserStateProvider);
                           if (destination == null) return;
-                          await hostController.shareDownloadableFiles(files,
+                          await hostController.shareDownloadableFiles(
+                              shareableFiles,
                               (destination.ipAddress!, destination.port!));
+                          ref.read(selectedItemsProvider.notifier).clear();
                         },
                         child: Container(
                           height: 40.scale,

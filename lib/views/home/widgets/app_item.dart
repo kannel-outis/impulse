@@ -25,12 +25,26 @@ class _AppItemState extends ConsumerState<AppItem> {
     return (screenWidth - ($styles.insets.md * 2)) / 4;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+
+    // });
+  }
+
   bool _isSelected = false;
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(selectedItemsProvider, (previous, next) {
+      if (next.isEmpty) {
+        ref.read(selectingItemStateProvider).isSelectingApp = false;
+        _isSelected = false;
+      }
+    });
     final selectingItemPRovider = ref.watch(selectingItemStateProvider);
-    final selectedItems = ref.read(selectedItemsProvider.notifier);
+    final selectedItems = ref.watch(selectedItemsProvider.notifier);
     return GestureDetector(
       onLongPress: () {
         ///if Already in selecting mode, cancel
@@ -55,16 +69,19 @@ class _AppItemState extends ConsumerState<AppItem> {
             _isSelected = false;
             setState(() {});
           }
-
-          if (selectedItems.selectedIsEmpty) {
-            selectingItemPRovider.isSelectingApp = false;
-          }
+        }
+        if (ref.read(selectedItemsProvider).isEmpty) {
+          selectingItemPRovider.isSelectingApp = false;
         }
       },
       child: Container(
         width: _appBox(),
         height: _appBox(),
-        color: _isSelected ? Colors.white : null,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: _isSelected ? Colors.white : Colors.transparent,
+          ),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,

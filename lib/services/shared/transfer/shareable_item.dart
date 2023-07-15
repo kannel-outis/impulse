@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:impulse/services/services.dart';
 
+// ignore: must_be_immutable
 class ShareableItem extends Item {
   final OnProgressCallBack? progressCallBack;
   final OnStateChange? stateChange;
@@ -73,6 +74,16 @@ class ShareableItem extends Item {
       }
     };
   }
+
+  @override
+  List<Object?> get props => [
+        fileSize,
+        fileType,
+        id,
+        fileName,
+        authorId,
+        filePath,
+      ];
 }
 
 // class _ResponseState {

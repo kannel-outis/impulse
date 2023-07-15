@@ -158,4 +158,14 @@ class ReceiveableItem extends Item {
     // TODO: implement toMap
     throw UnimplementedError();
   }
+
+  @override
+  List<Object?> get props => [
+        fileSize,
+        fileType,
+        id,
+        fileName,
+        authorId,
+        filePath,
+      ];
 }

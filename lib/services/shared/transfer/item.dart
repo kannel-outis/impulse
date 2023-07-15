@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:equatable/equatable.dart';
 import 'package:impulse/services/utils/enums.dart';
 import 'package:mime/mime.dart';
 
@@ -17,7 +18,7 @@ typedef OnStateChange = Function(
   DownloadState state,
 );
 
-abstract class Item {
+abstract class Item extends Equatable {
   final String id;
   final File file;
   final String fileType;
@@ -28,7 +29,7 @@ abstract class Item {
   final String authorId;
   final (String, int) homeDestination;
 
-  Item({
+  const Item({
     required this.file,
     required this.fileType,
     required this.fileSize,
@@ -57,6 +58,8 @@ abstract class Item {
   String? get mime => lookupMimeType(file.path);
 
   String get name => fileName ?? file.path.split("/").last;
+
+  String get filePath => file.path;
 
   Map<String, dynamic> toMap();
 }
