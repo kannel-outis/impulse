@@ -119,7 +119,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       ///if fpund retreive the item with the id
       final item = items.single;
 
-
       ///Check if the file with that id exists on the device,
       ///if it does proceed to open the file and make it downloadable
       if (await item.file.exists()) {
@@ -129,7 +128,25 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
               .set("Content-Disposition", "attachment; filename=${item.name}")
           ..headers.set("Content-Length", "${item.file.lengthSync()}");
         print(item.file.lengthSync());
-        await httpRequest.response.addStream(item.file.openRead());
+
+        ///This should be start
+        int bytesDownloadedByClient = 0;
+        final response = httpRequest.response;
+        final fileStream = item.file.openRead();
+        await response.addStream(fileStream.map((event) {
+          bytesDownloadedByClient += event.length;
+
+          final percentage =
+              (bytesDownloadedByClient / item.file.lengthSync()) * 100;
+          log("${item.fileName}: $percentage");
+          item.onProgressCallback?.call(
+            bytesDownloadedByClient,
+            item.file.lengthSync(),
+            DownloadState.inProgress,
+          );
+          return event;
+        }));
+        // await httpRequest.response.addStream(item.file.openRead());
         httpRequest.response.close();
         // print("Done");
       } else {
