@@ -61,7 +61,7 @@ class DownloadManager {
       }
       print(_listOfWaitingReceivables.length);
       // currentItemAtIndex += 1;
-      await download(index: numberOfDownloadedItems + 1);
+      await download();
     });
   }
 

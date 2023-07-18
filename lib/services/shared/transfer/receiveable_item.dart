@@ -36,13 +36,12 @@ class ReceiveableItem extends Item {
         );
 
   factory ReceiveableItem.fromShareableMap(Map<String, dynamic> map) {
-    final list = (map["fileName"] as String).split(".");
-    list.insert(
-        1,
-        map["altName"] != null
-            ? map["altName"] as String
-            : map["fileId"] as String);
-    final fileName = list.join(".");
+    final fileName = map["altName"] != null
+        ? _joinNameWithId(
+            "${map["altName"] as String}.${map["fileType"] as String}",
+            map["fileId"] as String)
+        : _joinNameWithId(
+            "${map["fileName"] as String}}", map["fileId"] as String);
     return ReceiveableItem(
       file: File("${Configurations.instance.impulseDir.path}$fileName"),
       fileType: map["fileType"] as String,
@@ -55,6 +54,13 @@ class ReceiveableItem extends Item {
       ),
       authorId: map["senderId"],
     );
+  }
+
+  static String _joinNameWithId(String name, String id) {
+    ///Storing with individual ids to avoid problems with app or file with the same name,
+    final list = (name).split(".");
+    list.insert(1, id);
+    return list.join(".");
   }
 
   ReceiveableItem copyWith({

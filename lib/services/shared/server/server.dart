@@ -89,13 +89,19 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       httpRequest.response.close();
     } else if (url.contains("http://${address.address}:$port/download")) {
       print("object......................................");
+
+      ///get the id of the file from the url query parameter
       final fileId = httpRequest.requestedUri.queryParameters["id"];
       print("$fileId from server.....");
       print(httpRequest.requestedUri.queryParameters);
+
+      ///Check if the id exists in the shareable files list
+      ///if the file was indeed shared, it should have an id in the list
       final items = serverManager
           .getSelectedItems()
           .where((element) => element.id == fileId);
       if (fileId == null || items.isEmpty) {
+        ///if this file cant be found, write a response and close connection
         httpRequest.response.write(
           json.encode(
             {
@@ -109,15 +115,13 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         httpRequest.response.close();
         return;
       }
+
+      ///if fpund retreive the item with the id
       final item = items.single;
 
-      // final file = File(
-      //     "C:/Users/emirb/Downloads/Guardians of the Galaxy Vol. 3 (2023) (NetNaija.com).mkv");
-      // final file2 = File("C:/Users/emirb/Downloads/placeholder.png");
-      // final file3 =
-      //     File("/storage/emulated/0/Movies/ScreenRecord/20220304081125.mp4");
-      // final rangeHeader = httpRequest.headers.value(HttpHeaders.rangeHeader);
 
+      ///Check if the file with that id exists on the device,
+      ///if it does proceed to open the file and make it downloadable
       if (await item.file.exists()) {
         httpRequest.response
           ..headers.set("Content-Type", item.mime ?? "application/octat-stream")
