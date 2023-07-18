@@ -46,6 +46,7 @@ dependencies:
   lottie: ^2.4.0
   mime: ^1.0.4
   path_drawing: ^1.0.1
+  path_provider: ^2.0.15
   riverpod: ^2.3.6
   uuid: ^3.0.7
 

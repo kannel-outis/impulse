@@ -7,6 +7,7 @@ class ShareableItem extends Item {
   final OnProgressCallBack? progressCallBack;
   final OnStateChange? stateChange;
   final Host? host;
+  final String? altName;
 
   ShareableItem({
     required File file,
@@ -16,6 +17,7 @@ class ShareableItem extends Item {
     required String id,
     this.progressCallBack,
     this.stateChange,
+    this.altName,
     required (String, int) homeDestination,
     required String authorId,
   }) : super(
@@ -27,7 +29,7 @@ class ShareableItem extends Item {
           onStateChange: stateChange,
           authorId: authorId,
           homeDestination: homeDestination,
-          fileName: file.path.split("/").last,
+          fileName: altName ?? file.path.split("/").last,
         );
 
   DownloadState _state = DownloadState.pending;
@@ -68,6 +70,7 @@ class ShareableItem extends Item {
       "fileId": id,
       "senderId": authorId,
       "fileName": fileName,
+      "altName": altName,
       "homeDestination": {
         "ip": homeDestination.$1,
         "port": homeDestination.$2,

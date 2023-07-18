@@ -1,6 +1,7 @@
+import 'dart:developer';
 import 'dart:io';
 
-import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:impulse/app/impulse_exception.dart';
 
 import '../services.dart';
@@ -17,8 +18,8 @@ class ClientImpl implements ClientHost {
   }
 
   @override
-  Future<Either<AppException, Map<String, dynamic>>> establishConnectionToHost(
-      {required String address, int? port}) async {
+  Future<dartz.Either<AppException, Map<String, dynamic>>>
+      establishConnectionToHost({required String address, int? port}) async {
     // if () {
     //   return const Left(
     //     AppException("Cannot make a connection if no host is found"),
@@ -29,7 +30,7 @@ class ClientImpl implements ClientHost {
   }
 
   @override
-  Future<Either<AppException, (String, int)>> createServer(
+  Future<dartz.Either<AppException, (String, int)>> createServer(
       {InternetAddress? address, int? port}) {
     if (gateWay == null) const AppException("This receiver is not a host");
     return ServicesUtils.creatServer(
@@ -40,7 +41,7 @@ class ClientImpl implements ClientHost {
   }
 
   @override
-  Future<Either<AppException, bool>> createServerAndNotifyHost({
+  Future<dartz.Either<AppException, bool>> createServerAndNotifyHost({
     required String address,
     int? port,
     required Map<String, dynamic> body,
@@ -55,7 +56,7 @@ class ClientImpl implements ClientHost {
   }
 
   @override
-  Future<Either<AppException?, Map<String, dynamic>>> shareFile({
+  Future<dartz.Either<AppException?, Map<String, dynamic>>> shareFile({
     required File file,
     required (String ip, int port) destination,
     Function(int, int)? onProgress,
@@ -70,7 +71,11 @@ class ClientImpl implements ClientHost {
       int start = 0,
       required int end,
       Function(int p1, IClient p2)? init}) {
-    final url = "http://${destination.$1}:${destination.$2}/download?id=$id";
+    final url =
+        "http://${destination.$1}:${destination.$2}/download?id=$fileId";
+    log("$fileId from cleint");
+    log("$destination from cleint");
+    // return Stream.empty();
     return ServicesUtils.getStream(
       url,
       end: end,
@@ -89,8 +94,9 @@ class ClientImpl implements ClientHost {
   }
 
   @override
-  Future<Either<AppException?, Map<String, dynamic>>> shareDownloadableFiles(
-      List<Map<String, dynamic>> files, (String, int) destination) {
+  Future<dartz.Either<AppException?, Map<String, dynamic>>>
+      shareDownloadableFiles(
+          List<Map<String, dynamic>> files, (String, int) destination) {
     // TODO: implement shareDownloadableFiles
     throw UnimplementedError();
   }

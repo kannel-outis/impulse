@@ -111,6 +111,8 @@ class ServicesUtils {
           request.headers[key] = _defaultHeaders[key]!;
         }
       });
+      print("From Server utils");
+
       final response = await client.send(request);
       init?.call(
         int.parse(response.headers[HttpHeaders.contentLengthHeader]!),
@@ -118,6 +120,8 @@ class ServicesUtils {
       );
 
       final stream = StreamController<List<int>>();
+      print(response.headers);
+      print("From Server utils");
       response.stream.listen((data) {
         stream.add(data);
       }, onError: (_) => null, onDone: stream.close, cancelOnError: false);

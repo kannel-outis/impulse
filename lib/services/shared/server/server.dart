@@ -88,7 +88,10 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       ));
       httpRequest.response.close();
     } else if (url.contains("http://${address.address}:$port/download")) {
+      print("object......................................");
       final fileId = httpRequest.requestedUri.queryParameters["id"];
+      print("$fileId from server.....");
+      print(httpRequest.requestedUri.queryParameters);
       final items = serverManager
           .getSelectedItems()
           .where((element) => element.id == fileId);
@@ -102,6 +105,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
             },
           ),
         );
+        print("Close....");
         httpRequest.response.close();
         return;
       }
@@ -120,6 +124,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           ..headers
               .set("Content-Disposition", "attachment; filename=${item.name}")
           ..headers.set("Content-Length", "${item.file.lengthSync()}");
+        print(item.file.lengthSync());
         await httpRequest.response.addStream(item.file.openRead());
         httpRequest.response.close();
         // print("Done");
@@ -182,7 +187,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       final List<Map<String, dynamic>> list =
           List<Map<String, dynamic>>.from(json.decode(bodyEncoded)["files"]);
       for (var el in list) {
-        log(el.toString());
+        // log(el.toString());
         serverManager.receivablesStreamController.add(el);
       }
 

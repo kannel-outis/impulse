@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/controllers/download_manager.dart';
 import 'package:impulse/services/services.dart';
-import 'package:impulse/services/shared/transfer/receiveable_item.dart';
 
 // final _receivablesMapStream = StreamProvider<Map<String, dynamic>>((ref) {
 //   final controller =
@@ -13,16 +13,19 @@ import 'package:impulse/services/shared/transfer/receiveable_item.dart';
 // });
 
 final receivableListItems =
-    StateNotifierProvider<ReceiveableItemsProvider, List<Item>>((ref) {
+    StateNotifierProvider<ReceiveableItemsProvider, List<ReceiveableItem>>(
+        (ref) {
   final stream =
       ref.watch(serverControllerProvider).receivablesStreamController.stream;
+  final downloadManager = ref.watch(downloadManagerProvider);
 
-  return ReceiveableItemsProvider(stream);
+  return ReceiveableItemsProvider(stream, downloadManager);
 });
 
-class ReceiveableItemsProvider extends StateNotifier<List<Item>> {
+class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
   final Stream<Map<String, dynamic>> itemsStream;
-  ReceiveableItemsProvider(this.itemsStream) : super([]) {
+  final DownloadManager downloadManager;
+  ReceiveableItemsProvider(this.itemsStream, this.downloadManager) : super([]) {
     _listen();
   }
 
@@ -30,6 +33,11 @@ class ReceiveableItemsProvider extends StateNotifier<List<Item>> {
     itemsStream.listen((event) {
       final item = ReceiveableItem.fromShareableMap(event);
       state = [...state, item];
+      
+      downloadManager.addToQueue([item]);
+      if (downloadManager.isDownloading == false) {
+        downloadManager.download();
+      }
     });
   }
 }

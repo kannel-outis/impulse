@@ -1,11 +1,15 @@
+// ignore_for_file: must_be_immutable
+
 import 'dart:io';
 
+import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 
 class ReceiveableItem extends Item {
   final OnProgressCallBack? progressCallBack;
   final OnStateChange? stateChange;
   final int start;
+  final String? altName;
   // final int fileLength;
 
   ReceiveableItem({
@@ -13,12 +17,12 @@ class ReceiveableItem extends Item {
     required String fileType,
     required int fileSize,
     required String id,
-    // required this.fileLength,
     this.start = 0,
     this.progressCallBack,
     this.stateChange,
     required (String, int) homeDestination,
     required String authorId,
+    this.altName,
   }) : super(
           id: id,
           file: file,
@@ -32,16 +36,41 @@ class ReceiveableItem extends Item {
         );
 
   factory ReceiveableItem.fromShareableMap(Map<String, dynamic> map) {
+    final list = (map["fileName"] as String).split(".");
+    list.insert(
+        1,
+        map["altName"] != null
+            ? map["altName"] as String
+            : map["fileId"] as String);
+    final fileName = list.join(".");
     return ReceiveableItem(
-      file: File("/storage/emulated/0/impulse/${map["fileName"] as String}"),
+      file: File("${Configurations.instance.impulseDir.path}$fileName"),
       fileType: map["fileType"] as String,
       fileSize: map["fileSize"] as int,
       id: map["fileId"] as String,
+      altName: map["altName"],
       homeDestination: (
         map["homeDestination"]["ip"] as String,
         map["homeDestination"]["port"] as int
       ),
       authorId: map["senderId"],
+    );
+  }
+
+  ReceiveableItem copyWith({
+    File? file,
+    int? start,
+  }) {
+    return ReceiveableItem(
+      file: file ?? this.file,
+      fileType: fileType,
+      fileSize: fileSize,
+      id: id,
+      homeDestination: homeDestination,
+      authorId: authorId,
+      progressCallBack: progressCallBack,
+      stateChange: stateChange,
+      start: start ?? this.start,
     );
   }
 
@@ -58,7 +87,7 @@ class ReceiveableItem extends Item {
 
   int downloadedBytes = 0;
 
-  void readyFileForDownload() {
+  void _readyFileForDownload() {
     _cleanPath();
     _output = file.openWrite(mode: FileMode.writeOnlyAppend);
   }
@@ -91,6 +120,9 @@ class ReceiveableItem extends Item {
 
   @override
   Future<void> receive() async {
+    // log(id.toString());
+    // return;
+    _readyFileForDownload();
     _downloadPaused = false;
     try {
       downloadedBytes = start;
@@ -118,6 +150,7 @@ class ReceiveableItem extends Item {
           _output.add(data);
         }
       }
+      print(downloadedBytes);
       await _closeOutputStreams(true);
       return;
     } catch (e) {

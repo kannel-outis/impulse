@@ -53,7 +53,8 @@ class _AppItemState extends ConsumerState<AppItem> {
         /// enter selecting mode
         /// and add the first item
         selectingItemPRovider.isSelectingApp = true;
-        selectedItems.addSelected(path: widget.app.appPath);
+        selectedItems.addSelected(
+            path: widget.app.appPath, altName: widget.app.appName);
         _isSelected = true;
         setState(() {});
       },
@@ -61,7 +62,8 @@ class _AppItemState extends ConsumerState<AppItem> {
         if (selectingItemPRovider.isSelectingApp) {
           ///Adds to selected apps or remove app if already added
           if (_isSelected == false) {
-            selectedItems.addSelected(path: widget.app.appPath);
+            selectedItems.addSelected(
+                path: widget.app.appPath, altName: widget.app.appName);
             _isSelected = true;
             setState(() {});
           } else {

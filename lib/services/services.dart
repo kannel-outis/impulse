@@ -7,6 +7,7 @@ export 'shared/server/server.dart';
 export 'shared/server/server_manager.dart';
 export 'shared/transfer/item.dart';
 export 'shared/transfer/shareable_item.dart';
+export 'shared/transfer/receiveable_item.dart';
 export 'utils/constants.dart';
 export 'utils/enums.dart';
 export 'utils/extensions.dart';
