@@ -57,25 +57,25 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
             //     .read(connectionStateProvider.notifier)
             //     .setState(ConnectionState.connected);
           },
-          // child: Icon(
-          //   Icons.inventory_2,
-          //   size: $styles.sizes.prefixIconSize * 4,
-          //   color: $styles.colors.iconColor1,
-          // ),
+          child: Icon(
+            Icons.inventory_2,
+            size: $styles.sizes.prefixIconSize * 4,
+            color: $styles.colors.iconColor1,
+          ),
 
           ///for testing purpose
-          child: receiveables.isNotEmpty
-              ? ListView.builder(
-                  itemCount: receiveables.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(
-                        receiveables[index].fileSize.toString(),
-                      ),
-                    );
-                  },
-                )
-              : null,
+          // child: receiveables.isNotEmpty
+          //     ? ListView.builder(
+          //         itemCount: receiveables.length,
+          //         itemBuilder: (context, index) {
+          //           return ListTile(
+          //             title: Text(
+          //               receiveables[index].fileSize.toString(),
+          //             ),
+          //           );
+          //         },
+          //       )
+          //     : null,
         ),
       );
     }

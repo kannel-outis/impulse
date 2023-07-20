@@ -34,7 +34,14 @@ class ShareableItem extends Item {
 
   DownloadState _state = DownloadState.pending;
 
-  int _received = 0;
+  double sent = 0;
+
+  ///should be called from the server
+  void updateProgress(int received, int totalSize, DownloadState state) {
+    _state = state;
+    sent = received / totalSize;
+    onProgressCallback?.call(received, totalSize, state);
+  }
 
   // @override
   // Future<void> share() async {

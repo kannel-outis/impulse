@@ -6,8 +6,8 @@ import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 
 class ReceiveableItem extends Item {
-  final OnProgressCallBack? progressCallBack;
-  final OnStateChange? stateChange;
+  OnProgressCallBack? progressCallBack;
+  OnStateChange? stateChange;
   final int start;
   final String? altName;
   // final int fileLength;

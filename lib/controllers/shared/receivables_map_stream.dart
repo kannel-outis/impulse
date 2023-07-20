@@ -17,7 +17,7 @@ final receivableListItems =
         (ref) {
   final stream =
       ref.watch(serverControllerProvider).receivablesStreamController.stream;
-  final downloadManager = ref.watch(downloadManagerProvider);
+  final downloadManager = ref.read(downloadManagerProvider);
 
   return ReceiveableItemsProvider(stream, downloadManager);
 });
@@ -33,7 +33,7 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
     itemsStream.listen((event) {
       final item = ReceiveableItem.fromShareableMap(event);
       state = [...state, item];
-      
+
       downloadManager.addToQueue([item]);
       if (downloadManager.isDownloading == false) {
         downloadManager.download();

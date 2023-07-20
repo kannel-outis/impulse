@@ -13,3 +13,4 @@ export 'shared/sender_controller.dart';
 export 'shared/server_controller.dart';
 export 'shared/shared.dart';
 export 'shared/user_state_notifier.dart';
+export 'download_manager.dart';

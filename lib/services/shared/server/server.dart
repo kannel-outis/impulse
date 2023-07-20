@@ -136,10 +136,17 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         await response.addStream(fileStream.map((event) {
           bytesDownloadedByClient += event.length;
 
-          final percentage =
-              (bytesDownloadedByClient / item.file.lengthSync()) * 100;
-          log("${item.fileName}: $percentage");
-          item.onProgressCallback?.call(
+          // final percentage =
+          //     (bytesDownloadedByClient / item.file.lengthSync()) * 100;
+          // log("${item.fileName}: $percentage");
+          // item.onProgressCallback?.call(
+          // bytesDownloadedByClient,
+          // item.file.lengthSync(),
+          // DownloadState.inProgress,
+          // );
+
+          ///may be removed later
+          (item as ShareableItem).updateProgress(
             bytesDownloadedByClient,
             item.file.lengthSync(),
             DownloadState.inProgress,
@@ -147,6 +154,19 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           return event;
         }));
         // await httpRequest.response.addStream(item.file.openRead());
+
+        // item.onProgressCallback?.call(
+        //   bytesDownloadedByClient,
+        //   item.file.lengthSync(),
+        //   DownloadState.completed,
+        // );
+
+        ///may be removed later
+        (item as ShareableItem).updateProgress(
+          bytesDownloadedByClient,
+          item.file.lengthSync(),
+          DownloadState.completed,
+        );
         httpRequest.response.close();
         // print("Done");
       } else {

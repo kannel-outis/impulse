@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:impulse/services/utils/enums.dart';
+import 'package:impulse_utils/impulse_utils.dart';
 import 'package:mime/mime.dart';
 
 typedef OnProgressCallBack = Function(
@@ -24,12 +25,12 @@ abstract class Item extends Equatable {
   final String fileType;
   final int fileSize;
   final String? fileName;
-  final OnProgressCallBack? onProgressCallback;
-  final OnStateChange? onStateChange;
+   OnProgressCallBack? onProgressCallback;
+  OnStateChange? onStateChange;
   final String authorId;
   final (String, int) homeDestination;
 
-  const Item({
+   Item({
     required this.file,
     required this.fileType,
     required this.fileSize,
@@ -61,5 +62,12 @@ abstract class Item extends Equatable {
 
   String get filePath => file.path;
 
+  // ignore: library_private_types_in_public_api
+  _ItemFileSize get itemSize => _ItemFileSize(fileSize);
+
   Map<String, dynamic> toMap();
+}
+
+class _ItemFileSize extends FileSize {
+  const _ItemFileSize(super.size);
 }
