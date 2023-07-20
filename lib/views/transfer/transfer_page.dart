@@ -123,7 +123,7 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
     return AnimatedAlign(
       duration: const Duration(milliseconds: 300),
       alignment: Alignment(
-        .85,
+        0,
         calcBottomAlignmentToOneDP(context),
       ),
       // alignment:
@@ -230,7 +230,7 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                                 children: [
                                   Expanded(child: Container()),
                                   SizedBox(
-                                    width: 200,
+                                    width: 250,
                                     child: TabBar(
                                       controller: _tabController,
                                       indicatorSize: TabBarIndicatorSize.label,
@@ -246,9 +246,21 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                                       labelColor: $styles.colors.fontColor1,
                                       indicatorWeight: 2,
                                       padding: EdgeInsets.zero,
-                                      tabs: const [
-                                        Text("Sent"),
-                                        Text("Received"),
+                                      tabs: [
+                                        Consumer(builder: (contex, ref, child) {
+                                          final shareables =
+                                              ref.watch(shareableItemsProvider);
+                                          return TabWidget(
+                                              label: "Sent", items: shareables);
+                                        }),
+                                        Consumer(
+                                            builder: (context, ref, child) {
+                                          final receaivables =
+                                              ref.watch(receivableListItems);
+                                          return TabWidget(
+                                              label: "Received",
+                                              items: receaivables);
+                                        }),
                                       ],
                                     ),
                                   ),
@@ -259,42 +271,52 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                               child: TabBarView(
                                 controller: _tabController,
                                 children: [
-                                  SingleChildScrollView(
-                                    controller: _scrollController,
-                                    // physics: const AlwaysScrollableScrollPhysics(),
-                                    child: Consumer(
-                                      builder: (context, ref, child) {
-                                        final shareable =
-                                            ref.watch(shareableItemsProvider);
-                                        return Column(
-                                          children: [
-                                            ...List.generate(
-                                              shareable.length,
-                                              (index) => TransferListTile(
-                                                  item: shareable[index]),
-                                            ).reversed,
-                                          ],
-                                        );
-                                      },
-                                    ),
+                                  Consumer(
+                                    builder: (context, ref, child) {
+                                      final shareable =
+                                          ref.watch(shareableItemsProvider);
+                                      return ListView(
+                                        ///size of each tile and margin
+                                        physics: ((100 + $styles.insets.lg) *
+                                                    shareable.length >
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .height -
+                                                    200)
+                                            ? const AlwaysScrollableScrollPhysics()
+                                            : const NeverScrollableScrollPhysics(),
+                                        children: [
+                                          ...List.generate(
+                                            shareable.length,
+                                            (index) => TransferListTile(
+                                                item: shareable[index]),
+                                          ).reversed,
+                                        ],
+                                      );
+                                    },
                                   ),
-                                  SingleChildScrollView(
-                                    // physics: const AlwaysScrollableScrollPhysics(),
-                                    child: Consumer(
-                                      builder: (context, ref, child) {
-                                        final receivables =
-                                            ref.watch(receivableListItems);
-                                        return Column(
-                                          children: [
-                                            ...List.generate(
-                                              receivables.length,
-                                              (index) => TransferListTile(
-                                                  item: receivables[index]),
-                                            ).reversed,
-                                          ],
-                                        );
-                                      },
-                                    ),
+                                  Consumer(
+                                    builder: (context, ref, child) {
+                                      final receivables =
+                                          ref.watch(receivableListItems);
+                                      return ListView(
+                                        physics: ((100 + $styles.insets.lg) *
+                                                    receivables.length >
+                                                MediaQuery.of(context)
+                                                        .size
+                                                        .height -
+                                                    200)
+                                            ? const AlwaysScrollableScrollPhysics()
+                                            : const NeverScrollableScrollPhysics(),
+                                        children: [
+                                          ...List.generate(
+                                            receivables.length,
+                                            (index) => TransferListTile(
+                                                item: receivables[index]),
+                                          ).reversed,
+                                        ],
+                                      );
+                                    },
                                   ),
                                 ],
                               ),
@@ -330,6 +352,50 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
       widget.miniPlayerController.openMiniPlayer();
       setState(() {});
     }
+  }
+}
+
+class TabWidget extends StatelessWidget {
+  const TabWidget({
+    super.key,
+    required this.items,
+    required this.label,
+  });
+
+  final List<Item> items;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Flex(
+      direction: MediaQuery.of(context).size.width < 250
+          ? Axis.vertical
+          : Axis.horizontal,
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Text(
+          label,
+          style: $styles.text.body,
+        ),
+        if (items.isNotEmpty)
+          Container(
+            height: 20,
+            width: 20,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular($styles.corners.xxlg),
+                color: $styles.colors.fontColor1),
+            child: Center(
+              child: Text(
+                "${items.length}",
+                style: $styles.text.bodySmall.copyWith(
+                  height: 1.5,
+                  color: $styles.colors.accentColor1,
+                ),
+              ),
+            ),
+          )
+      ],
+    );
   }
 }
 

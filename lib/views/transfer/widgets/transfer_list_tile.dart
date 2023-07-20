@@ -36,6 +36,18 @@ class _TransferListTileState extends State<TransferListTile> {
     // _timer = Timer(const Duration(seconds: 1), () {
     //   setState(() {});
     // });
+
+    // log((widget.item as ShareableItem).state.toString());
+    // updateStateAndProgress();
+    updateStateAndProgress();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
+  void updateStateAndProgress() {
     _state = () {
       if (widget.item is ShareableItem) {
         return (widget.item as ShareableItem).state;
@@ -51,12 +63,6 @@ class _TransferListTileState extends State<TransferListTile> {
             widget.item.fileSize;
       }
     }();
-    // log((widget.item as ShareableItem).state.toString());
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
     widget.item.onProgressCallback = (
       int received,
       int totalSize,
@@ -74,6 +80,14 @@ class _TransferListTileState extends State<TransferListTile> {
   }
 
   @override
+  void didUpdateWidget(covariant TransferListTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // if (oldWidget.item.id != widget.item.id) {
+    updateStateAndProgress();
+    // }
+  }
+
+  @override
   void dispose() {
     widget.item.onProgressCallback = null;
     super.dispose();
@@ -85,9 +99,9 @@ class _TransferListTileState extends State<TransferListTile> {
       children: [
         Container(
           height: widget.height,
-          width: double.infinity,
+          width: MediaQuery.of(context).size.width,
           margin: EdgeInsets.only(
-            bottom: widget.mini ? 0 : 30,
+            bottom: widget.mini ? 0 : $styles.insets.lg,
           ),
           decoration: const BoxDecoration(
             color: Colors.transparent,
@@ -148,7 +162,11 @@ class _TransferListTileState extends State<TransferListTile> {
         ),
         Container(
           height: widget.height,
-          width: MediaQuery.of(context).size.width * _progress,
+          width: MediaQuery.of(context).size.width > 700
+              ? 700 * _progress
+              : MediaQuery.of(context).size.width * _progress,
+          constraints:
+              widget.mini ? null : const BoxConstraints(maxWidth: 700),
           margin: EdgeInsets.only(
             bottom: widget.mini ? 0 : 30,
           ),

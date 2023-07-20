@@ -107,6 +107,11 @@ class ReceiveableItem extends Item {
   Future<void> _closeOutputStreams([bool complete = false]) async {
     if (complete) {
       _downloadCompleted = complete;
+      onProgressCallback?.call(
+        downloadedBytes,
+        fileSize,
+        state,
+      );
     } else if (_downloadPaused) {
     } else {
       _downloadCanceled = true;
@@ -140,6 +145,7 @@ class ReceiveableItem extends Item {
       final streamSize = fileSize;
 
       if (downloadedBytes >= streamSize) {
+        /////does nothing
       } else {
         await for (final data in stream) {
           downloadedBytes += data.length;
@@ -155,6 +161,14 @@ class ReceiveableItem extends Item {
           );
           _output.add(data);
         }
+
+        ///After successful download update the state once more and call the onProgress
+        ///the completed state can also be gotten from the onStateChange callback
+        // onProgressCallback?.call(
+        //   downloadedBytes,
+        //   fileSize,
+        //   DownloadState.completed,
+        // );
       }
       print(downloadedBytes);
       await _closeOutputStreams(true);
