@@ -6,6 +6,8 @@ class AssetsImage {
   static const String DEFAULT_DISPLAY_IMAGE_2 =
       "assets/images/default_display_image_2.png";
   static const String image_placeholder = "assets/images/image_placeholder.png";
+  static const String android_icon_placeholder =
+      "assets/images/android_icon_placeholder.webp";
 
   ///SVGs
   static const String setting_filled = "assets/svgs/settings_filled.svg";

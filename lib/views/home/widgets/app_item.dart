@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
-import 'package:impulse/controllers/home/selected_item_provider.dart';
+import 'package:impulse/controllers/shared/selected_item_provider.dart';
 import 'package:impulse/controllers/shared/selecting_item_provider.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
@@ -25,12 +25,26 @@ class _AppItemState extends ConsumerState<AppItem> {
     return (screenWidth - ($styles.insets.md * 2)) / 4;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+
+    // });
+  }
+
   bool _isSelected = false;
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(selectedItemsProvider, (previous, next) {
+      if (next.isEmpty) {
+        ref.read(selectingItemStateProvider).isSelectingApp = false;
+        _isSelected = false;
+      }
+    });
     final selectingItemPRovider = ref.watch(selectingItemStateProvider);
-    final selectedItems = ref.read(selectedItemsProvider.notifier);
+    final selectedItems = ref.watch(selectedItemsProvider.notifier);
     return GestureDetector(
       onLongPress: () {
         ///if Already in selecting mode, cancel
@@ -39,7 +53,8 @@ class _AppItemState extends ConsumerState<AppItem> {
         /// enter selecting mode
         /// and add the first item
         selectingItemPRovider.isSelectingApp = true;
-        selectedItems.addSelected(path: widget.app.appPath);
+        selectedItems.addSelected(
+            path: widget.app.appPath, altName: widget.app.appName);
         _isSelected = true;
         setState(() {});
       },
@@ -47,7 +62,8 @@ class _AppItemState extends ConsumerState<AppItem> {
         if (selectingItemPRovider.isSelectingApp) {
           ///Adds to selected apps or remove app if already added
           if (_isSelected == false) {
-            selectedItems.addSelected(path: widget.app.appPath);
+            selectedItems.addSelected(
+                path: widget.app.appPath, altName: widget.app.appName);
             _isSelected = true;
             setState(() {});
           } else {
@@ -55,16 +71,19 @@ class _AppItemState extends ConsumerState<AppItem> {
             _isSelected = false;
             setState(() {});
           }
-
-          if (selectedItems.selectedIsEmpty) {
-            selectingItemPRovider.isSelectingApp = false;
-          }
+        }
+        if (ref.read(selectedItemsProvider).isEmpty) {
+          selectingItemPRovider.isSelectingApp = false;
         }
       },
       child: Container(
         width: _appBox(),
         height: _appBox(),
-        color: _isSelected ? Colors.white : null,
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: _isSelected ? Colors.white : Colors.transparent,
+          ),
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,

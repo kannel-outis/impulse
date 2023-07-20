@@ -2,8 +2,9 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/impulse_exception.dart';
-import 'package:impulse/controllers/shared/server_controller.dart';
 import 'package:impulse/services/services.dart';
+
+import 'server_controller.dart';
 
 final senderProvider = ChangeNotifierProvider<SenderProvider>(
   (ref) {
@@ -53,6 +54,18 @@ class SenderProvider extends ChangeNotifier {
       _myServer.ipAddress = _address = addressAndPort.$1;
       _myServer.port = _port = addressAndPort.$2;
       notifyListeners();
+      return null;
+    }
+  }
+
+  Future<AppException?> shareDownloadableFiles(
+      List<Map<String, dynamic>> files, (String, int) destination) async {
+    if (files.isEmpty) return const AppException("Nothing has been selected");
+    final result = await host.shareDownloadableFiles(files, destination);
+    if (result is Left) {
+      final exception = (result as Left).value as AppException;
+      return exception;
+    } else {
       return null;
     }
   }

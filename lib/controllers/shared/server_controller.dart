@@ -10,29 +10,33 @@ import 'package:impulse/app/assets/assets_images.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/server_info.dart';
 import 'package:impulse/models/user.dart';
-import 'package:impulse/services/server_manager.dart';
+import 'package:impulse/services/services.dart';
 import 'package:uuid/uuid.dart';
 
 final serverControllerProvider =
     ChangeNotifierProvider<ServerController>((ref) {
   final alert = ref.watch(alertStateNotifier.notifier);
   final connectedUser = ref.watch(connectUserStateProvider.notifier);
-  return ServerController(alertState: alert, connectedUserState: connectedUser);
+  return ServerController(
+    alertState: alert,
+    connectedUserState: connectedUser,
+  );
 });
 
 class ServerController extends ServerManager with ChangeNotifier {
   final AlertState alertState;
   final ConnectedUserState connectedUserState;
 
-  ServerController(
-      {required this.alertState, required this.connectedUserState});
+  ServerController({
+    required this.alertState,
+    required this.connectedUserState,
+  });
 
   Completer<bool> alertResponder = Completer<bool>();
+  StreamController<Map<String, dynamic>> _receivableStreamController =
+      StreamController<Map<String, dynamic>>();
   Timer? _timer;
-
-  // bool _showAcceptDeclineAlert = false;
-
-  // bool get showAcceptDeclineAlert => _showAcceptDeclineAlert;
+  List<Item> _items = [];
 
   /////
   /// The Senders/Hosts ip address and port that needs to be set after server creation
@@ -52,9 +56,16 @@ class ServerController extends ServerManager with ChangeNotifier {
     _port = port;
   }
 
+  ///This is called everytime we select an file or item
+  ///cleed from [SelectedItems] provider
   @override
-  List<String> getFiles() {
-    return <String>[];
+  void setSelectedItems(List<Item> items) {
+    _items = items;
+  }
+
+  @override
+  List<Item> getSelectedItems() {
+    return _items;
   }
 
   @override
@@ -85,6 +96,7 @@ class ServerController extends ServerManager with ChangeNotifier {
   @override
   Future<bool> handleClientServerNotification(
       Map<String, dynamic> serverMap) async {
+    // ignore: todo
     //TODO: remove alertstate entirely and use connectedUserState.setUserState(serverInfo, fling: true)
     // to show alert instead
     alertState.updateState(true);
@@ -107,11 +119,18 @@ class ServerController extends ServerManager with ChangeNotifier {
     return result;
   }
 
-  void handleAlertResponse(bool response) {
+  void handleAlertResponse(bool response) async {
     alertResponder.complete(response);
-
     alertState.updateState(false);
     _timer?.cancel();
-    alertResponder = Completer();
+    alertResponder = Completer<bool>();
   }
+
+  void reset() {
+    _receivableStreamController = StreamController<Map<String, dynamic>>();
+  }
+
+  @override
+  StreamController<Map<String, dynamic>> get receivablesStreamController =>
+      _receivableStreamController;
 }

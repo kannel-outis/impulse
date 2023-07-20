@@ -1,8 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
-import 'package:impulse/controllers/file_manager/file_manager_controller.dart';
 import 'package:impulse/views/shared/padded_body.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
@@ -40,6 +41,7 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final receiveables = ref.watch(receivableListItems);
 
     if (files.isEmpty) {
       return Center(
@@ -60,6 +62,20 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
             size: $styles.sizes.prefixIconSize * 4,
             color: $styles.colors.iconColor1,
           ),
+
+          ///for testing purpose
+          // child: receiveables.isNotEmpty
+          //     ? ListView.builder(
+          //         itemCount: receiveables.length,
+          //         itemBuilder: (context, index) {
+          //           return ListTile(
+          //             title: Text(
+          //               receiveables[index].fileSize.toString(),
+          //             ),
+          //           );
+          //         },
+          //       )
+          //     : null,
         ),
       );
     }
