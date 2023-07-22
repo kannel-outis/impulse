@@ -1,14 +1,14 @@
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
-import 'package:impulse/services/utils/enums.dart';
+import 'package:impulse/app/app.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 import 'package:mime/mime.dart';
 
 typedef OnProgressCallBack = Function(
   int received,
   int totalSize,
-  DownloadState state,
+  IState state,
 );
 
 typedef OnStateChange = Function(
@@ -16,21 +16,22 @@ typedef OnStateChange = Function(
   int totalSize,
   File? file,
   String? reason,
-  DownloadState state,
+  IState state,
 );
 
+// ignore: must_be_immutable
 abstract class Item extends Equatable {
   final String id;
   final File file;
   final String fileType;
   final int fileSize;
   final String? fileName;
-   OnProgressCallBack? onProgressCallback;
+  OnProgressCallBack? onProgressCallback;
   OnStateChange? onStateChange;
   final String authorId;
   final (String, int) homeDestination;
 
-   Item({
+  Item({
     required this.file,
     required this.fileType,
     required this.fileSize,
@@ -54,13 +55,17 @@ abstract class Item extends Equatable {
     throw UnimplementedError();
   }
 
-  // DownloadState get state;
+  // IState get state;
 
   String? get mime => lookupMimeType(file.path);
 
   String get name => fileName ?? file.path.split("/").last;
 
   String get filePath => file.path;
+
+  IState get state => IState.pending;
+
+  int get proccessedBytes => 0;
 
   // ignore: library_private_types_in_public_api
   _ItemFileSize get itemSize => _ItemFileSize(fileSize);

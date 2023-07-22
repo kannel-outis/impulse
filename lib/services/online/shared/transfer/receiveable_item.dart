@@ -167,7 +167,7 @@ class ReceiveableItem extends Item {
         // onProgressCallback?.call(
         //   downloadedBytes,
         //   fileSize,
-        //   DownloadState.completed,
+        //   IState.completed,
         // );
       }
       print(downloadedBytes);
@@ -197,14 +197,18 @@ class ReceiveableItem extends Item {
     });
   }
 
-  DownloadState get state {
-    if (_downloadCanceled) return DownloadState.canceled;
-    if (_downloadCompleted) return DownloadState.completed;
-    if (_downloadFailed) return DownloadState.failed;
-    if (_downloading) return DownloadState.inProgress;
-    if (_downloadPaused) return DownloadState.paused;
-    return DownloadState.pending;
+  @override
+  IState get state {
+    if (_downloadCanceled) return IState.canceled;
+    if (_downloadCompleted) return IState.completed;
+    if (_downloadFailed) return IState.failed;
+    if (_downloading) return IState.inProgress;
+    if (_downloadPaused) return IState.paused;
+    return IState.pending;
   }
+
+  @override
+  int get proccessedBytes => downloadedBytes;
 
   @override
   Map<String, dynamic> toMap() {

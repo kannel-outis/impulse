@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import '../../services.dart';
+import 'package:impulse/app/app.dart';
+
+import '../../../services.dart';
 
 class MyGateWay extends GateWay<ServerSocket, Socket> {
   MyGateWay();
@@ -142,14 +144,14 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           // item.onProgressCallback?.call(
           // bytesDownloadedByClient,
           // item.file.lengthSync(),
-          // DownloadState.inProgress,
+          // IState.inProgress,
           // );
 
           ///may be removed later
           (item as ShareableItem).updateProgress(
             bytesDownloadedByClient,
             item.file.lengthSync(),
-            DownloadState.inProgress,
+            IState.inProgress,
           );
           return event;
         }));
@@ -158,14 +160,14 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         // item.onProgressCallback?.call(
         //   bytesDownloadedByClient,
         //   item.file.lengthSync(),
-        //   DownloadState.completed,
+        //   IState.completed,
         // );
 
         ///may be removed later
         (item as ShareableItem).updateProgress(
           bytesDownloadedByClient,
           item.file.lengthSync(),
-          DownloadState.completed,
+          IState.completed,
         );
         httpRequest.response.close();
         // print("Done");

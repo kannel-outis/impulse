@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 
 // ignore: must_be_immutable
@@ -32,16 +33,19 @@ class ShareableItem extends Item {
           fileName: altName ?? file.path.split("/").last,
         );
 
-  DownloadState _state = DownloadState.pending;
+  IState _state = IState.pending;
 
-  double sent = 0;
+  int sentBytes = 0;
 
   ///should be called from the server
-  void updateProgress(int received, int totalSize, DownloadState state) {
+  void updateProgress(int received, int totalSize, IState state) {
     _state = state;
-    sent = received / totalSize;
+    sentBytes = received;
     onProgressCallback?.call(received, totalSize, state);
   }
+
+  @override
+  int get proccessedBytes => sentBytes;
 
   // @override
   // Future<void> share() async {
@@ -66,8 +70,7 @@ class ShareableItem extends Item {
   //   }
   // }
 
-  @override
-  DownloadState get state => _state;
+  IState get state => _state;
 
   @override
   Map<String, dynamic> toMap() {
@@ -106,7 +109,7 @@ class ShareableItem extends Item {
 //     return _ResponseState._(state);
 //   }
 
-//   DownloadState get state => DownloadState.values
+//   IState get state => IState.values
 //       .where((element) => element.label == stateString)
 //       .first;
 // }

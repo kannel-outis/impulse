@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:impulse/app/impulse_exception.dart';
 
-import '../services.dart';
+import '../../services.dart';
 
 class ClientImpl implements ClientHost {
   final GateWay? gateWay;

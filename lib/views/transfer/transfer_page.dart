@@ -50,13 +50,13 @@ class MiniPlayer extends StatefulWidget {
 
 class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
   late final AnimationController _controller;
-  late final ScrollController _scrollController;
+  // late final ScrollController _scrollController;
   late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
+    // _scrollController = ScrollController();
     _tabController = TabController(length: 2, vsync: this);
     widget.miniPlayerController._playerState = this;
     widget.miniPlayerController._setInitialized();
@@ -192,8 +192,7 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                                 }
                                 final inProgressItemsWidget = shareable
                                     .where((element) =>
-                                        element.state ==
-                                        DownloadState.inProgress)
+                                        element.state == IState.inProgress)
                                     .toList()
                                     .map(
                                       (e) => TransferListTile(

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
@@ -27,7 +26,7 @@ class _TransferListTileState extends State<TransferListTile> {
   }
 
   double _progress = 0;
-  DownloadState _state = DownloadState.pending;
+  IState _state = IState.pending;
   late final Timer _timer;
 
   @override
@@ -49,32 +48,31 @@ class _TransferListTileState extends State<TransferListTile> {
 
   void updateStateAndProgress() {
     _state = () {
-      if (widget.item is ShareableItem) {
-        return (widget.item as ShareableItem).state;
-      } else {
-        return (widget.item as ReceiveableItem).state;
-      }
+      // if (widget.item is ShareableItem) {
+      //   return (widget.item as ShareableItem).state;
+      // } else {
+      //   return (widget.item as ReceiveableItem).state;
+      // }
+      return widget.item.state;
     }();
     _progress = () {
-      if (widget.item is ShareableItem) {
-        return (widget.item as ShareableItem).sent;
-      } else {
-        return (widget.item as ReceiveableItem).downloadedBytes /
-            widget.item.fileSize;
-      }
+      // if (widget.item is ShareableItem) {
+      //   return (widget.item as ShareableItem).sent;
+      // } else {
+      //   return (widget.item as ReceiveableItem).downloadedBytes /
+      //       widget.item.fileSize;
+      // }
+      return widget.item.proccessedBytes / widget.item.fileSize;
     }();
     widget.item.onProgressCallback = (
       int received,
       int totalSize,
-      DownloadState state,
+      IState state,
     ) {
       _progress = received / totalSize;
       _state = state;
       if (mounted) {
         setState(() {});
-      }
-      if (widget.item is ReceiveableItem) {
-        print(_progress);
       }
     };
   }
@@ -165,8 +163,7 @@ class _TransferListTileState extends State<TransferListTile> {
           width: MediaQuery.of(context).size.width > 700
               ? 700 * _progress
               : MediaQuery.of(context).size.width * _progress,
-          constraints:
-              widget.mini ? null : const BoxConstraints(maxWidth: 700),
+          constraints: widget.mini ? null : const BoxConstraints(maxWidth: 700),
           margin: EdgeInsets.only(
             bottom: widget.mini ? 0 : 30,
           ),

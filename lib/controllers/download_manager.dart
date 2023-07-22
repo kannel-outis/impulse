@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 
 final downloadManagerProvider = Provider<DownloadManager>((ref) {
@@ -55,9 +56,9 @@ class DownloadManager {
     // download(index: numberOfDownloadedItems + 1);
     log("${item.id} from download");
     await item.receive().then((value) async {
-      if (item.state == DownloadState.completed) {
+      if (item.state == IState.completed) {
         _listOfWaitingReceivables
-            .removeWhere((element) => element.state == DownloadState.completed);
+            .removeWhere((element) => element.state == IState.completed);
       }
       print(_listOfWaitingReceivables.length);
       // currentItemAtIndex += 1;
