@@ -4,6 +4,7 @@ import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/services/services.dart';
 import 'package:impulse/views/files/file_manager.dart';
 import 'package:impulse/views/home/widgets/app_item.dart';
 import 'package:impulse/views/settings/settings_screen.dart';
@@ -124,6 +125,14 @@ class _HomePageState extends ConsumerState<HomePage>
                         GestureDetector(
                           onTap: () async {
                             ///TODO: To be removed,
+                            ///
+                            ///
+                            final d =
+                                HiveManagerImpl().getAllReceiveableItems();
+                            for (var e in d) {
+                              print("${e.iState}: ${e.proccessedBytes}");
+                            }
+                            return;
                             final hostController = ref.read(senderProvider);
 
                             final files = ref.read(selectedItemsProvider);

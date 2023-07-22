@@ -65,7 +65,7 @@ abstract class Item extends Equatable {
 
   IState get state => IState.pending;
 
-  int get proccessedBytes => 0;
+  int get proccessedBytes;
 
   // ignore: library_private_types_in_public_api
   _ItemFileSize get itemSize => _ItemFileSize(fileSize);

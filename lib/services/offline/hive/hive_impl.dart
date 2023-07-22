@@ -1,26 +1,22 @@
 import 'package:hive/hive.dart';
 import 'package:impulse/services/services.dart';
 
-import 'adapters/hive_item.dart';
-import 'hive_init.dart';
-import 'hive_manager.dart';
-
 class HiveManagerImpl extends HiveManager {
   @override
-  List<Item> getAllReceiveableItems() {
+  List<HiveItem> getAllReceiveableItems() {
     final box = Hive.box<HiveItem>(HiveInit.receiveableItemsBox);
     return box.values.toList();
   }
 
   @override
-  List<Item> getAllShareableItems() {
+  List<HiveItem> getAllShareableItems() {
     final box = Hive.box<HiveItem>(HiveInit.shareableItemsBox);
     return box.values.toList();
   }
 
   @override
   Future<void> saveItem(Item item) async {
-    late final Box box;
+    late final Box<HiveItem> box;
     if (item is ReceiveableItem) {
       box = Hive.box<HiveItem>(HiveInit.receiveableItemsBox);
     } else if (item is ShareableItem) {
@@ -41,5 +37,25 @@ class HiveManagerImpl extends HiveManager {
     );
 
     await box.put(newItem.id, newItem);
+  }
+
+  @override
+  HiveItem? getReceiveableItemWithKey(String key) {
+    final box = Hive.box<HiveItem>(HiveInit.receiveableItemsBox);
+    if (!box.containsKey(key)) {
+      return null;
+    } else {
+      return box.get(key);
+    }
+  }
+
+  @override
+  HiveItem? getShareableItemWithKey(String key) {
+    final box = Hive.box<HiveItem>(HiveInit.shareableItemsBox);
+    if (!box.containsKey(key)) {
+      return null;
+    } else {
+      return box.get(key);
+    }
   }
 }

@@ -54,6 +54,9 @@ class HiveItem extends Item with HiveObjectMixin {
   Map<String, dynamic> toMap() {
     return {};
   }
+
+  @override
+  int get proccessedBytes => processedBytes;
 }
 
 class HiveItemAdapter extends TypeAdapter<HiveItem> {

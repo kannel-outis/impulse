@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:impulse/services/offline/hive/hive_init.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Configurations {
@@ -14,11 +15,22 @@ class Configurations {
 
   late final Directory impulseDir;
 
-  Future<void> loadPaths() async {
+  Future<void> _loadPaths() async {
     ///TODO: Ask for permission
     final applicationDocumentDir = await getApplicationDocumentsDirectory();
     impulseDir = await Directory(
             "${applicationDocumentDir.path}${Platform.pathSeparator}impulse files${Platform.pathSeparator}")
         .create();
+  }
+
+  Future<void> _loadHiveInit() async {
+    await HiveInit.init();
+  }
+
+  Future<void> loadAllInit() async {
+    await Future.value([
+      _loadHiveInit(),
+      _loadPaths(),
+    ]);
   }
 }

@@ -83,11 +83,13 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       final hostInfo = await serverManager.myServerInfo();
       // hostInfo.port = _httpServer.port;
       // hostInfo.ipAddress = _httpServer.address.address;
-      httpRequest.response.write(json.encode(
-        {
-          "hostServerInfo": hostInfo.toMap(),
-        },
-      ));
+      httpRequest.response.write(
+        json.encode(
+          {
+            "hostServerInfo": hostInfo.toMap(),
+          },
+        ),
+      );
       httpRequest.response.close();
     } else if (url.contains("http://${address.address}:$port/download")) {
       print("object......................................");
@@ -130,6 +132,14 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
               .set("Content-Disposition", "attachment; filename=${item.name}")
           ..headers.set("Content-Length", "${item.file.lengthSync()}");
         print(item.file.lengthSync());
+
+        final hiveItem = await serverManager.getHiveItemForShareable(item);
+        item.onProgressCallback = (received, totalSize, state) async {
+          hiveItem.iState = state;
+          hiveItem.processedBytes = received;
+          await hiveItem.save();
+          // print("${state} ::::::::::::::::::");
+        };
 
         ///This should be start
         int bytesDownloadedByClient = 0;
