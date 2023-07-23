@@ -5,8 +5,8 @@ import 'package:impulse/services/services.dart';
 
 // ignore: must_be_immutable
 class ShareableItem extends Item {
-  final OnProgressCallBack? progressCallBack;
-  final OnStateChange? stateChange;
+  // final OnProgressCallBack? progressCallBack;
+  // final OnStateChange? stateChange;
   final Host? host;
   final String? altName;
 
@@ -16,8 +16,8 @@ class ShareableItem extends Item {
     this.host,
     required int fileSize,
     required String id,
-    this.progressCallBack,
-    this.stateChange,
+    // this.progressCallBack,
+    // this.stateChange,
     this.altName,
     required (String, int) homeDestination,
     required String authorId,
@@ -26,8 +26,8 @@ class ShareableItem extends Item {
           file: file,
           fileSize: fileSize,
           fileType: fileType,
-          onProgressCallback: progressCallBack,
-          onStateChange: stateChange,
+          // onProgressCallback: progressCallBack,
+          // onStateChange: stateChange,
           authorId: authorId,
           homeDestination: homeDestination,
           fileName: altName ?? file.path.split("/").last,
@@ -41,7 +41,8 @@ class ShareableItem extends Item {
   void updateProgress(int received, int totalSize, IState state) {
     _state = state;
     sentBytes = received;
-    onProgressCallback?.call(received, totalSize, state);
+    // onProgressCallback?.call(received, totalSize, state);
+    notifyListeners(received, totalSize, file, "", state);
   }
 
   @override

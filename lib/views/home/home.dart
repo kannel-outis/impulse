@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart' hide ConnectionState;
@@ -127,12 +128,13 @@ class _HomePageState extends ConsumerState<HomePage>
                             ///TODO: To be removed,
                             ///
                             ///
-                            final d =
-                                HiveManagerImpl().getAllReceiveableItems();
-                            for (var e in d) {
-                              print("${e.iState}: ${e.proccessedBytes}");
-                            }
-                            return;
+                            // log("object");
+                            // return;
+                            // final d = HiveManagerImpl().getAllShareableItems();
+                            // for (var e in d) {
+                            //   log("${e.fileName}: ${e.proccessedBytes}");
+                            // }
+                            // return;
                             final hostController = ref.read(senderProvider);
 
                             final files = ref.read(selectedItemsProvider);

@@ -6,8 +6,8 @@ import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 
 class ReceiveableItem extends Item {
-  OnProgressCallBack? progressCallBack;
-  OnStateChange? stateChange;
+  // OnProgressCallBack? progressCallBack;
+  // OnStateChange? stateChange;
   final int start;
   final String? altName;
   // final int fileLength;
@@ -18,8 +18,8 @@ class ReceiveableItem extends Item {
     required int fileSize,
     required String id,
     this.start = 0,
-    this.progressCallBack,
-    this.stateChange,
+    // this.progressCallBack,
+    // this.stateChange,
     required (String, int) homeDestination,
     required String authorId,
     this.altName,
@@ -29,9 +29,9 @@ class ReceiveableItem extends Item {
           fileSize: fileSize,
           authorId: authorId,
           fileType: fileType,
-          onStateChange: stateChange,
+          // onStateChange: stateChange,
           homeDestination: homeDestination,
-          onProgressCallback: progressCallBack,
+          // onProgressCallback: progressCallBack,
           fileName: file.path.split("/").last,
         );
 
@@ -74,8 +74,8 @@ class ReceiveableItem extends Item {
       id: id,
       homeDestination: homeDestination,
       authorId: authorId,
-      progressCallBack: progressCallBack,
-      stateChange: stateChange,
+      // progressCallBack: progressCallBack,
+      // stateChange: stateChange,
       start: start ?? this.start,
     );
   }
@@ -107,11 +107,12 @@ class ReceiveableItem extends Item {
   Future<void> _closeOutputStreams([bool complete = false]) async {
     if (complete) {
       _downloadCompleted = complete;
-      onProgressCallback?.call(
-        downloadedBytes,
-        fileSize,
-        state,
-      );
+      // onProgressCallback?.call(
+      //   downloadedBytes,
+      //   fileSize,
+      //   state,
+      // );
+      notifyListeners(downloadedBytes, fileSize, file, "", state);
     } else if (_downloadPaused) {
     } else {
       _downloadCanceled = true;
@@ -123,8 +124,10 @@ class ReceiveableItem extends Item {
       final totalBytes = downloadedBytes;
       // final contentSize = _contentSize(totalBytes);
 
-      onStateChange?.call(totalBytes, fileSize, file, "", state);
+      // onStateChange?.call(totalBytes, fileSize, file, "", state);
+      notifyListeners(totalBytes, fileSize, file, "", state);
     });
+    startTime = null;
   }
 
   double get _progress => (downloadedBytes / fileSize) * 100;
@@ -133,6 +136,7 @@ class ReceiveableItem extends Item {
   Future<void> receive() async {
     // log(id.toString());
     // return;
+    startTime = DateTime.now();
     _readyFileForDownload();
     _downloadPaused = false;
     try {
@@ -154,11 +158,12 @@ class ReceiveableItem extends Item {
           if (_downloadCanceled || _downloadPaused) {
             return;
           }
-          onProgressCallback?.call(
-            downloadedBytes,
-            fileSize,
-            state,
-          );
+          // onProgressCallback?.call(
+          //   downloadedBytes,
+          //   fileSize,
+          //   state,
+          // );
+          notifyListeners(downloadedBytes, fileSize, file, "", state);
           _output.add(data);
         }
 
@@ -176,7 +181,8 @@ class ReceiveableItem extends Item {
     } catch (e) {
       _downloading = false;
       _downloadFailed = true;
-      onStateChange?.call(downloadedBytes, fileSize, file, e.toString(), state);
+      // onStateChange?.call(downloadedBytes, fileSize, file, e.toString(), state);
+      notifyListeners(downloadedBytes, fileSize, file, e.toString(), state);
       return;
     }
   }

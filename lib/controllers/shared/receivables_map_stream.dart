@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/services/services.dart';
 
@@ -46,12 +47,23 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
 
       ///define the onprogress call back so that we can collect the state and proccessed byte
       ///and save to thet hive instance.
-      item.onProgressCallback = (received, totalSize, state) async {
+      // item.onProgressCallback = (received, totalSize, state) async {
+      //   hiveItem?.iState = state;
+      //   hiveItem?.processedBytes = received;
+
+      //   await hiveItem?.save();
+      // };
+
+      void listener(int received, int totalSize, file, String? reason, state) {
         hiveItem?.iState = state;
         hiveItem?.processedBytes = received;
+        hiveItem?.save();
+        if (state == IState.completed) {
+          item.removeListener(listener);
+        }
+      }
 
-        await hiveItem?.save();
-      };
+      item.addListener(listener);
       state = [...state, item];
 
       downloadManager.addToQueue([item]);

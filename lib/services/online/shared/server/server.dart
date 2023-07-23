@@ -126,6 +126,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       ///Check if the file with that id exists on the device,
       ///if it does proceed to open the file and make it downloadable
       if (await item.file.exists()) {
+        item.startTime = DateTime.now();
         httpRequest.response
           ..headers.set("Content-Type", item.mime ?? "application/octat-stream")
           ..headers
@@ -134,12 +135,16 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         print(item.file.lengthSync());
 
         final hiveItem = await serverManager.getHiveItemForShareable(item);
-        item.onProgressCallback = (received, totalSize, state) async {
+        void listener(int received, int totalSize, File? file, String? reason,
+            IState state) {
           hiveItem.iState = state;
           hiveItem.processedBytes = received;
-          await hiveItem.save();
+          hiveItem.save();
           // print("${state} ::::::::::::::::::");
-        };
+        }
+
+        ///add listener that works the hive operation
+        item.addListener(listener);
 
         ///This should be start
         int bytesDownloadedByClient = 0;
@@ -157,7 +162,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           // IState.inProgress,
           // );
 
-          ///may be removed later
           (item as ShareableItem).updateProgress(
             bytesDownloadedByClient,
             item.file.lengthSync(),
@@ -173,13 +177,16 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         //   IState.completed,
         // );
 
-        ///may be removed later
         (item as ShareableItem).updateProgress(
           bytesDownloadedByClient,
           item.file.lengthSync(),
           IState.completed,
         );
         httpRequest.response.close();
+
+        ///remove listener
+        item.removeListener(listener);
+        item.startTime = null;
         // print("Done");
       } else {
         httpRequest.response.write(

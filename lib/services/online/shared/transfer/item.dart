@@ -5,29 +5,17 @@ import 'package:impulse/app/app.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 import 'package:mime/mime.dart';
 
-typedef OnProgressCallBack = Function(
-  int received,
-  int totalSize,
-  IState state,
-);
-
-typedef OnStateChange = Function(
-  int received,
-  int totalSize,
-  File? file,
-  String? reason,
-  IState state,
-);
+import 'state_listenable.dart';
 
 // ignore: must_be_immutable
-abstract class Item extends Equatable {
+abstract class Item extends StateListenable with EquatableMixin {
   final String id;
   final File file;
   final String fileType;
   final int fileSize;
   final String? fileName;
-  OnProgressCallBack? onProgressCallback;
-  OnStateChange? onStateChange;
+  // OnProgressCallBack? onProgressCallback;
+  // OnStateChange? onStateChange;
   final String authorId;
   final (String, int) homeDestination;
 
@@ -38,10 +26,11 @@ abstract class Item extends Equatable {
     required this.id,
     required this.authorId,
     required this.homeDestination,
-    this.onProgressCallback,
-    this.onStateChange,
+    // this.onProgressCallback,
+    // this.onStateChange,
     this.fileName,
   });
+  DateTime? startTime;
 
   Future<void> receive() async {
     throw UnimplementedError();

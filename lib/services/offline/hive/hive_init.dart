@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:hive/hive.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/offline/hive/adapters/hive_item.dart';
@@ -9,8 +12,15 @@ class HiveInit {
   static const String receiveableItemsBox = "receiveables";
   static const String shareableItemsBox = "shareables";
   static Future<void> init() async {
-    final documentDir = await getApplicationDocumentsDirectory();
-    Hive.init(documentDir.path);
+    final documentDir = await () async {
+      ///for debug resons
+      ///
+      if (Platform.isWindows && kDebugMode) {
+        return await getDownloadsDirectory();
+      }
+      return await getApplicationDocumentsDirectory();
+    }();
+    Hive.init(documentDir!.path);
 
     Hive.registerAdapter<HiveItem>(HiveItemAdapter());
     Hive.registerAdapter<IState>(IStateAdapter());
