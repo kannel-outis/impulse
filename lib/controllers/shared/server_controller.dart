@@ -20,16 +20,19 @@ final serverControllerProvider =
   return ServerController(
     alertState: alert,
     connectedUserState: connectedUser,
+    hiveManager: HiveManagerImpl(),
   );
 });
 
 class ServerController extends ServerManager with ChangeNotifier {
   final AlertState alertState;
   final ConnectedUserState connectedUserState;
+  final HiveManager hiveManager;
 
   ServerController({
     required this.alertState,
     required this.connectedUserState,
+    required this.hiveManager,
   });
 
   Completer<bool> alertResponder = Completer<bool>();
@@ -133,4 +136,15 @@ class ServerController extends ServerManager with ChangeNotifier {
   @override
   StreamController<Map<String, dynamic>> get receivablesStreamController =>
       _receivableStreamController;
+
+  @override
+  Future<HiveItem> getHiveItemForShareable(Item item) async {
+    final hiveItem = hiveManager.getShareableItemWithKey(item.id);
+    if (hiveItem != null) {
+      return hiveItem;
+    } else {
+      await hiveManager.saveItem(item);
+      return hiveManager.getShareableItemWithKey(item.id)!;
+    }
+  }
 }

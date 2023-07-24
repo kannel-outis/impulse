@@ -184,7 +184,7 @@ class _CustomClientBottomModalSheetState
 
   @override
   Widget build(BuildContext context) {
-    final receiverController = ref.watch(receiverProvider);
+    // final receiverController = ref.watch(receiverProvider);
 
     return Container(
       height: $styles.constraints.modalConstraints.maxHeight,
@@ -232,58 +232,72 @@ class _CustomClientBottomModalSheetState
               ),
             ),
           ),
-          for (var i = 0;
-              i < receiverController.availableHostServers.length;
-              i++)
-            Align(
-              // top: randomOffsets[i].dy,
-              // left: randomOffsets[i].dx,
-              alignment: _convertOffsetToAlignment(
-                  randomOffsets.last, $styles.sizes.modalBoxSize, context),
-              child: GestureDetector(
-                onTap: () async {
-                  final provider = ref.read(receiverProvider);
-                  provider
-                      .selectHost(receiverController.availableHostServers[i]);
-                  final result = await provider.createServerAndNotifyHost();
-                  if (result == null) {
-                    ref.read(userProvider.notifier).setUserState(User.client);
-                    ref.read(homeProvider).shouldShowTopStack = true;
-                  }
-                },
-                child: SizedBox(
-                  height: _modalInnerPadding + 30.scale,
-                  width: _modalInnerPadding + 20.scale,
-                  // color: Colors.yellow,
-                  child: Column(
-                    children: [
-                      Container(
-                        height: _modalInnerPadding,
-                        width: _modalInnerPadding,
-                        decoration: BoxDecoration(
-                          color: colors[i],
-                          borderRadius:
-                              BorderRadius.circular($styles.corners.lg),
-                          image: DecorationImage(
-                            image: MemoryImage(
-                              receiverController
-                                  .availableHostServers[i].user.displayImage,
-                            ),
-                            fit: BoxFit.cover,
+          Consumer(
+            builder: (context, ref, child) {
+              final receiverController = ref.watch(receiverProvider);
+
+              return Stack(
+                children: [
+                  for (var i = 0;
+                      i < receiverController.availableHostServers.length;
+                      i++)
+                    Align(
+                      // top: randomOffsets[i].dy,
+                      // left: randomOffsets[i].dx,
+                      alignment: _convertOffsetToAlignment(randomOffsets.last,
+                          $styles.sizes.modalBoxSize, context),
+                      child: GestureDetector(
+                        onTap: () async {
+                          final provider = ref.read(receiverProvider);
+                          provider.selectHost(
+                              receiverController.availableHostServers[i]);
+                          final result =
+                              await provider.createServerAndNotifyHost();
+                          if (result == null) {
+                            ref
+                                .read(userProvider.notifier)
+                                .setUserState(User.client);
+                            ref.read(homeProvider).shouldShowTopStack = true;
+                          }
+                        },
+                        child: SizedBox(
+                          height: _modalInnerPadding + 30.scale,
+                          width: _modalInnerPadding + 20.scale,
+                          // color: Colors.yellow,
+                          child: Column(
+                            children: [
+                              Container(
+                                height: _modalInnerPadding,
+                                width: _modalInnerPadding,
+                                decoration: BoxDecoration(
+                                  color: colors[i],
+                                  borderRadius:
+                                      BorderRadius.circular($styles.corners.lg),
+                                  image: DecorationImage(
+                                    image: MemoryImage(
+                                      receiverController.availableHostServers[i]
+                                          .user.displayImage,
+                                    ),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              FittedBox(
+                                child: Text(
+                                  receiverController
+                                      .availableHostServers[i].user.name,
+                                  style: $styles.text.body,
+                                ),
+                              )
+                            ],
                           ),
                         ),
                       ),
-                      FittedBox(
-                        child: Text(
-                          receiverController.availableHostServers[i].user.name,
-                          style: $styles.text.body,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            )
+                    )
+                ],
+              );
+            },
+          ),
         ],
       ),
     );

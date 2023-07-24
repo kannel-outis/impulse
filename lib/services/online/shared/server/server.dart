@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import '../../services.dart';
+import 'package:impulse/app/app.dart';
+
+import '../../../services.dart';
 
 class MyGateWay extends GateWay<ServerSocket, Socket> {
   MyGateWay();
@@ -81,11 +83,13 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       final hostInfo = await serverManager.myServerInfo();
       // hostInfo.port = _httpServer.port;
       // hostInfo.ipAddress = _httpServer.address.address;
-      httpRequest.response.write(json.encode(
-        {
-          "hostServerInfo": hostInfo.toMap(),
-        },
-      ));
+      httpRequest.response.write(
+        json.encode(
+          {
+            "hostServerInfo": hostInfo.toMap(),
+          },
+        ),
+      );
       httpRequest.response.close();
     } else if (url.contains("http://${address.address}:$port/download")) {
       print("object......................................");
@@ -122,12 +126,25 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       ///Check if the file with that id exists on the device,
       ///if it does proceed to open the file and make it downloadable
       if (await item.file.exists()) {
+        item.startTime = DateTime.now();
         httpRequest.response
           ..headers.set("Content-Type", item.mime ?? "application/octat-stream")
           ..headers
               .set("Content-Disposition", "attachment; filename=${item.name}")
           ..headers.set("Content-Length", "${item.file.lengthSync()}");
         print(item.file.lengthSync());
+
+        final hiveItem = await serverManager.getHiveItemForShareable(item);
+        void listener(int received, int totalSize, File? file, String? reason,
+            IState state) {
+          hiveItem.iState = state;
+          hiveItem.processedBytes = received;
+          hiveItem.save();
+          // print("${state} ::::::::::::::::::");
+        }
+
+        ///add listener that works the hive operation
+        item.addListener(listener);
 
         ///This should be start
         int bytesDownloadedByClient = 0;
@@ -142,14 +159,13 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           // item.onProgressCallback?.call(
           // bytesDownloadedByClient,
           // item.file.lengthSync(),
-          // DownloadState.inProgress,
+          // IState.inProgress,
           // );
 
-          ///may be removed later
           (item as ShareableItem).updateProgress(
             bytesDownloadedByClient,
             item.file.lengthSync(),
-            DownloadState.inProgress,
+            IState.inProgress,
           );
           return event;
         }));
@@ -158,16 +174,19 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         // item.onProgressCallback?.call(
         //   bytesDownloadedByClient,
         //   item.file.lengthSync(),
-        //   DownloadState.completed,
+        //   IState.completed,
         // );
 
-        ///may be removed later
         (item as ShareableItem).updateProgress(
           bytesDownloadedByClient,
           item.file.lengthSync(),
-          DownloadState.completed,
+          IState.completed,
         );
         httpRequest.response.close();
+
+        ///remove listener
+        item.removeListener(listener);
+        item.startTime = null;
         // print("Done");
       } else {
         httpRequest.response.write(

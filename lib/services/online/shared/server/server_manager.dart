@@ -14,6 +14,7 @@ abstract class ServerManager {
   String? get ipAddress;
   set port(int? ipAddress);
   int? get port;
+  Future<HiveItem> getHiveItemForShareable(Item item);
 
   //subject to removal later
   // ServerInfo? get clientServerInfo;

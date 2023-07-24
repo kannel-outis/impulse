@@ -1,11 +1,12 @@
 import 'dart:io';
 
+import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 
 // ignore: must_be_immutable
 class ShareableItem extends Item {
-  final OnProgressCallBack? progressCallBack;
-  final OnStateChange? stateChange;
+  // final OnProgressCallBack? progressCallBack;
+  // final OnStateChange? stateChange;
   final Host? host;
   final String? altName;
 
@@ -15,8 +16,8 @@ class ShareableItem extends Item {
     this.host,
     required int fileSize,
     required String id,
-    this.progressCallBack,
-    this.stateChange,
+    // this.progressCallBack,
+    // this.stateChange,
     this.altName,
     required (String, int) homeDestination,
     required String authorId,
@@ -25,23 +26,27 @@ class ShareableItem extends Item {
           file: file,
           fileSize: fileSize,
           fileType: fileType,
-          onProgressCallback: progressCallBack,
-          onStateChange: stateChange,
+          // onProgressCallback: progressCallBack,
+          // onStateChange: stateChange,
           authorId: authorId,
           homeDestination: homeDestination,
           fileName: altName ?? file.path.split("/").last,
         );
 
-  DownloadState _state = DownloadState.pending;
+  IState _state = IState.pending;
 
-  double sent = 0;
+  int sentBytes = 0;
 
   ///should be called from the server
-  void updateProgress(int received, int totalSize, DownloadState state) {
+  void updateProgress(int received, int totalSize, IState state) {
     _state = state;
-    sent = received / totalSize;
-    onProgressCallback?.call(received, totalSize, state);
+    sentBytes = received;
+    // onProgressCallback?.call(received, totalSize, state);
+    notifyListeners(received, totalSize, file, "", state);
   }
+
+  @override
+  int get proccessedBytes => sentBytes;
 
   // @override
   // Future<void> share() async {
@@ -66,8 +71,7 @@ class ShareableItem extends Item {
   //   }
   // }
 
-  @override
-  DownloadState get state => _state;
+  IState get state => _state;
 
   @override
   Map<String, dynamic> toMap() {
@@ -106,7 +110,7 @@ class ShareableItem extends Item {
 //     return _ResponseState._(state);
 //   }
 
-//   DownloadState get state => DownloadState.values
+//   IState get state => IState.values
 //       .where((element) => element.label == stateString)
 //       .first;
 // }

@@ -27,3 +27,15 @@ enum User {
   client,
   undecided,
 }
+
+enum IState {
+  failed("Failed"),
+  inProgress("In Progress"),
+  paused("Paused"),
+  pending("Pending"),
+  completed("Completed"),
+  canceled("Canceled");
+
+  const IState(this.label);
+  final String label;
+}

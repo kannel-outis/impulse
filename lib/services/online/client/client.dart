@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:impulse/app/impulse_exception.dart';
-import '../services.dart';
+import '../../services.dart';
 
 abstract class Client {
   Future<List<String>> scan() {

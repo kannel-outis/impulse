@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:impulse/app/configuration.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
@@ -8,7 +7,7 @@ import 'app/app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Configurations.instance.loadPaths();
+  await Configurations.instance.loadAllInit();
   final container = ProviderContainer();
   // container.
   if (isAndroid) {
