@@ -99,6 +99,9 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       print("$fileId from server.....");
       print(httpRequest.requestedUri.queryParameters);
 
+      String rangeHeader = httpRequest.headers.value(HttpHeaders.rangeHeader)!;
+      final start = int.parse(rangeHeader.split('=')[1].split('-')[0]);
+
       ///Check if the id exists in the shareable files list
       ///if the file was indeed shared, it should have an id in the list
       final items = serverManager
@@ -131,7 +134,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           ..headers.set("Content-Type", item.mime ?? "application/octat-stream")
           ..headers
               .set("Content-Disposition", "attachment; filename=${item.name}")
-          ..headers.set("Content-Length", "${item.file.lengthSync()}");
+          ..headers.set("Content-Length", "${item.file.lengthSync() - start}");
         print(item.file.lengthSync());
 
         final hiveItem = await serverManager.getHiveItemForShareable(item);
@@ -147,9 +150,10 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         item.addListener(listener);
 
         ///This should be start
-        int bytesDownloadedByClient = 0;
+        int bytesDownloadedByClient = start;
         final response = httpRequest.response;
-        final fileStream = item.file.openRead();
+        print(start);
+        final fileStream = item.file.openRead(start);
         await response.addStream(fileStream.map((event) {
           bytesDownloadedByClient += event.length;
 
@@ -180,7 +184,9 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         (item as ShareableItem).updateProgress(
           bytesDownloadedByClient,
           item.file.lengthSync(),
-          IState.completed,
+          bytesDownloadedByClient != item.file.lengthSync()
+              ? IState.paused
+              : IState.completed,
         );
         httpRequest.response.close();
 

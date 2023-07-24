@@ -130,9 +130,10 @@ class _HomePageState extends ConsumerState<HomePage>
                             ///
                             // log("object");
                             // return;
-                            // final d = HiveManagerImpl().getAllShareableItems();
+                            // final d =
+                            //     HiveManagerImpl().getAllReceiveableItems();
                             // for (var e in d) {
-                            //   log("${e.fileName}: ${e.proccessedBytes}");
+                            //   log("${e.path}: ${e.fileSize}");
                             // }
                             // return;
                             final hostController = ref.read(senderProvider);

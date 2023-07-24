@@ -58,7 +58,7 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         hiveItem?.iState = state;
         hiveItem?.processedBytes = received;
         hiveItem?.save();
-        if (state == IState.completed) {
+        if (state.isCompleted) {
           item.removeListener(listener);
         }
       }

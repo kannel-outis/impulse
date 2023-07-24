@@ -36,6 +36,13 @@ enum IState {
   completed("Completed"),
   canceled("Canceled");
 
+  /// this is only used on the server side
+  // waiting("Waiting");
+
   const IState(this.label);
   final String label;
+
+  bool get isPaused => this == IState.paused;
+  bool get isCompleted => this == IState.completed;
+  bool get isInProgress => this == IState.inProgress;
 }

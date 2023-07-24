@@ -52,7 +52,7 @@ abstract class Item extends StateListenable with EquatableMixin {
 
   String get filePath => file.path;
 
-  IState get state => IState.pending;
+  IState get state;
 
   int get proccessedBytes;
 

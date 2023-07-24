@@ -206,8 +206,8 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                                   );
                                 }
                                 final inProgressItemsWidget = shareable
-                                    .where((element) =>
-                                        element.state == IState.inProgress)
+                                    .where(
+                                        (element) => element.state.isInProgress)
                                     .toList()
                                     .map(
                                       (e) => TransferListTile(

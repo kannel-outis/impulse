@@ -78,7 +78,7 @@ class _AppItemState extends ConsumerState<AppItem> {
       },
       child: Container(
         width: _appBox(),
-        height: _appBox(),
+        height: _appBox() + 10,
         decoration: BoxDecoration(
           border: Border.all(
             color: _isSelected ? Colors.white : Colors.transparent,
