@@ -16,11 +16,11 @@ class HiveInit {
       ///for debug resons
       ///
       if (Platform.isWindows && kDebugMode) {
-        return await getDownloadsDirectory();
+        return await getApplicationSupportDirectory();
       }
       return await getApplicationDocumentsDirectory();
     }();
-    Hive.init(documentDir!.path);
+    Hive.init(documentDir.path);
 
     Hive.registerAdapter<HiveItem>(HiveItemAdapter());
     Hive.registerAdapter<IState>(IStateAdapter());

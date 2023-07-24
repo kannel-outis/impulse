@@ -17,7 +17,7 @@ final receivableListItems =
         (ref) {
   final stream =
       ref.watch(serverControllerProvider).receivablesStreamController.stream;
-  final downloadManager = ref.read(downloadManagerProvider);
+  final downloadManager = ref.read(downloadManagerProvider.notifier);
 
   return ReceiveableItemsProvider(stream, downloadManager, HiveManagerImpl());
 });

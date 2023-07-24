@@ -1,8 +1,5 @@
 // ignore_for_file: library_private_types_in_public_api, unused_element, file_names
 
-import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
@@ -10,7 +7,6 @@ import 'package:impulse/services/services.dart';
 typedef _ItemListenableBuilder = Widget Function(
   BuildContext context,
   double percentage,
-  int mbps,
   IState state,
 );
 
@@ -32,11 +28,6 @@ class ItemListenableBuilder extends StatefulWidget {
 class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
   double _progress = 0;
   IState _state = IState.pending;
-  int _mbps = 0;
-  DateTime _previouseReceived = DateTime.now();
-  int _previouseReceivedByte = 0;
-
-  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -71,6 +62,11 @@ class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
     _state = state;
 
     setState(() {});
+
+    // if (state != IState.inProgress) {
+    //   _debounceTimer?.cancel();
+    //   _debounceTimer = null;
+    // }
   }
 
   @override
@@ -82,13 +78,12 @@ class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
   @override
   void dispose() {
     _listenableAsItem(widget).removeListener(_listener);
-    _debounceTimer?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return widget.child ?? widget.builder(context, _progress, _mbps, _state);
+    return widget.child ?? widget.builder(context, _progress, _state);
   }
 
   Item _listenableAsItem(ItemListenableBuilder widget) {

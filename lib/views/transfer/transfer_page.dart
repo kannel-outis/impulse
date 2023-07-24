@@ -1,5 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api
 
+///modifer version of https://github.com/kannel-outis/Flash_Youtube/blob/dev-2/flash_youtube_downloader/lib/screens/mini_player/components/mini_player_draggable.dart
+
 import 'dart:math';
 import 'dart:ui';
 
@@ -164,6 +166,19 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                               builder: (context, ref, child) {
                                 final shareable =
                                     ref.watch(shareableItemsProvider);
+                                final downloadManager =
+                                    ref.watch(downloadManagerProvider);
+                                if (downloadManager.$2 != null) {
+                                  log(downloadManager.$1);
+                                  return TransferListTile(
+                                    item: downloadManager.$2!,
+                                    mini: true,
+                                    mBps: ImpulseFileSize(downloadManager.$1)
+                                        .sizeToString,
+                                    height:
+                                        widget.miniPlayerController.minHeight,
+                                  );
+                                }
 
                                 if (shareable.isEmpty) {
                                   return Container(

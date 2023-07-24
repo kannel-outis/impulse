@@ -7,11 +7,13 @@ import 'item_listenable_builder.dart';
 class TransferListTile extends StatelessWidget {
   final double height;
   final bool mini;
+  final String? mBps;
   final Item item;
   const TransferListTile({
     this.height = 100,
     this.mini = false,
     required this.item,
+    this.mBps,
     super.key,
   });
 
@@ -24,7 +26,7 @@ class TransferListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ItemListenableBuilder(
         listenable: item,
-        builder: (context, percentage, mbps, state) {
+        builder: (context, percentage, state) {
           return Stack(
             children: [
               Container(
@@ -76,7 +78,7 @@ class TransferListTile extends StatelessWidget {
                               Padding(
                                 padding: const EdgeInsets.only(right: 10.0),
                                 child: Text(
-                                  state.label,
+                                  mBps != null ? mBps! : state.label,
                                   style: $styles.text.body.copyWith(
                                     color: Colors.green,
                                   ),
