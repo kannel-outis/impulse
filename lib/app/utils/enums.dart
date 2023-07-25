@@ -34,7 +34,8 @@ enum IState {
   paused("Paused"),
   pending("Pending"),
   completed("Completed"),
-  canceled("Canceled");
+  canceled("Canceled"),
+  waiting("Waiting");
 
   /// this is only used on the server side
   // waiting("Waiting");
@@ -45,4 +46,8 @@ enum IState {
   bool get isPaused => this == IState.paused;
   bool get isCompleted => this == IState.completed;
   bool get isInProgress => this == IState.inProgress;
+  bool get isCanceled => this == IState.canceled;
+  bool get isPending => this == IState.pending;
+  bool get isWaiting => this == IState.waiting;
+  bool get isFailed => this == IState.failed;
 }

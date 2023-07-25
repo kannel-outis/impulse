@@ -225,8 +225,13 @@ class ReceiveableItem extends Item {
   int get proccessedBytes => downloadedBytes;
 
   @override
+  void changeState(IState newState) {
+    notifyListeners(
+        downloadedBytes, fileSize, file, "Queue from pause", newState);
+  }
+
+  @override
   Map<String, dynamic> toMap() {
-    // TODO: implement toMap
     throw UnimplementedError();
   }
 

@@ -44,6 +44,8 @@ abstract class Item extends StateListenable with EquatableMixin {
     throw UnimplementedError();
   }
 
+  void changeState(IState newState) {}
+
   // IState get state;
 
   String? get mime => lookupMimeType(file.path);

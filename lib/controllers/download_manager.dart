@@ -102,6 +102,7 @@ class DownloadManager extends StateNotifier<(int mBps, Item? currentItem)> {
         item.start = item.downloadedBytes;
 
         _listOfWaitingReceivables.insert(1, item);
+        item.changeState(IState.waiting);
 
         ///remove from paused list
         _listOfPaused.removeWhere((element) => element.id == item.id);
@@ -110,7 +111,6 @@ class DownloadManager extends StateNotifier<(int mBps, Item? currentItem)> {
   }
 
   void _listener(received, totalSize, file, reason, state) {
-    print("$state  $reason");
     DateTime now = DateTime.now();
 
     if (_debounceTimer == null || !_debounceTimer!.isActive) {

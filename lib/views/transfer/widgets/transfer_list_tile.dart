@@ -99,14 +99,14 @@ class TransferListTile extends StatelessWidget {
                               ],
                             ),
                             if (mini == false &&
-                                    item is ReceiveableItem &&
-                                    state.isInProgress ||
-                                state.isPaused)
+                                item is ReceiveableItem &&
+                                (state.isInProgress || state.isPaused))
                               Consumer(
                                 builder: (context, ref, child) {
                                   return GestureDetector(
                                     onTap: () async {
-                                      if (item is ReceiveableItem) {
+                                      if (item is ReceiveableItem &&
+                                          !state.isWaiting) {
                                         final downloadManager = ref.read(
                                             downloadManagerProvider.notifier);
                                         if (state.isInProgress) {
@@ -124,7 +124,9 @@ class TransferListTile extends StatelessWidget {
                                       width: 80,
                                       decoration: BoxDecoration(
                                         color: state.isPaused
-                                            ? Colors.green
+                                            ? state.isWaiting
+                                                ? Colors.grey
+                                                : Colors.green
                                             : $styles.colors.folderColor2,
                                         borderRadius: BorderRadius.circular(
                                           $styles.corners.sm,
@@ -132,7 +134,11 @@ class TransferListTile extends StatelessWidget {
                                       ),
                                       alignment: Alignment.center,
                                       child: Text(
-                                        state.isPaused ? "Resume" : "Pause",
+                                        state.isPaused
+                                            ? "Resume"
+                                            : state.isWaiting
+                                                ? state.label
+                                                : "Pause",
                                         style: $styles.text.bodySmall.copyWith(
                                           color: Colors.white,
                                         ),
