@@ -159,12 +159,12 @@ class ReceiveableItem extends Item {
         /////does nothing
       } else {
         await for (final data in stream) {
-          downloadedBytes += data.length;
           // ignore: unused_local_variable
           final progress = _progress;
           if (_downloadCanceled || _downloadPaused) {
             return;
           }
+          downloadedBytes += data.length;
           // onProgressCallback?.call(
           //   downloadedBytes,
           //   fileSize,
