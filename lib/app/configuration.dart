@@ -18,6 +18,12 @@ class Configurations {
   Future<void> _loadPaths() async {
     ///TODO: Ask for permission
     final applicationDocumentDir = await getApplicationDocumentsDirectory();
+    if (Platform.isAndroid) {
+      impulseDir = await Directory(
+              "${Platform.pathSeparator}storage${Platform.pathSeparator}emulated${Platform.pathSeparator}0${Platform.pathSeparator}impulse files${Platform.pathSeparator}")
+          .create();
+      return;
+    }
     impulseDir = await Directory(
             "${applicationDocumentDir.path}${Platform.pathSeparator}impulse files${Platform.pathSeparator}")
         .create();

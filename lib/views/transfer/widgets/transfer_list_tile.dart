@@ -80,13 +80,17 @@ class TransferListTile extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  item is ReceiveableItem
-                                      ? (item as ReceiveableItem).altName ??
-                                          item.fileName ??
-                                          item.name
-                                      : item.fileName ?? item.name,
-                                  style: $styles.text.body,
+                                SizedBox(
+                                  width: 200,
+                                  child: Text(
+                                    item is ReceiveableItem
+                                        ? (item as ReceiveableItem).altName ??
+                                            item.fileName ??
+                                            item.name
+                                        : item.fileName ?? item.name,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: $styles.text.body,
+                                  ),
                                 ),
                                 Text(
                                   item.itemSize.sizeToString,
@@ -94,7 +98,9 @@ class TransferListTile extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            if (mini == false && state.isInProgress ||
+                            if (mini == false &&
+                                    item is ReceiveableItem &&
+                                    state.isInProgress ||
                                 state.isPaused)
                               Consumer(
                                 builder: (context, ref, child) {

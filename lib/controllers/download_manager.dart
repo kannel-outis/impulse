@@ -51,7 +51,7 @@ class DownloadManager extends StateNotifier<(int mBps, Item? currentItem)> {
         index > _listOfWaitingReceivables.length - 1) {
       _downloading = false;
       if (_downloading == false) {
-        Future.delayed(const Duration(seconds: 2), () {
+        Future.delayed(const Duration(seconds: 1), () {
           state = (0, state.$2);
           _debounceTimer?.cancel();
         });

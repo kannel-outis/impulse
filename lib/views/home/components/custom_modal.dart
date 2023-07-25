@@ -7,7 +7,7 @@ import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:lottie/lottie.dart';
 
-import 'scan_animation_painter.dart';
+import '../widgets/scan_animation_painter.dart';
 
 class CustomHostBottomModalSheet extends ConsumerStatefulWidget {
   const CustomHostBottomModalSheet({
@@ -372,7 +372,7 @@ class _CustomClientBottomModalSheetState
     } else {
       width = MediaQuery.of(context).size.width;
     }
-    width = (size.width / 2) - _modalInnerPadding;
+    // width = (size.width / 2) - _modalInnerPadding;
     // print(MediaQuery.of(context).size.width);
     final height = (size.height - _modalInnerPadding);
     final x = (offset.dx / (width / 2)) - 1;

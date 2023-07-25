@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
 
-import 'custom_modal.dart';
+import '../components/custom_modal.dart';
 
 class SpeedChild extends StatelessWidget {
   final bool isHost;

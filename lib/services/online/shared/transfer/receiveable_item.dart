@@ -40,8 +40,7 @@ class ReceiveableItem extends Item {
         ? _joinNameWithId(
             "${map["altName"] as String}.${map["fileType"] as String}",
             map["fileId"] as String)
-        : _joinNameWithId(
-            "${map["fileName"] as String}}", map["fileId"] as String);
+        : _joinNameWithId(map["fileName"] as String, map["fileId"] as String);
     return ReceiveableItem(
       file: File("${Configurations.instance.impulseDir.path}$fileName"),
       fileType: map["fileType"] as String,
