@@ -20,10 +20,15 @@ class CustomHostBottomModalSheet extends ConsumerStatefulWidget {
 }
 
 class _CustomHostBottomModalSheetState
-    extends ConsumerState<CustomHostBottomModalSheet> {
+    extends ConsumerState<CustomHostBottomModalSheet>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Future<LottieComposition> _composition;
   @override
   void initState() {
     super.initState();
+    _controller =
+        AnimationController(vsync: this, duration: $styles.times.xSlow);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final homeController = ref.read(homeProvider);
       final hostController = ref.read(senderProvider);
@@ -33,6 +38,7 @@ class _CustomHostBottomModalSheetState
         // print(hostController.clientServerInfo);
       });
     });
+    _composition = AssetLottie("assets/lottie/waiting.json").load();
   }
 
   @override
@@ -43,6 +49,12 @@ class _CustomHostBottomModalSheetState
 
       homeController.shouldShowTopStack = false;
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -59,6 +71,7 @@ class _CustomHostBottomModalSheetState
         height: $styles.sizes.maxContentHeight1,
         width: double.infinity,
         color: $styles.colors.accentColor1,
+        constraints: $styles.constraints.modalConstraints,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -67,22 +80,38 @@ class _CustomHostBottomModalSheetState
             //   color: $styles.colors.iconColor3,
             //   size: $styles.sizes.xLargeIconSize,
             // ),
-            LottieBuilder.asset(
-              "assets/lottie/waiting.json",
+            Lottie(
+              composition: Configurations.instance.composition,
               height: $styles.sizes.xxLargeIconSize,
               width: $styles.sizes.xxLargeIconSize,
-              delegates: LottieDelegates(
-                  // values: [
-                  //   ValueDelegate.color(
-                  //     ['bout', 'bout 3', 'bmid'],
-                  //     callback: (s) {
-
-                  //       return Color(0xff78ee34);
-                  //     },
-                  // )
-                  // ],
-                  ),
             ),
+            // } else {
+            //   return const Center(
+            //     child: CircularProgressIndicator(),
+            //   );
+            // }
+            // return LottieBuilder.asset(
+            //   "assets/lottie/waiting.json",
+            //   height: $styles.sizes.xxLargeIconSize,
+            //   width: $styles.sizes.xxLargeIconSize,
+            //   controller: _controller,
+            //   frameRate: FrameRate.max,
+            //   frameBuilder: (context, child, composition) {
+            //     return child;
+            //   },
+            //   // delegates: LottieDelegates(
+            //   //     // values: [
+            //   //     //   ValueDelegate.color(
+            //   //     //     ['bout', 'bout 3', 'bmid'],
+            //   //     //     callback: (s) {
+
+            //   //     //       return Color(0xff78ee34);
+            //   //     //     },
+            //   //     // )
+            //   //     // ],
+            //   //     ),
+            // );
+            // }),
             Text(
               "Waitng for receivers....",
               style: $styles.text.h3,

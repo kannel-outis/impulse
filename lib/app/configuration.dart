@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:impulse/services/offline/hive/hive_init.dart';
+import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Configurations {
@@ -33,10 +34,13 @@ class Configurations {
     await HiveInit.init();
   }
 
+  late final LottieComposition composition;
+
   Future<void> loadAllInit() async {
     await Future.value([
       _loadHiveInit(),
       _loadPaths(),
     ]);
+    composition = await AssetLottie("assets/lottie/waiting.json").load();
   }
 }
