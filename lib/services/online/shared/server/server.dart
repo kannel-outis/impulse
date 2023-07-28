@@ -188,6 +188,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
               ? IState.paused
               : IState.completed,
         );
+        // await response.flush();
         httpRequest.response.close();
 
         ///remove listener

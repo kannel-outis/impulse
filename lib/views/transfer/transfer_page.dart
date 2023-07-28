@@ -271,9 +271,13 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                                             builder: (context, ref, child) {
                                           final receaivables =
                                               ref.watch(receivableListItems);
+
+                                          ///to watch changes in the receevables and and rebuild the consumer
+                                          ref.watch(downloadManagerProvider);
                                           return TabWidget(
-                                              label: "Received",
-                                              items: receaivables);
+                                            label: "Received",
+                                            items: receaivables,
+                                          );
                                         }),
                                       ],
                                     ),
@@ -400,7 +404,7 @@ class TabWidget extends StatelessWidget {
                 color: $styles.colors.fontColor1),
             child: Center(
               child: Text(
-                "${items.length}",
+                "${items.where((element) => !element.state.isCompleted).toList().length}",
                 style: $styles.text.bodySmall.copyWith(
                   height: 1.5,
                   color: $styles.colors.accentColor1,

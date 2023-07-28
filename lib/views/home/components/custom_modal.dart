@@ -23,7 +23,6 @@ class _CustomHostBottomModalSheetState
     extends ConsumerState<CustomHostBottomModalSheet>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  late final Future<LottieComposition> _composition;
   @override
   void initState() {
     super.initState();
@@ -38,7 +37,6 @@ class _CustomHostBottomModalSheetState
         // print(hostController.clientServerInfo);
       });
     });
-    _composition = AssetLottie("assets/lottie/waiting.json").load();
   }
 
   @override
@@ -84,6 +82,8 @@ class _CustomHostBottomModalSheetState
               composition: Configurations.instance.composition,
               height: $styles.sizes.xxLargeIconSize,
               width: $styles.sizes.xxLargeIconSize,
+              controller: _controller..repeat(),
+              fit: BoxFit.contain,
             ),
             // } else {
             //   return const Center(

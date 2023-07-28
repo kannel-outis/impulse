@@ -162,6 +162,8 @@ class ReceiveableItem extends Item {
           // ignore: unused_local_variable
           final progress = _progress;
           if (_downloadCanceled || _downloadPaused) {
+            _iClient?.client.close();
+
             return;
           }
           downloadedBytes += data.length;

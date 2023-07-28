@@ -122,9 +122,14 @@ class ServicesUtils {
       final stream = StreamController<List<int>>();
       print(response.headers);
       print("From Server utils");
-      response.stream.listen((data) {
-        stream.add(data);
-      }, onError: (_) => null, onDone: stream.close, cancelOnError: false);
+      response.stream.listen(
+        (data) {
+          stream.add(data);
+        },
+        onError: (_) => stream.close,
+        onDone: stream.close,
+        cancelOnError: false,
+      );
       yield* stream.stream;
     } on Exception catch (e) {
       print(e.toString());
