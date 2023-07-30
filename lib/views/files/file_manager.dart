@@ -1,10 +1,12 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/views/shared/padded_body.dart';
+import 'package:impulse/views/shared/selectable_item_widget.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
 import 'widgets/file_manager_tile.dart';
@@ -25,16 +27,24 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
   void initState() {
     super.initState();
     if (isAndroid) {
-      if (widget.files != null) {
-        files = widget.files!;
+      _init_();
+    } else {
+      final dir =
+          ImpulseDirectory(directory: Directory("C:/Users/emirb/Downloads/"));
+      _init_(dir);
+    }
+  }
+
+  void _init_([ImpulseDirectory? dir]) {
+    if (widget.files != null) {
+      files = widget.files!;
+      setState(() {});
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        final controller = ref.read(fileManagerProvider);
+        files = controller.goToPath(dir);
         setState(() {});
-      } else {
-        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-          final controller = ref.read(fileManagerProvider);
-          files = controller.goToPath();
-          setState(() {});
-        });
-      }
+      });
     }
   }
 
@@ -84,7 +94,12 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
         itemCount: files.length,
         itemBuilder: (context, index) {
           final item = files[index];
-          return FileManagerTile(item: item);
+          return SelectableItemWidget(
+            file: (item.fileSystemEntity is File)
+                ? item.fileSystemEntity as File
+                : null,
+            child: FileManagerTile(item: item),
+          );
         },
       ),
     );

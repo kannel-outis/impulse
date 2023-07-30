@@ -11,7 +11,9 @@ import 'package:impulse/views/home/widgets/app_item.dart';
 import 'package:impulse/views/settings/settings_screen.dart';
 import 'package:impulse/views/shared/custom_speed_dial.dart';
 import 'package:impulse/views/shared/padded_body.dart';
+import 'package:impulse/views/shared/selectable_item_widget.dart';
 import 'package:impulse/views/transfer/transfer_page.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'components/bottom_nav_bar.dart';
 import 'widgets/speed_child_item.dart';
@@ -53,6 +55,34 @@ class _HomePageState extends ConsumerState<HomePage>
     //     }
     //   });
     // });
+  }
+
+  Future<void> _share() async {
+    final destination = ref.read(connectUserStateProvider);
+    if (destination == null) return;
+    final hostController = ref.read(senderProvider);
+
+    final files = ref.read(selectedItemsProvider);
+    for (final item in files) {
+      item.homeDestination ??= (
+        ref.read(serverControllerProvider).ipAddress!,
+        ref.read(serverControllerProvider).port!
+      );
+    }
+    ref.read(shareableItemsProvider.notifier).addAllItems(files);
+    final shareableFiles = ref
+        .read(shareableItemsProvider.notifier)
+        .filteredList
+        .map((e) => e.toMap())
+        .toList();
+    // print(files);
+    print(shareableFiles.length);
+
+    // return;
+
+    await hostController.shareDownloadableFiles(
+        shareableFiles, (destination.ipAddress!, destination.port!));
+    ref.read(selectedItemsProvider.notifier).clear();
   }
 
   List<Widget> get tabs => <Widget>[
@@ -130,33 +160,13 @@ class _HomePageState extends ConsumerState<HomePage>
                             ///
                             // log("object");
                             // return;
-                            // final d = HiveManagerImpl().getAllShareableItems();
+                            // final d =
+                            //     HiveManagerImpl().getAllReceiveableItems();
                             // for (var e in d) {
-                            //   log("${e.fileName}: ${e.proccessedBytes}");
+                            //   log("${e.path}: ${e.fileSize}");
                             // }
                             // return;
-                            final hostController = ref.read(senderProvider);
-
-                            final files = ref.read(selectedItemsProvider);
-                            ref
-                                .read(shareableItemsProvider.notifier)
-                                .addAllItems(files);
-                            final shareableFiles = ref
-                                .read(shareableItemsProvider.notifier)
-                                .filteredList
-                                .map((e) => e.toMap())
-                                .toList();
-                            // print(files);
-                            print(shareableFiles.length);
-
-                            // return;
-                            final destination =
-                                ref.read(connectUserStateProvider);
-                            if (destination == null) return;
-                            await hostController.shareDownloadableFiles(
-                                shareableFiles,
-                                (destination.ipAddress!, destination.port!));
-                            ref.read(selectedItemsProvider.notifier).clear();
+                            await _share();
                           },
                           child: Container(
                             height: 40.scale,

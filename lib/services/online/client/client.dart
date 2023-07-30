@@ -23,6 +23,11 @@ abstract class Client {
     required int end,
     Function(int, IClient)? init,
   });
+
+  Future<void> cancelItem(
+    (String, int) destination,
+    String fileId,
+  );
 }
 
 abstract interface class ClientHost implements Client, Host {}

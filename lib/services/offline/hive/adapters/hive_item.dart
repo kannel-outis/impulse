@@ -57,6 +57,9 @@ class HiveItem extends Item with HiveObjectMixin {
 
   @override
   int get proccessedBytes => processedBytes;
+
+  @override
+  IState get state => iState;
 }
 
 class HiveItemAdapter extends TypeAdapter<HiveItem> {

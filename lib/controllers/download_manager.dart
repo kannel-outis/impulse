@@ -45,13 +45,20 @@ class DownloadManager extends StateNotifier<(int mBps, Item? currentItem)> {
 
   Timer? _debounceTimer;
 
+  Future<void> removeItemFromDownloadList(Item item) async {
+    if (item.state.isInProgress) {
+      await item.cancel();
+    }
+    _listOfWaitingReceivables.removeWhere((element) => element.id == item.id);
+  }
+
   Future<void> download({int index = 0}) async {
     // return;
     if (_listOfWaitingReceivables.isEmpty ||
         index > _listOfWaitingReceivables.length - 1) {
       _downloading = false;
       if (_downloading == false) {
-        Future.delayed(const Duration(seconds: 2), () {
+        Future.delayed(const Duration(seconds: 1), () {
           state = (0, state.$2);
           _debounceTimer?.cancel();
         });
@@ -61,62 +68,82 @@ class DownloadManager extends StateNotifier<(int mBps, Item? currentItem)> {
     numberOfDownloadedItems = index;
     _downloading = true;
     final item = _listOfWaitingReceivables.first;
-    state = (0, item);
+    state = (_previousMBps, item);
     /////
-    item.addListener((received, totalSize, file, reason, state) {
-      DateTime now = DateTime.now();
-
-      if (_debounceTimer == null || !_debounceTimer!.isActive) {
-        _debounceTimer?.cancel();
-        _debounceTimer = Timer(const Duration(seconds: 1), () {
-          final duration = now.difference(_previouseReceivedTime).inSeconds;
-          final bytesPerInterval =
-              (received - _previouseReceivedByte) ~/ duration;
-          final mBps = bytesPerInterval.isNegative
-              ? _previousMBps
-              : bytesPerInterval.toInt();
-          this.state = (mBps, this.state.$2);
-          _previousMBps = mBps;
-
-          log(bytesPerInterval.toString());
-          _previouseReceivedTime = now;
-          _previouseReceivedByte = received;
-        });
-      }
-    });
+    item.addListener(_listener);
     ///////
     log("${item.id} from download");
-    await item.receive().then((value) async {
-      if (item.state == IState.completed) {
-        _listOfWaitingReceivables
-            .removeWhere((element) => element.state == IState.completed);
-      }
-      // currentItemAtIndex += 1;
+    try {
+      await item.receive().then((value) async {
+        if (item.state.isCompleted ||
+            item.state.isCanceled ||
+            item.state.isFailed) {
+          _listOfWaitingReceivables
+              .removeWhere((element) => element.id == item.id);
+        }
+        item.removeListener(_listener);
+        // currentItemAtIndex += 1;
+        await download();
+      });
+    } catch (e) {
+      _listOfWaitingReceivables.removeWhere((element) => element.id == item.id);
+      item.removeListener(_listener);
       await download();
-    });
+    }
   }
 
-  // void debounce(){
-  //  DateTime now = DateTime.now();
+  void pauseCurrentDownload() {
+    state.$2?.pause();
 
-  // if (_debounceTimer == null || !_debounceTimer!.isActive) {
-  //   _debounceTimer?.cancel();
-  //   _debounceTimer = Timer(const Duration(seconds: 1), () {
-  //     final duration = now.difference(_previouseReceivedTime).inSeconds;
-  //     final bytesPerInterval = (received - _previouseReceivedByte) / duration;
-  //     _mbps = bytesPerInterval.isNegative ? 0 : bytesPerInterval.toInt();
-
-  //     log(bytesPerInterval.toString());
-  //     _previouseReceivedTime = now;
-  //     _previouseReceivedByte = received;
-  //   });
-  // }
-  // }
-
-  void pause(ReceiveableItem item) {
+    if (state.$2 == null) return;
     final index = _listOfWaitingReceivables
-        .indexWhere((element) => element.id == item.id);
+        .indexWhere((element) => element.id == state.$2!.id);
     _listOfPaused.add(_listOfWaitingReceivables[index]);
     _listOfWaitingReceivables.removeAt(index);
+  }
+
+  void resumeDownload(ReceiveableItem item) {
+    ///Check if item was paused
+    final contains = _listOfPaused.map((e) => e.id).contains(item.id);
+    if (contains) {
+      ///check if receivable list is empty, if so, add and call download();
+      if (_listOfWaitingReceivables.isEmpty) {
+        item.start = item.downloadedBytes;
+        _listOfWaitingReceivables.add(item);
+        download();
+      } else {
+        ///if not empty, that means something is currently downloading, add to next on the list
+
+        item.start = item.downloadedBytes;
+
+        _listOfWaitingReceivables.insert(1, item);
+        item.changeState(IState.waiting);
+
+        ///remove from paused list
+        _listOfPaused.removeWhere((element) => element.id == item.id);
+      }
+    }
+  }
+
+  void _listener(received, totalSize, file, reason, state) {
+    DateTime now = DateTime.now();
+
+    if (_debounceTimer == null || !_debounceTimer!.isActive) {
+      _debounceTimer?.cancel();
+      _debounceTimer = Timer(const Duration(seconds: 1), () {
+        final duration = now.difference(_previouseReceivedTime).inSeconds;
+        final bytesPerInterval =
+            (received - _previouseReceivedByte) ~/ duration;
+        final mBps = bytesPerInterval.isNegative
+            ? _previousMBps
+            : bytesPerInterval.toInt();
+        this.state = (mBps, this.state.$2);
+        _previousMBps = mBps;
+
+        log(bytesPerInterval.toString());
+        _previouseReceivedTime = now;
+        _previouseReceivedByte = received;
+      });
+    }
   }
 }

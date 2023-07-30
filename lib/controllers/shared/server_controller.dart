@@ -17,10 +17,12 @@ final serverControllerProvider =
     ChangeNotifierProvider<ServerController>((ref) {
   final alert = ref.watch(alertStateNotifier.notifier);
   final connectedUser = ref.watch(connectUserStateProvider.notifier);
+  final shareableProvider = ref.read(shareableItemsProvider.notifier);
   return ServerController(
     alertState: alert,
     connectedUserState: connectedUser,
     hiveManager: HiveManagerImpl(),
+    shareableItemsProvider: shareableProvider,
   );
 });
 
@@ -28,11 +30,13 @@ class ServerController extends ServerManager with ChangeNotifier {
   final AlertState alertState;
   final ConnectedUserState connectedUserState;
   final HiveManager hiveManager;
+  final ShareableItemsProvider shareableItemsProvider;
 
   ServerController({
     required this.alertState,
     required this.connectedUserState,
     required this.hiveManager,
+    required this.shareableItemsProvider,
   });
 
   Completer<bool> alertResponder = Completer<bool>();
@@ -146,5 +150,11 @@ class ServerController extends ServerManager with ChangeNotifier {
       await hiveManager.saveItem(item);
       return hiveManager.getShareableItemWithKey(item.id)!;
     }
+  }
+
+  @override
+  void removeCanceledItem(String id) {
+    _items.removeWhere((element) => element.id == id);
+    shareableItemsProvider.cancelItemWithId(id);
   }
 }

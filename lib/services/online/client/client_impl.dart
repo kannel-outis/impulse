@@ -100,4 +100,16 @@ class ClientImpl implements ClientHost {
     // TODO: implement shareDownloadableFiles
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> cancelItem((String, int) destination, String fileId) {
+    final url = Uri.parse("http://${destination.$1}:${destination.$2}/cancel");
+    final body = {
+      "fileId": fileId,
+    };
+    return RequestHelper.post(
+      url,
+      body,
+    );
+  }
 }

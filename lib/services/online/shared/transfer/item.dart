@@ -17,7 +17,7 @@ abstract class Item extends StateListenable with EquatableMixin {
   // OnProgressCallBack? onProgressCallback;
   // OnStateChange? onStateChange;
   final String authorId;
-  final (String, int) homeDestination;
+  (String, int)? homeDestination;
 
   Item({
     required this.file,
@@ -44,6 +44,8 @@ abstract class Item extends StateListenable with EquatableMixin {
     throw UnimplementedError();
   }
 
+  void changeState(IState newState) {}
+
   // IState get state;
 
   String? get mime => lookupMimeType(file.path);
@@ -52,7 +54,7 @@ abstract class Item extends StateListenable with EquatableMixin {
 
   String get filePath => file.path;
 
-  IState get state => IState.pending;
+  IState get state;
 
   int get proccessedBytes;
 

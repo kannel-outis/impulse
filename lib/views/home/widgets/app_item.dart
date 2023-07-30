@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
-import 'package:impulse/controllers/shared/selected_item_provider.dart';
-import 'package:impulse/controllers/shared/selecting_item_provider.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
-class AppItem extends ConsumerStatefulWidget {
-  final Application app;
+class AppItem extends StatefulWidget {
   const AppItem({
     super.key,
     required this.app,
   });
 
+  final Application app;
+
   @override
-  ConsumerState<AppItem> createState() => _AppItemState();
+  State<AppItem> createState() => _AppItemState();
 }
 
-class _AppItemState extends ConsumerState<AppItem> {
+class _AppItemState extends State<AppItem> {
   double _appBox() {
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -26,92 +24,38 @@ class _AppItemState extends ConsumerState<AppItem> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-
-    // });
-  }
-
-  bool _isSelected = false;
-
-  @override
   Widget build(BuildContext context) {
-    ref.listen(selectedItemsProvider, (previous, next) {
-      if (next.isEmpty) {
-        ref.read(selectingItemStateProvider).isSelectingApp = false;
-        _isSelected = false;
-      }
-    });
-    final selectingItemPRovider = ref.watch(selectingItemStateProvider);
-    final selectedItems = ref.watch(selectedItemsProvider.notifier);
-    return GestureDetector(
-      onLongPress: () {
-        ///if Already in selecting mode, cancel
-        if (selectingItemPRovider.isSelectingApp) return;
-
-        /// enter selecting mode
-        /// and add the first item
-        selectingItemPRovider.isSelectingApp = true;
-        selectedItems.addSelected(
-            path: widget.app.appPath, altName: widget.app.appName);
-        _isSelected = true;
-        setState(() {});
-      },
-      onTap: () {
-        if (selectingItemPRovider.isSelectingApp) {
-          ///Adds to selected apps or remove app if already added
-          if (_isSelected == false) {
-            selectedItems.addSelected(
-                path: widget.app.appPath, altName: widget.app.appName);
-            _isSelected = true;
-            setState(() {});
-          } else {
-            selectedItems.removeSelected(path: widget.app.appPath);
-            _isSelected = false;
-            setState(() {});
-          }
-        }
-        if (ref.read(selectedItemsProvider).isEmpty) {
-          selectingItemPRovider.isSelectingApp = false;
-        }
-      },
-      child: Container(
-        width: _appBox(),
-        height: _appBox(),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: _isSelected ? Colors.white : Colors.transparent,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular($styles.corners.md),
-                image: DecorationImage(
-                  image: MemoryImage(widget.app.appIcon),
-                  fit: BoxFit.cover,
-                ),
+    return Container(
+      color: Colors.transparent,
+      height: _appBox(),
+      width: _appBox(),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular($styles.corners.md),
+              image: DecorationImage(
+                image: MemoryImage(widget.app.appIcon),
+                fit: BoxFit.cover,
               ),
             ),
-            Text(
-              widget.app.appName,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              style: $styles.text.body,
-            ),
-            Text(
-              widget.app.sizeToString,
-              textAlign: TextAlign.center,
-              style: $styles.text.body,
-            ),
-          ],
-        ),
+          ),
+          Text(
+            widget.app.appName,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: $styles.text.body,
+          ),
+          Text(
+            widget.app.sizeToString,
+            textAlign: TextAlign.center,
+            style: $styles.text.body,
+          ),
+        ],
       ),
     );
   }

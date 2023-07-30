@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/services/services.dart';
 
@@ -19,17 +18,20 @@ final receivableListItems =
       ref.watch(serverControllerProvider).receivablesStreamController.stream;
   final downloadManager = ref.read(downloadManagerProvider.notifier);
 
-  return ReceiveableItemsProvider(stream, downloadManager, HiveManagerImpl());
+  return ReceiveableItemsProvider(
+      stream, downloadManager, HiveManagerImpl(), ClientImpl());
 });
 
 class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
   final Stream<Map<String, dynamic>> itemsStream;
   final DownloadManager downloadManager;
   final HiveManager hiveManager;
+  final Client client;
   ReceiveableItemsProvider(
     this.itemsStream,
     this.downloadManager,
     this.hiveManager,
+    this.client,
   ) : super([]) {
     _listen();
   }
@@ -58,7 +60,7 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         hiveItem?.iState = state;
         hiveItem?.processedBytes = received;
         hiveItem?.save();
-        if (state == IState.completed) {
+        if (state.isCompleted) {
           item.removeListener(listener);
         }
       }
@@ -71,5 +73,12 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         downloadManager.download();
       }
     });
+  }
+
+  void cancelItemWithId(ReceiveableItem item) async {
+    await downloadManager.removeItemFromDownloadList(item);
+    await client.cancelItem(item.homeDestination!, item.id);
+    state.removeWhere((element) => element.id == item.id);
+    state = [...state];
   }
 }

@@ -8,7 +8,7 @@ import 'package:impulse/services/services.dart';
 class ReceiveableItem extends Item {
   // OnProgressCallBack? progressCallBack;
   // OnStateChange? stateChange;
-  final int start;
+  int start;
   final String? altName;
   // final int fileLength;
 
@@ -40,8 +40,7 @@ class ReceiveableItem extends Item {
         ? _joinNameWithId(
             "${map["altName"] as String}.${map["fileType"] as String}",
             map["fileId"] as String)
-        : _joinNameWithId(
-            "${map["fileName"] as String}}", map["fileId"] as String);
+        : _joinNameWithId(map["fileName"] as String, map["fileId"] as String);
     return ReceiveableItem(
       file: File("${Configurations.instance.impulseDir.path}$fileName"),
       fileType: map["fileType"] as String,
@@ -66,14 +65,15 @@ class ReceiveableItem extends Item {
   ReceiveableItem copyWith({
     File? file,
     int? start,
+    String? altName,
   }) {
     return ReceiveableItem(
       file: file ?? this.file,
       fileType: fileType,
       fileSize: fileSize,
       id: id,
-      homeDestination: homeDestination,
-      authorId: authorId,
+      homeDestination: homeDestination!,
+      authorId: authorId, altName: altName ?? this.altName,
       // progressCallBack: progressCallBack,
       // stateChange: stateChange,
       start: start ?? this.start,
@@ -82,8 +82,8 @@ class ReceiveableItem extends Item {
 
   late final Client _client = ClientImpl();
 
-  late final IOSink _output;
-  late final IClient _iClient;
+  IOSink? _output;
+  IClient? _iClient;
 
   bool _downloadCanceled = false;
   bool _downloadCompleted = false;
@@ -114,12 +114,19 @@ class ReceiveableItem extends Item {
       // );
       notifyListeners(downloadedBytes, fileSize, file, "", state);
     } else if (_downloadPaused) {
+      _downloadCanceled = false;
+      _downloadFailed = false;
+      _downloadCompleted = false;
+    } else if (_downloadCanceled) {
+      _downloadPaused = false;
+      _downloadFailed = false;
+      _downloadCompleted = false;
     } else {
-      _downloadCanceled = true;
+      _downloadFailed = true;
     }
 
-    await _output.flush().then((value) {
-      _output.close();
+    await _output?.flush().then((value) {
+      _output?.close();
       _downloading = false;
       final totalBytes = downloadedBytes;
       // final contentSize = _contentSize(totalBytes);
@@ -141,7 +148,7 @@ class ReceiveableItem extends Item {
     _downloadPaused = false;
     try {
       downloadedBytes = start;
-      final stream = _client.getFileStreamFromHostServer(homeDestination, id,
+      final stream = _client.getFileStreamFromHostServer(homeDestination!, id,
           start: start, end: fileSize, init: (length, client) {
         _iClient = client;
       });
@@ -152,19 +159,21 @@ class ReceiveableItem extends Item {
         /////does nothing
       } else {
         await for (final data in stream) {
-          downloadedBytes += data.length;
           // ignore: unused_local_variable
           final progress = _progress;
           if (_downloadCanceled || _downloadPaused) {
+            _iClient?.client.close();
+
             return;
           }
+          downloadedBytes += data.length;
           // onProgressCallback?.call(
           //   downloadedBytes,
           //   fileSize,
           //   state,
           // );
           notifyListeners(downloadedBytes, fileSize, file, "", state);
-          _output.add(data);
+          _output?.add(data);
         }
 
         ///After successful download update the state once more and call the onProgress
@@ -176,12 +185,13 @@ class ReceiveableItem extends Item {
         // );
       }
       print(downloadedBytes);
-      await _closeOutputStreams(true);
+      await _closeOutputStreams(downloadedBytes == fileSize ? true : false);
       return;
     } catch (e) {
       _downloading = false;
       _downloadFailed = true;
       // onStateChange?.call(downloadedBytes, fileSize, file, e.toString(), state);
+      await _closeOutputStreams();
       notifyListeners(downloadedBytes, fileSize, file, e.toString(), state);
       return;
     }
@@ -191,15 +201,16 @@ class ReceiveableItem extends Item {
   Future<void> pause() async {
     _downloadPaused = true;
     await _closeOutputStreams().then(
-      (value) => _iClient.client.close(),
+      (value) => _iClient?.client.close(),
     );
   }
 
   @override
   Future<void> cancel() async {
-    await _closeOutputStreams().then((value) {
-      file.deleteSync();
-      _iClient.client.close();
+    _downloadCanceled = true;
+    await _closeOutputStreams().then((value) async {
+      await file.delete();
+      _iClient?.client.close();
     });
   }
 
@@ -217,8 +228,13 @@ class ReceiveableItem extends Item {
   int get proccessedBytes => downloadedBytes;
 
   @override
+  void changeState(IState newState) {
+    notifyListeners(
+        downloadedBytes, fileSize, file, "Queue from pause", newState);
+  }
+
+  @override
   Map<String, dynamic> toMap() {
-    // TODO: implement toMap
     throw UnimplementedError();
   }
 

@@ -7,7 +7,7 @@ import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:lottie/lottie.dart';
 
-import 'scan_animation_painter.dart';
+import '../widgets/scan_animation_painter.dart';
 
 class CustomHostBottomModalSheet extends ConsumerStatefulWidget {
   const CustomHostBottomModalSheet({
@@ -20,16 +20,20 @@ class CustomHostBottomModalSheet extends ConsumerStatefulWidget {
 }
 
 class _CustomHostBottomModalSheetState
-    extends ConsumerState<CustomHostBottomModalSheet> {
+    extends ConsumerState<CustomHostBottomModalSheet>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
   @override
   void initState() {
     super.initState();
+    _controller =
+        AnimationController(vsync: this, duration: $styles.times.xSlow);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final homeController = ref.read(homeProvider);
       final hostController = ref.read(senderProvider);
       hostController.createServer().then((value) {
         homeController.isWaitingForReceiver = true;
-        ref.read(userProvider.notifier).setUserState(User.host);
+        ref.read(userProvider.notifier).setUserState(UserType.host);
         // print(hostController.clientServerInfo);
       });
     });
@@ -46,6 +50,12 @@ class _CustomHostBottomModalSheetState
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final homeController = ref.watch(homeProvider);
 
@@ -59,6 +69,7 @@ class _CustomHostBottomModalSheetState
         height: $styles.sizes.maxContentHeight1,
         width: double.infinity,
         color: $styles.colors.accentColor1,
+        constraints: $styles.constraints.modalConstraints,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -67,22 +78,40 @@ class _CustomHostBottomModalSheetState
             //   color: $styles.colors.iconColor3,
             //   size: $styles.sizes.xLargeIconSize,
             // ),
-            LottieBuilder.asset(
-              "assets/lottie/waiting.json",
+            Lottie(
+              composition: Configurations.instance.composition,
               height: $styles.sizes.xxLargeIconSize,
               width: $styles.sizes.xxLargeIconSize,
-              delegates: LottieDelegates(
-                  // values: [
-                  //   ValueDelegate.color(
-                  //     ['bout', 'bout 3', 'bmid'],
-                  //     callback: (s) {
-
-                  //       return Color(0xff78ee34);
-                  //     },
-                  // )
-                  // ],
-                  ),
+              controller: _controller..repeat(),
+              fit: BoxFit.contain,
             ),
+            // } else {
+            //   return const Center(
+            //     child: CircularProgressIndicator(),
+            //   );
+            // }
+            // return LottieBuilder.asset(
+            //   "assets/lottie/waiting.json",
+            //   height: $styles.sizes.xxLargeIconSize,
+            //   width: $styles.sizes.xxLargeIconSize,
+            //   controller: _controller,
+            //   frameRate: FrameRate.max,
+            //   frameBuilder: (context, child, composition) {
+            //     return child;
+            //   },
+            //   // delegates: LottieDelegates(
+            //   //     // values: [
+            //   //     //   ValueDelegate.color(
+            //   //     //     ['bout', 'bout 3', 'bmid'],
+            //   //     //     callback: (s) {
+
+            //   //     //       return Color(0xff78ee34);
+            //   //     //     },
+            //   //     // )
+            //   //     // ],
+            //   //     ),
+            // );
+            // }),
             Text(
               "Waitng for receivers....",
               style: $styles.text.h3,
@@ -256,7 +285,7 @@ class _CustomClientBottomModalSheetState
                           if (result == null) {
                             ref
                                 .read(userProvider.notifier)
-                                .setUserState(User.client);
+                                .setUserState(UserType.client);
                             ref.read(homeProvider).shouldShowTopStack = true;
                           }
                         },
@@ -372,7 +401,7 @@ class _CustomClientBottomModalSheetState
     } else {
       width = MediaQuery.of(context).size.width;
     }
-    width = (size.width / 2) - _modalInnerPadding;
+    // width = (size.width / 2) - _modalInnerPadding;
     // print(MediaQuery.of(context).size.width);
     final height = (size.height - _modalInnerPadding);
     final x = (offset.dx / (width / 2)) - 1;

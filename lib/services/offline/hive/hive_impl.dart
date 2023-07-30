@@ -30,8 +30,8 @@ class HiveManagerImpl extends HiveManager {
       type: item.fileType,
       totalSize: item.fileSize,
       homeUserId: item.authorId,
-      homeDestinationAddress: item.homeDestination.$1,
-      homeDestinationPort: item.homeDestination.$2,
+      homeDestinationAddress: item.homeDestination!.$1,
+      homeDestinationPort: item.homeDestination!.$2,
       iState: item.state,
       processedBytes: item.proccessedBytes,
     );

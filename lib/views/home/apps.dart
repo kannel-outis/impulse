@@ -27,7 +27,10 @@ class _AppsPageState extends ConsumerState<AppsPage>
         children: [
           for (final app in homeController.applications
               .where((element) => element.isSystemApp == false))
-            AppItem(app: app),
+            SelectableItemWidget(
+              app: app,
+              child: AppItem(app: app),
+            ),
         ],
       ),
     );

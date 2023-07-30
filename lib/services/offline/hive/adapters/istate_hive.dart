@@ -18,6 +18,8 @@ class IStateAdapter extends TypeAdapter<IState> {
         return IState.pending;
       case 4:
         return IState.failed;
+      case 5:
+        return IState.waiting;
       default:
         return IState.inProgress;
     }
@@ -41,8 +43,11 @@ class IStateAdapter extends TypeAdapter<IState> {
       case IState.failed:
         writer.writeByte(4);
         break;
-      case IState.inProgress:
+      case IState.waiting:
         writer.writeByte(5);
+        break;
+      case IState.inProgress:
+        writer.writeByte(6);
         break;
     }
   }
