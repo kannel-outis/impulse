@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
@@ -98,6 +99,49 @@ class TransferListTile extends StatelessWidget {
                                 ),
                               ],
                             ),
+                            if (!state.isCompleted && item is ReceiveableItem)
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Consumer(builder: (context, ref, child) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          // if (state.isInProgress) {
+                                          //   item.cancel();
+                                          // }
+                                          final receivableProvider = ref.read(
+                                              receivableListItems.notifier);
+                                          receivableProvider.cancelItemWithId(
+                                              item as ReceiveableItem);
+                                        },
+                                        child: Container(
+                                          height: 30,
+                                          width: 30,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(100),
+                                            color: Colors.transparent,
+                                            border:
+                                                Border.all(color: Colors.red),
+                                          ),
+                                          margin: EdgeInsets.only(
+                                            right: $styles.insets.sm,
+                                          ),
+                                          child: Center(
+                                            child: Icon(
+                                              CupertinoIcons.clear,
+                                              size: 15.scale,
+                                              color: $styles.colors.iconColor1,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                ),
+                              ),
                             if (mini == false &&
                                 item is ReceiveableItem &&
                                 (state.isInProgress || state.isPaused))

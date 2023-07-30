@@ -19,17 +19,20 @@ final receivableListItems =
       ref.watch(serverControllerProvider).receivablesStreamController.stream;
   final downloadManager = ref.read(downloadManagerProvider.notifier);
 
-  return ReceiveableItemsProvider(stream, downloadManager, HiveManagerImpl());
+  return ReceiveableItemsProvider(
+      stream, downloadManager, HiveManagerImpl(), ClientImpl());
 });
 
 class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
   final Stream<Map<String, dynamic>> itemsStream;
   final DownloadManager downloadManager;
   final HiveManager hiveManager;
+  final Client client;
   ReceiveableItemsProvider(
     this.itemsStream,
     this.downloadManager,
     this.hiveManager,
+    this.client,
   ) : super([]) {
     _listen();
   }
@@ -71,5 +74,13 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         downloadManager.download();
       }
     });
+  }
+
+  void cancelItemWithId(ReceiveableItem item) async {
+    await downloadManager.removeItemFromDownloadList(item);
+    await client.cancelItem(item.homeDestination, item.id);
+    state.removeWhere((element) => element.id == item.id);
+    state = [...state];
+    print(state.length);
   }
 }

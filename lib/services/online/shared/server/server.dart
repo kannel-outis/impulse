@@ -266,6 +266,14 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         ),
       );
       httpRequest.response.close();
+    } else if (url == _buildUrl("cancel")) {
+      final result = await httpRequest.fold<List<int>>(
+          [], (previous, element) => previous..addAll(element));
+      final bodyEncoded = String.fromCharCodes(result);
+      final fileId = jsonDecode(bodyEncoded)["fileId"] as String;
+      serverManager.removeCanceledItem(fileId);
+      httpRequest.response.statusCode = Constants.STATUS_OK;
+      httpRequest.response.close();
     }
   }
 

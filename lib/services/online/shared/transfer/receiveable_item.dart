@@ -207,8 +207,9 @@ class ReceiveableItem extends Item {
 
   @override
   Future<void> cancel() async {
-    await _closeOutputStreams().then((value) {
-      file.deleteSync();
+    _downloadCanceled = true;
+    await _closeOutputStreams().then((value) async {
+      await file.delete();
       _iClient?.client.close();
     });
   }

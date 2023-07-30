@@ -45,6 +45,13 @@ class DownloadManager extends StateNotifier<(int mBps, Item? currentItem)> {
 
   Timer? _debounceTimer;
 
+  Future<void> removeItemFromDownloadList(Item item) async {
+    if (item.state.isInProgress) {
+      await item.cancel();
+    }
+    _listOfWaitingReceivables.removeWhere((element) => element.id == item.id);
+  }
+
   Future<void> download({int index = 0}) async {
     // return;
     if (_listOfWaitingReceivables.isEmpty ||
@@ -66,15 +73,23 @@ class DownloadManager extends StateNotifier<(int mBps, Item? currentItem)> {
     item.addListener(_listener);
     ///////
     log("${item.id} from download");
-    await item.receive().then((value) async {
-      if (item.state.isCompleted) {
-        _listOfWaitingReceivables
-            .removeWhere((element) => element.state == IState.completed);
-      }
+    try {
+      await item.receive().then((value) async {
+        if (item.state.isCompleted ||
+            item.state.isCanceled ||
+            item.state.isFailed) {
+          _listOfWaitingReceivables
+              .removeWhere((element) => element.id == item.id);
+        }
+        item.removeListener(_listener);
+        // currentItemAtIndex += 1;
+        await download();
+      });
+    } catch (e) {
+      _listOfWaitingReceivables.removeWhere((element) => element.id == item.id);
       item.removeListener(_listener);
-      // currentItemAtIndex += 1;
       await download();
-    });
+    }
   }
 
   void pauseCurrentDownload() {

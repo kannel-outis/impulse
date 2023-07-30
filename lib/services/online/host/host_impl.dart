@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
@@ -97,10 +96,23 @@ class HostImpl extends Client implements Host {
   @override
   Future<Either<AppException?, Map<String, dynamic>>> shareDownloadableFiles(
       List<Map<String, dynamic>> files, (String, int) destination) {
-    final url = Uri.parse("http://${destination.$1}:${destination.$2}/sharables");
+    final url =
+        Uri.parse("http://${destination.$1}:${destination.$2}/sharables");
     final body = {
       "files": files,
     };
     return RequestHelper.post(url, body);
+  }
+
+  @override
+  Future<void> cancelItem((String, int) destination, String fileId) {
+    final url = Uri.parse("http://${destination.$1}:${destination.$2}/cancel");
+    final body = {
+      "fileId": fileId,
+    };
+    return RequestHelper.post(
+      url,
+      body,
+    );
   }
 }

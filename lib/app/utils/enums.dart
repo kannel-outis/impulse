@@ -22,7 +22,7 @@ enum ConnectionState {
   }
 }
 
-enum User {
+enum UserType {
   host,
   client,
   undecided,

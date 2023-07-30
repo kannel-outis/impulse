@@ -62,6 +62,7 @@ class SelectedItems extends StateNotifier<List<Item>> {
   }
 
   void clear() {
+    items.clear();
     state = [];
   }
 
@@ -93,6 +94,11 @@ class ShareableItemsProvider extends StateNotifier<List<ShareableItem>> {
 
   void addAllItems(List<Item> items) {
     state = [...state, ..._filteredList(items)];
+  }
+
+  void cancelItemWithId(String itemId) {
+    state.removeWhere((element) => element.id == itemId);
+    state = [...state];
   }
 
   List<Item> get filteredList => _filtered;

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:impulse/app/impulse_exception.dart';
 
 class RequestHelper {
+  const RequestHelper._();
   static Future<Either<AppException, Map<String, dynamic>>> get(Uri url) async {
     try {
       final response = await http.get(url);

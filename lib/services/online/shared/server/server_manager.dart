@@ -15,6 +15,7 @@ abstract class ServerManager {
   set port(int? ipAddress);
   int? get port;
   Future<HiveItem> getHiveItemForShareable(Item item);
+  void removeCanceledItem(String id);
 
   //subject to removal later
   // ServerInfo? get clientServerInfo;
