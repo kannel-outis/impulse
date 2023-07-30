@@ -9,14 +9,14 @@ import 'package:impulse_utils/impulse_utils.dart';
 import 'package:uuid/uuid.dart';
 
 final selectedItemsProvider =
-    StateNotifierProvider<SelectedItems, List<Item>>((ref) {
+    StateNotifierProvider<SelectedItems, List<ShareableItem>>((ref) {
   final serverController = ref.watch(serverControllerProvider);
   return SelectedItems(
     serverManager: serverController,
   );
 });
 
-class SelectedItems extends StateNotifier<List<Item>> {
+class SelectedItems extends StateNotifier<List<ShareableItem>> {
   final ServerManager serverManager;
   SelectedItems({
     List<File> initialList = const [],
@@ -76,7 +76,10 @@ class SelectedItems extends StateNotifier<List<Item>> {
       altName: altName,
 
       ///Home destination is my server
-      homeDestination: (serverManager.ipAddress!, serverManager.port!),
+      homeDestination:
+          serverManager.ipAddress == null || serverManager.port == null
+              ? null
+              : (serverManager.ipAddress!, serverManager.port!),
       authorId: myInfo.user.id,
     );
   }

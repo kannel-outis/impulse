@@ -45,10 +45,10 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
     final selectedItems = ref.watch(selectedItemsProvider.notifier);
     return GestureDetector(
       onLongPress: () {
-        if (widget.file == null && widget.app == null ||
-            ref.read(connectionStateProvider) != ConnectionState.connected) {
-          return;
-        }
+        // if (widget.file == null && widget.app == null ||
+        //     ref.read(connectionStateProvider) != ConnectionState.connected) {
+        //   return;
+        // }
 
         ///if Already in selecting mode, cancel
         if (selectingItemPRovider.isSelectingApp) return;
@@ -65,7 +65,6 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
         setState(() {});
       },
       onTap: () {
-        print("object");
         if (selectingItemPRovider.isSelectingApp) {
           ///Adds to selected apps or remove app if already added
           if (_isSelected == false) {

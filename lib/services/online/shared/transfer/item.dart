@@ -17,7 +17,7 @@ abstract class Item extends StateListenable with EquatableMixin {
   // OnProgressCallBack? onProgressCallback;
   // OnStateChange? onStateChange;
   final String authorId;
-  final (String, int) homeDestination;
+  (String, int)? homeDestination;
 
   Item({
     required this.file,
