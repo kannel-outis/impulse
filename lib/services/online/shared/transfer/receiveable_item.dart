@@ -72,7 +72,7 @@ class ReceiveableItem extends Item {
       fileType: fileType,
       fileSize: fileSize,
       id: id,
-      homeDestination: homeDestination,
+      homeDestination: homeDestination!,
       authorId: authorId, altName: altName ?? this.altName,
       // progressCallBack: progressCallBack,
       // stateChange: stateChange,
@@ -148,7 +148,7 @@ class ReceiveableItem extends Item {
     _downloadPaused = false;
     try {
       downloadedBytes = start;
-      final stream = _client.getFileStreamFromHostServer(homeDestination, id,
+      final stream = _client.getFileStreamFromHostServer(homeDestination!, id,
           start: start, end: fileSize, init: (length, client) {
         _iClient = client;
       });

@@ -17,9 +17,9 @@ class ShareableItem extends Item {
     required int fileSize,
     required String id,
     // this.progressCallBack,
-    // this.stateChange,
+    // this.stateChange
+    (String, int)? homeDestination,
     this.altName,
-    required (String, int) homeDestination,
     required String authorId,
   }) : super(
           id: id,
@@ -71,6 +71,7 @@ class ShareableItem extends Item {
   //   }
   // }
 
+  @override
   IState get state => _state;
 
   @override
@@ -83,8 +84,8 @@ class ShareableItem extends Item {
       "fileName": fileName,
       "altName": altName,
       "homeDestination": {
-        "ip": homeDestination.$1,
-        "port": homeDestination.$2,
+        "ip": homeDestination!.$1,
+        "port": homeDestination!.$2,
       }
     };
   }

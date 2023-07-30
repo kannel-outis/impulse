@@ -68,7 +68,7 @@ class DownloadManager extends StateNotifier<(int mBps, Item? currentItem)> {
     numberOfDownloadedItems = index;
     _downloading = true;
     final item = _listOfWaitingReceivables.first;
-    state = (0, item);
+    state = (_previousMBps, item);
     /////
     item.addListener(_listener);
     ///////

@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/services/services.dart';
 
@@ -78,9 +77,8 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
 
   void cancelItemWithId(ReceiveableItem item) async {
     await downloadManager.removeItemFromDownloadList(item);
-    await client.cancelItem(item.homeDestination, item.id);
+    await client.cancelItem(item.homeDestination!, item.id);
     state.removeWhere((element) => element.id == item.id);
     state = [...state];
-    print(state.length);
   }
 }
