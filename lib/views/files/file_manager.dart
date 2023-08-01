@@ -13,7 +13,8 @@ import 'widgets/file_manager_tile.dart';
 
 class FileManagerScreen extends ConsumerStatefulWidget {
   final List<ImpulseFileEntity>? files;
-  const FileManagerScreen({super.key, this.files});
+  final String? path;
+  const FileManagerScreen({super.key, this.files, this.path});
 
   @override
   ConsumerState<FileManagerScreen> createState() => _FileManagerScreenState();
@@ -29,8 +30,8 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
     if (isAndroid) {
       _init_();
     } else {
-      final dir =
-          ImpulseDirectory(directory: Directory("C:/Users/emirb/Downloads/"));
+      final dir = ImpulseDirectory(
+          directory: Directory(widget.path ?? "C:/Users/emirb/Downloads/"));
       _init_(dir);
     }
   }
@@ -75,7 +76,7 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
 
           ///for testing purpose
           // child: receiveables.isNotEmpty
-          //     ? ListView.builder(
+          //      ListView.builder(
           //         itemCount: receiveables.length,
           //         itemBuilder: (context, index) {
           //           return ListTile(

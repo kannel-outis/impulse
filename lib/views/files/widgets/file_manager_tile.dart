@@ -32,7 +32,9 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
           ? () {
               // if (widget.item.isFolder) {
               final files = fileManagerController.goToPath(widget.item);
-              context.push(ImpulseRouter.routes.folder, extra: files);
+              context.push(
+                  "${ImpulseRouter.routes.folder}/files/${widget.item.fileSystemEntity.path}",
+                  extra: widget.item.fileSystemEntity.path);
               // }
             }
           : null,

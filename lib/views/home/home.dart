@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/services/services.dart';
@@ -25,7 +26,11 @@ part 'videos.dart';
 part 'apps.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key});
+  final StatefulNavigationShell navigationShell;
+  const HomePage({
+    super.key,
+    required this.navigationShell,
+  });
 
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
@@ -33,8 +38,7 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage>
     with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-  late final PageController _pageController;
+  // late final PageController _pageController;
   late final _key = GlobalKey();
 
   int index = 0;
@@ -45,16 +49,6 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   void initState() {
     super.initState();
-
-    _tabController = TabController(length: tabs.length, vsync: this);
-    _pageController = PageController();
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //   ref.read(connectionStateProvider.notifier).addListener((state) {
-    //     if(state == ConnectionState.connected){
-
-    //     }
-    //   });
-    // });
   }
 
   Future<void> _share() async {
@@ -85,12 +79,6 @@ class _HomePageState extends ConsumerState<HomePage>
     ref.read(selectedItemsProvider.notifier).clear();
   }
 
-  List<Widget> get tabs => <Widget>[
-        Text("Apps", style: bodyStyle),
-        Text("Images", style: bodyStyle),
-        Text("Videos", style: bodyStyle),
-      ];
-
   Offset get getPositionOffset {
     final renderBox = _key.currentContext!.findRenderObject() as RenderBox?;
 
@@ -113,8 +101,6 @@ class _HomePageState extends ConsumerState<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    final connectionState = ref.watch(connectionStateProvider);
-
     return WillPopScope(
       onWillPop: () async {
         final miniPlayerControllerP = ref.read(miniPlayerController);
@@ -183,104 +169,91 @@ class _HomePageState extends ConsumerState<HomePage>
                   ),
                 ),
               ),
-              body: PageView(
-                controller: _pageController,
-                // onPageChanged: (page) {
-                //   index = page;
-                //   setState(() {});
-                // },
-                physics: const NeverScrollableScrollPhysics(),
-                children: [
-                  if (isAndroid)
-                    Home(tabController: _tabController, tabs: tabs),
-                  const FileManagerScreen(),
-                  const SettingScreen(),
-                ],
-              ),
-              floatingActionButton: connectionState == ConnectionState.connected
-                  ? Container()
-                  : Consumer(builder: (context, ref, child) {
-                      final homeController = ref.watch(homeProvider);
-                      final hostController = ref.watch(senderProvider);
+              body: widget.navigationShell,
+              floatingActionButton: Consumer(builder: (context, ref, child) {
+                final homeController = ref.watch(homeProvider);
+                final hostController = ref.watch(senderProvider);
+                final connectionState = ref.watch(connectionStateProvider);
+                final selectedItems = ref.watch(selectedItemsProvider);
 
-                      return CustomSpeedDial(
-                        open: isOverlayOpen,
-                        disable: hostController.host.isServerRunning ||
-                            connectionState == ConnectionState.connected,
-                        toolTipMessage: homeController.isWaitingForReceiver
-                            ? connectionState == ConnectionState.connected
-                                ? "Connected"
-                                : "Waiting for connection"
-                            : "Connect",
-                        waitForReverseAnimation: waitForOverlayReverseAnimation,
-                        onToggle: (isOpen) {
-                          waitforOverlayReverseAnimation(true);
-                          if (isOpen != isOverlayOpen) {
-                            isOverlayOpen = isOpen;
-                            setState(() {});
-                          }
-                        },
-                        overlayChildrenOffset: const Offset(0.0, -10),
-                        duration: $styles.times.med,
-                        child: Stack(
-                          children: [
-                            Container(
-                              height: 50,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
+                return connectionState == ConnectionState.notConnected &&
+                        selectedItems.isNotEmpty
+                    ? Container()
+                    : connectionState == ConnectionState.connected
+                        ? Container()
+                        : CustomSpeedDial(
+                            open: isOverlayOpen,
+                            disable: hostController.host.isServerRunning ||
+                                connectionState == ConnectionState.connected,
+                            toolTipMessage: homeController.isWaitingForReceiver
+                                ? connectionState == ConnectionState.connected
+                                    ? "Connected"
+                                    : "Waiting for connection"
+                                : "Connect",
+                            waitForReverseAnimation:
+                                waitForOverlayReverseAnimation,
+                            onToggle: (isOpen) {
+                              waitforOverlayReverseAnimation(true);
+                              if (isOpen != isOverlayOpen) {
+                                isOverlayOpen = isOpen;
+                                setState(() {});
+                              }
+                            },
+                            overlayChildrenOffset: const Offset(0.0, -10),
+                            duration: $styles.times.med,
+                            child: Stack(
+                              children: [
+                                Container(
+                                  height: 50,
+                                  width: 50,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(100),
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
 
-                              /// This particular icon is not aligned properly
-                              /// it had to be manually done
-                              alignment: const Alignment(0.0, .2),
-                              child: const Icon(
-                                ImpulseIcons.transfer5,
-                                size: 30,
-                              ),
-                            ),
-                            if (hostController.host.isServerRunning ||
-                                connectionState == ConnectionState.connected)
-                              Container(
-                                height: 50,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100),
-                                  color: Colors.black.withOpacity(.5),
+                                  /// This particular icon is not aligned properly
+                                  /// it had to be manually done
+                                  alignment: const Alignment(0.0, .2),
+                                  child: const Icon(
+                                    ImpulseIcons.transfer5,
+                                    size: 30,
+                                  ),
                                 ),
+                                if (hostController.host.isServerRunning ||
+                                    connectionState ==
+                                        ConnectionState.connected)
+                                  Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100),
+                                      color: Colors.black.withOpacity(.5),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            // childSpacing: .4,
+                            children: [
+                              SpeedChild(
+                                onTap: () {
+                                  closeOverlay();
+                                },
+                                icon: Icons.file_upload_rounded,
                               ),
-                          ],
-                        ),
-                        // childSpacing: .4,
-                        children: [
-                          SpeedChild(
-                            onTap: () {
-                              closeOverlay();
-                            },
-                            icon: Icons.file_upload_rounded,
-                          ),
-                          SpeedChild(
-                            isHost: false,
-                            onTap: () {
-                              closeOverlay();
-                            },
-                            icon: Icons.file_download_rounded,
-                          ),
-                        ].reversed.toList(),
-                      );
-                    }),
+                              SpeedChild(
+                                isHost: false,
+                                onTap: () {
+                                  closeOverlay();
+                                },
+                                icon: Icons.file_download_rounded,
+                              ),
+                            ].reversed.toList(),
+                          );
+              }),
               bottomNavigationBar: MyBottomNavBar(
-                index: index,
-                onChanged: (index) {
-                  this.index = index;
-                  setState(() {});
-                  _pageController.animateToPage(
-                    index,
-                    duration: $styles.times.pageTransition,
-                    curve: $styles.curves.defaultCurve,
-                  );
-                },
+                index: widget.navigationShell.currentIndex,
+                onChanged: onChanged,
               ),
             ),
 
@@ -309,17 +282,38 @@ class _HomePageState extends ConsumerState<HomePage>
       ),
     );
   }
+
+  void onChanged(int index) {
+    widget.navigationShell.goBranch(
+      index,
+      initialLocation: index == widget.navigationShell.currentIndex,
+    );
+  }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({
     super.key,
-    required TabController tabController,
-    required this.tabs,
-  }) : _tabController = tabController;
+  });
 
-  final TabController _tabController;
-  final List<Widget> tabs;
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
+  List<Widget> get tabs => <Widget>[
+        Text("Apps", style: bodyStyle),
+        Text("Images", style: bodyStyle),
+        Text("Videos", style: bodyStyle),
+      ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: tabs.length, vsync: this);
+  }
 
   @override
   Widget build(BuildContext context) {
