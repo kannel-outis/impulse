@@ -1,16 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/impulse_scaffold.dart';
-import 'package:impulse/test.dart';
 import 'package:impulse/views/settings/settings_screen.dart';
-import 'package:impulse/views/shared/custom_speed_dial.dart';
 import 'package:impulse/views/files/file_manager.dart';
 import 'package:impulse/views/home/home.dart';
-import 'package:impulse/views/transfer/transfer_page.dart';
-import 'package:impulse_utils/impulse_utils.dart';
 
 class ImpulseRouter {
   static const routes = _Routes();
@@ -59,58 +53,65 @@ class ImpulseRouter {
       //   ],
       // ),
 
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) {
-          return ImpulseScaffold(
-            child: HomePage(
-              navigationShell: navigationShell,
-            ),
-          );
+      ShellRoute(
+        builder: (context, state, child) {
+          return ImpulseScaffold(child: child);
         },
-        branches: [
-          if (isAndroid)
-            StatefulShellBranch(
-              routes: [
-                ImpulseRoute(
-                  path: routes.home,
-                  builder: (s) {
-                    return const Home();
-                  },
+        routes: [
+          StatefulShellRoute.indexedStack(
+            builder: (context, state, navigationShell) {
+              return HomePage(
+                navigationShell: navigationShell,
+              );
+            },
+            branches: [
+              if (isAndroid)
+                StatefulShellBranch(
+                  routes: [
+                    ImpulseRoute(
+                      path: routes.home,
+                      builder: (s) {
+                        return const Home();
+                      },
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          StatefulShellBranch(
-            navigatorKey: nestedFolderNavKey,
-            routes: [
-              ImpulseRoute(
-                path: routes.folder,
-                builder: (s) {
-                  return const FileManagerScreen();
-                },
+              StatefulShellBranch(
+                navigatorKey: nestedFolderNavKey,
                 routes: [
                   ImpulseRoute(
-                    path: "files/:path",
-                    // name: "insideFolder",
+                    path: routes.folder,
                     builder: (s) {
-                      print(s.fullPath);
-                      return FileManagerScreen(
-                        // files: s.extra != null
-                        //     ? s.extra as List<ImpulseFileEntity>
-                        //     : null,
-                        path: s.extra != null ? s.extra as String : null,
-                      );
+                      return const FileManagerScreen();
                     },
+                    routes: [
+                      ImpulseRoute(
+                        path: "files/:path",
+                        name: "filesPath",
+                        builder: (s) {
+                          print(Uri.decodeComponent(s.matchedLocation));
+                          // print(Uri.parse(s.location));
+                          return FileManagerScreen(
+                            // files: s.extra != null
+                            //     ? s.extra as List<ImpulseFileEntity>
+                            //     : null,
+                            // path: s.extra != null ? s.extra as String : null,
+                            path: s.pathParameters["path"] as String,
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              ImpulseRoute(
-                path: routes.settings,
-                builder: (s) => const SettingScreen(),
-              )
+              StatefulShellBranch(
+                routes: [
+                  ImpulseRoute(
+                    path: routes.settings,
+                    builder: (s) => const SettingScreen(),
+                  )
+                ],
+              ),
             ],
           ),
         ],
@@ -136,7 +137,7 @@ class ImpulseRoute extends GoRoute {
   ImpulseRoute(
       {required String path,
       required Widget Function(GoRouterState s) builder,
-      List<GoRoute> routes = const [],
+      List<RouteBase> routes = const [],
       String? name,
       this.parentNavKey})
       : super(

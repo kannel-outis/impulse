@@ -6,19 +6,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
-import 'package:impulse/services/services.dart';
-import 'package:impulse/views/files/file_manager.dart';
 import 'package:impulse/views/home/widgets/app_item.dart';
-import 'package:impulse/views/settings/settings_screen.dart';
 import 'package:impulse/views/shared/custom_speed_dial.dart';
 import 'package:impulse/views/shared/padded_body.dart';
 import 'package:impulse/views/shared/selectable_item_widget.dart';
 import 'package:impulse/views/transfer/transfer_page.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'components/bottom_nav_bar.dart';
 import 'widgets/speed_child_item.dart';
-import 'widgets/spinner.dart';
 import 'widgets/top_stack.dart';
 
 part 'images.dart';

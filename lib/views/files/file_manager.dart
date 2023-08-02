@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/views/shared/padded_body.dart';
@@ -23,15 +24,24 @@ class FileManagerScreen extends ConsumerStatefulWidget {
 class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
     with AutomaticKeepAliveClientMixin {
   List<ImpulseFileEntity> files = [];
+  late final ScrollController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = ScrollController();
     if (isAndroid) {
-      _init_();
+      final dir = widget.path == null
+          ? null
+          : ImpulseDirectory(
+              directory: Directory(widget.path!),
+            );
+      _init_(dir);
     } else {
       final dir = ImpulseDirectory(
-          directory: Directory(widget.path ?? "C:/Users/emirb/Downloads/"));
+        directory: Directory(widget.path ??
+            "C:${Platform.pathSeparator}Users${Platform.pathSeparator}emirb${Platform.pathSeparator}Downloads${Platform.pathSeparator}"),
+      );
       _init_(dir);
     }
   }
@@ -49,59 +59,77 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
     }
   }
 
+  List<String> get paths => widget.path!.split(Platform.pathSeparator);
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final receiveables = ref.watch(receivableListItems);
 
-    if (files.isEmpty) {
-      return Center(
-        child: InkWell(
-          onTap: () {
-            // if (ref.read(alertStateNotifier) == false) {
-            //   ref.read(alertStateNotifier.notifier).updateState(true);
-            //   return;
-            // }
-            // ref.read(alertStateNotifier.notifier).updateState(false);
-
-            // ref
-            //     .read(connectionStateProvider.notifier)
-            //     .setState(ConnectionState.connected);
-          },
-          child: Icon(
-            Icons.inventory_2,
-            size: $styles.sizes.prefixIconSize * 4,
-            color: $styles.colors.iconColor1,
-          ),
-
-          ///for testing purpose
-          // child: receiveables.isNotEmpty
-          //      ListView.builder(
-          //         itemCount: receiveables.length,
-          //         itemBuilder: (context, index) {
-          //           return ListTile(
-          //             title: Text(
-          //               receiveables[index].fileSize.toString(),
-          //             ),
-          //           );
-          //         },
-          //       )
-          //     : null,
-        ),
-      );
-    }
     return PaddedBody(
-      child: ListView.builder(
-        itemCount: files.length,
-        itemBuilder: (context, index) {
-          final item = files[index];
-          return SelectableItemWidget(
-            file: (item.fileSystemEntity is File)
-                ? item.fileSystemEntity as File
-                : null,
-            child: FileManagerTile(item: item),
-          );
-        },
+      child: Column(
+        children: [
+          SizedBox(
+            height: 100,
+            width: double.infinity,
+            child: SizedBox(
+              width:
+                  MediaQuery.of(context).size.width - ($styles.insets.md * 2),
+              child: SingleChildScrollView(
+                controller: _controller,
+                scrollDirection: Axis.horizontal,
+                physics: const NeverScrollableScrollPhysics(),
+                reverse: true,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (widget.path != null)
+                      for (var i = 0; i < paths.length; i++)
+                        GestureDetector(
+                          onTap: () {
+                            context.go("${ImpulseRouter.routes.folder}/files",
+                                extra: paths[i]);
+                          },
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: ($styles.insets.md, $styles.insets.md)
+                                    .insets,
+                                child: Text(paths[i], style: $styles.text.body),
+                              ),
+                              i != (paths.length - 1)
+                                  ? Text(">", style: $styles.text.body)
+                                  : const SizedBox(),
+                            ],
+                          ),
+                        ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: files.isEmpty
+                ? Icon(
+                    Icons.inventory_2,
+                    size: $styles.sizes.prefixIconSize * 4,
+                    color: $styles.colors.iconColor1,
+                  )
+                : ListView.builder(
+                    itemCount: files.length,
+                    itemBuilder: (context, index) {
+                      final item = files[index];
+                      return SelectableItemWidget(
+                        file: (item.fileSystemEntity is File)
+                            ? item.fileSystemEntity as File
+                            : null,
+                        child: FileManagerTile(item: item),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }
