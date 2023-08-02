@@ -7,7 +7,12 @@ final fileManagerProvider =
 
 class FileManagerController extends ChangeNotifier {
   List<ImpulseFileEntity> goToPath([ImpulseFileEntity? dir]) {
-    /// if no directory is provided, it goes directly to internal storage
+    /// *if no directory is provided, it goes directly to internal storage
     return FileManager.instance.getFileInDir(dir);
+  }
+
+  Future<List<ImpulseFileEntity>> goToPathAsync(
+      [ImpulseFileEntity? dir]) async {
+    return await FileManager.instance.getFileInDirAsync(dir);
   }
 }

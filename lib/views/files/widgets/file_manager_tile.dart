@@ -1,15 +1,18 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Path;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
-import 'package:impulse/controllers/file_manager/file_manager_controller.dart';
+// import 'package:impulse/controllers/file_manager/file_manager_controller.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
 class FileManagerTile extends ConsumerStatefulWidget {
   final ImpulseFileEntity item;
-  const FileManagerTile({super.key, required this.item});
+  const FileManagerTile({
+    super.key,
+    required this.item,
+  });
 
   @override
   ConsumerState<FileManagerTile> createState() => _FileManagerTileState();
@@ -25,13 +28,13 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
   double get leftItemPadding => 15;
   @override
   Widget build(BuildContext context) {
-    final fileManagerController = ref.watch(fileManagerProvider);
+    // final fileManagerController = ref.watch(fileManagerProvider);
 
     return GestureDetector(
       onTap: widget.item.isFolder
           ? () {
               // if (widget.item.isFolder) {
-              final files = fileManagerController.goToPath(widget.item);
+              // final files = fileManagerController.goToPath(widget.item);
 
               context.pushNamed(
                 "filesPath",

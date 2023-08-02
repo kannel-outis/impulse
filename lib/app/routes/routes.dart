@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Path;
 import 'package:go_router/go_router.dart';
+import 'package:impulse/models/models.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/impulse_scaffold.dart';
 import 'package:impulse/views/settings/settings_screen.dart';
@@ -89,14 +90,14 @@ class ImpulseRouter {
                         path: "files/:path",
                         name: "filesPath",
                         builder: (s) {
-                          print(Uri.decodeComponent(s.matchedLocation));
+                          // print(Uri.decodeComponent(s.matchedLocation));
                           // print(Uri.parse(s.location));
                           return FileManagerScreen(
                             // files: s.extra != null
                             //     ? s.extra as List<ImpulseFileEntity>
                             //     : null,
                             // path: s.extra != null ? s.extra as String : null,
-                            path: s.pathParameters["path"] as String,
+                            path: Path(location: s.location),
                           );
                         },
                       ),
