@@ -61,8 +61,11 @@ class ImpulseRouter {
         routes: [
           StatefulShellRoute.indexedStack(
             builder: (context, state, navigationShell) {
-              return HomePage(
-                navigationShell: navigationShell,
+              return Scaffold(
+                body: HomePage(
+                  navigationShell: navigationShell,
+                ),
+                resizeToAvoidBottomInset: false,
               );
             },
             branches: [
