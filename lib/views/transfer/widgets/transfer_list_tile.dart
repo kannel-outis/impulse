@@ -27,7 +27,6 @@ class TransferListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(item.homeDestination);
     return ItemListenableBuilder(
         listenable: item,
         builder: (context, percentage, state) {

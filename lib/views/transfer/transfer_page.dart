@@ -168,6 +168,12 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                                     ref.watch(shareableItemsProvider);
                                 final downloadManager =
                                     ref.watch(downloadManagerProvider);
+                                /* 
+                                    ! This needs to be here to start listening to the provider
+                                    ! it serves as the first listener to the receivableItems after a connection has been established
+                                    ! that way, it can automatically start downloading the items
+                                    */
+                                ref.watch(receivableListItems);
                                 if (downloadManager.$2 != null) {
                                   log(downloadManager.$1);
                                   return TransferListTile(
