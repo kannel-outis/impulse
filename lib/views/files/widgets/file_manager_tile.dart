@@ -60,7 +60,7 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
                 SizedBox(
                   width: _itemTileWidth(padding: leftItemPadding * 4),
                   child: Text(
-                    widget.item.name,
+                    widget.item.rootName ?? widget.item.name,
                     overflow: TextOverflow.ellipsis,
                     style: $styles.text.body,
                   ),
