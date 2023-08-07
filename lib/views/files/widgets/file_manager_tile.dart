@@ -25,6 +25,8 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
         ($styles.sizes.prefixIconSize + padding));
   }
 
+  ImpulseFileStorage get asStorageFile => widget.item as ImpulseFileStorage;
+
   double get leftItemPadding => 15;
   @override
   Widget build(BuildContext context) {
@@ -53,30 +55,66 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
           children: [
             _getPreffix(widget.item),
             SizedBox(width: leftItemPadding),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: _itemTileWidth(padding: leftItemPadding * 4),
-                  child: Text(
-                    widget.item.rootName ?? widget.item.name,
-                    overflow: TextOverflow.ellipsis,
-                    style: $styles.text.body,
+            widget.item is ImpulseFileStorage
+                ? Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: _itemTileWidth(padding: leftItemPadding * 4),
+                          child: Text(
+                            asStorageFile.type.label,
+                            overflow: TextOverflow.ellipsis,
+                            style: $styles.text.body,
+                          ),
+                        ),
+                        Row(
+                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Used: ${asStorageFile.usedSizeToFileSize.sizeToString}",
+                              style: $styles.text.body,
+                            ),
+                            SizedBox(width: $styles.insets.xl),
+                            Text(
+                              "Available: ${asStorageFile.remainingSizeToFileSize.sizeToString}",
+                              style: $styles.text.body,
+                            ),
+                            SizedBox(width: $styles.insets.xl),
+                            Text(
+                              "Total: ${asStorageFile.totalSizeToFileSize.sizeToString}",
+                              style: $styles.text.body,
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: _itemTileWidth(padding: leftItemPadding * 4),
+                        child: Text(
+                          widget.item.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: $styles.text.body,
+                        ),
+                      ),
+                      Text(
+                        widget.item.isFolder
+                            ? widget.item.fileSystemEntity
+                                .statSync()
+                                .modified
+                                .toString()
+                                .cutTimeDateString
+                            : widget.item.sizeToString,
+                        style: $styles.text.body,
+                      ),
+                    ],
                   ),
-                ),
-                Text(
-                  widget.item.isFolder
-                      ? widget.item.fileSystemEntity
-                          .statSync()
-                          .modified
-                          .toString()
-                          .cutTimeDateString
-                      : widget.item.sizeToString,
-                  style: $styles.text.body,
-                ),
-              ],
-            ),
           ],
         ),
       ),
@@ -120,6 +158,20 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
   }
 
   Container _buildFolderPreffix() {
+    if (widget.item.isRoot) {
+      return Container(
+        height: 45,
+        width: 45,
+        alignment: Alignment.center,
+        child: Icon(
+          (widget.item as ImpulseFileStorage).type == FileStorageType.Internal
+              ? Icons.phone_android_sharp
+              : Icons.sd_card_outlined,
+          color: $styles.colors.iconColor1,
+          size: 40.scale,
+        ),
+      );
+    }
     return Container(
       height: 45,
       width: 45,

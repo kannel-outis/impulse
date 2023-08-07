@@ -2,9 +2,11 @@ import 'dart:io';
 
 class Path {
   final String location;
+  String? altName;
 
-  const Path({
+  Path({
     required this.location,
+    this.altName,
   });
 
   String get locationDecode => Uri.decodeComponent(location);
@@ -12,6 +14,6 @@ class Path {
   String get name {
     final ss = path.split(Platform.pathSeparator);
     ss.removeWhere((s) => s == "");
-    return ss.last;
+    return altName ?? ss.last;
   }
 }

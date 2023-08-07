@@ -29,7 +29,7 @@ class TransferListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ItemListenableBuilder(
         listenable: item,
-        builder: (context, percentage, state) {
+        builder: (context, percentage, state, child) {
           return Consumer(builder: (context, ref, child) {
             return GestureDetector(
               onTap: (mini)

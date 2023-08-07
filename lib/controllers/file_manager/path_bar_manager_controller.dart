@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:impulse/app/app.dart';
 import 'package:impulse/models/models.dart';
 
 final pathController = StateNotifierProvider<PathController, List<Path>>((ref) {
@@ -6,7 +7,7 @@ final pathController = StateNotifierProvider<PathController, List<Path>>((ref) {
 });
 
 class PathController extends StateNotifier<List<Path>> {
-  PathController() : super([]);
+  PathController() : super([Path(location: ImpulseRouter.routes.folder, altName: "Root")]);
 
   void addPathToNav(Path path) {
     state = [...state, path];

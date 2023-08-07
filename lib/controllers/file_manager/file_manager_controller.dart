@@ -15,14 +15,14 @@ class FileManagerController extends ChangeNotifier {
 
   Future<List<ImpulseFileEntity>> goToPathAsync(
       [ImpulseFileEntity? _dir]) async {
-    late final ImpulseFileEntity dir;
-    if (_dir == null) {
-      final d = goToPath(
-          ImpulseDirectory(directory: Directory("/storage/4EF2-EB5A/")));
-      for (var element in d) {
-        print(element.name);
-      }
-    }
+    // late final ImpulseFileEntity dir;
+    // if (_dir == null) {
+    //   final d = goToPath(
+    //       ImpulseDirectory(directory: Directory("/storage/4EF2-EB5A/")));
+    //   for (var element in d) {
+    //     print(element.name);
+    //   }
+    // }
     // } else {}
     return await FileManager.instance.getFileInDirAsync(_dir);
   }
