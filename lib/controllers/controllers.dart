@@ -1,5 +1,7 @@
+export 'download_manager.dart';
 export 'file_manager/file_manager.dart';
 export 'file_manager/file_manager_controller.dart';
+export 'file_manager/path_bar_manager_controller.dart';
 export 'home/home.dart';
 export 'home/home_provider.dart';
 export 'shared/alert_state_controller.dart';
@@ -13,4 +15,3 @@ export 'shared/sender_controller.dart';
 export 'shared/server_controller.dart';
 export 'shared/shared.dart';
 export 'shared/user_state_notifier.dart';
-export 'download_manager.dart';

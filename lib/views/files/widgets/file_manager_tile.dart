@@ -1,15 +1,18 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Path;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
-import 'package:impulse/controllers/file_manager/file_manager_controller.dart';
+// import 'package:impulse/controllers/file_manager/file_manager_controller.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
 class FileManagerTile extends ConsumerStatefulWidget {
   final ImpulseFileEntity item;
-  const FileManagerTile({super.key, required this.item});
+  const FileManagerTile({
+    super.key,
+    required this.item,
+  });
 
   @override
   ConsumerState<FileManagerTile> createState() => _FileManagerTileState();
@@ -22,17 +25,24 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
         ($styles.sizes.prefixIconSize + padding));
   }
 
+  ImpulseFileStorage get asStorageFile => widget.item as ImpulseFileStorage;
+
   double get leftItemPadding => 15;
   @override
   Widget build(BuildContext context) {
-    final fileManagerController = ref.watch(fileManagerProvider);
+    // final fileManagerController = ref.watch(fileManagerProvider);
 
     return GestureDetector(
       onTap: widget.item.isFolder
           ? () {
               // if (widget.item.isFolder) {
-              final files = fileManagerController.goToPath(widget.item);
-              context.push(ImpulseRouter.routes.folder, extra: files);
+              // final files = fileManagerController.goToPath(widget.item);
+
+              context.pushNamed(
+                "filesPath",
+                pathParameters: {"path": widget.item.fileSystemEntity.path},
+                // extra: widget.item.fileSystemEntity.path,
+              );
               // }
             }
           : null,
@@ -45,30 +55,66 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
           children: [
             _getPreffix(widget.item),
             SizedBox(width: leftItemPadding),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: _itemTileWidth(padding: leftItemPadding * 4),
-                  child: Text(
-                    widget.item.name,
-                    overflow: TextOverflow.ellipsis,
-                    style: $styles.text.body,
+            widget.item is ImpulseFileStorage
+                ? Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: _itemTileWidth(padding: leftItemPadding * 4),
+                          child: Text(
+                            asStorageFile.type.label,
+                            overflow: TextOverflow.ellipsis,
+                            style: $styles.text.body,
+                          ),
+                        ),
+                        Row(
+                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Used: ${asStorageFile.usedSizeToFileSize.sizeToString}",
+                              style: $styles.text.body,
+                            ),
+                            SizedBox(width: $styles.insets.xl),
+                            Text(
+                              "Available: ${asStorageFile.remainingSizeToFileSize.sizeToString}",
+                              style: $styles.text.body,
+                            ),
+                            SizedBox(width: $styles.insets.xl),
+                            Text(
+                              "Total: ${asStorageFile.totalSizeToFileSize.sizeToString}",
+                              style: $styles.text.body,
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: _itemTileWidth(padding: leftItemPadding * 4),
+                        child: Text(
+                          widget.item.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: $styles.text.body,
+                        ),
+                      ),
+                      Text(
+                        widget.item.isFolder
+                            ? widget.item.fileSystemEntity
+                                .statSync()
+                                .modified
+                                .toString()
+                                .cutTimeDateString
+                            : widget.item.sizeToString,
+                        style: $styles.text.body,
+                      ),
+                    ],
                   ),
-                ),
-                Text(
-                  widget.item.isFolder
-                      ? widget.item.fileSystemEntity
-                          .statSync()
-                          .modified
-                          .toString()
-                          .cutTimeDateString
-                      : widget.item.sizeToString,
-                  style: $styles.text.body,
-                ),
-              ],
-            ),
           ],
         ),
       ),
@@ -112,6 +158,20 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
   }
 
   Container _buildFolderPreffix() {
+    if (widget.item.isRoot) {
+      return Container(
+        height: 45,
+        width: 45,
+        alignment: Alignment.center,
+        child: Icon(
+          (widget.item as ImpulseFileStorage).type == FileStorageType.Internal
+              ? Icons.phone_android_sharp
+              : Icons.sd_card_outlined,
+          color: $styles.colors.iconColor1,
+          size: 40.scale,
+        ),
+      );
+    }
     return Container(
       height: 45,
       width: 45,

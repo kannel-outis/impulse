@@ -30,7 +30,7 @@ class ShareableItem extends Item {
           // onStateChange: stateChange,
           authorId: authorId,
           homeDestination: homeDestination,
-          fileName: altName ?? file.path.split("/").last,
+          fileName: altName ?? file.path.split(Platform.pathSeparator).last,
         );
 
   IState _state = IState.pending;

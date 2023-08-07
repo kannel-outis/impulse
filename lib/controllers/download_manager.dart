@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
+import 'package:impulse/app/utils/debouncer.dart';
 import 'package:impulse/services/services.dart';
 
 final downloadManagerProvider =
@@ -43,7 +44,9 @@ class DownloadManager extends StateNotifier<(int mBps, Item? currentItem)> {
   int _previouseReceivedByte = 0;
   int _previousMBps = 0;
 
-  Timer? _debounceTimer;
+  // Timer? _debounceTimer;
+  final Debouncer _debouncer =
+      Debouncer(duration: const Duration(seconds: 1), function: () {});
 
   Future<void> removeItemFromDownloadList(Item item) async {
     if (item.state.isInProgress) {
@@ -60,7 +63,7 @@ class DownloadManager extends StateNotifier<(int mBps, Item? currentItem)> {
       if (_downloading == false) {
         Future.delayed(const Duration(seconds: 1), () {
           state = (0, state.$2);
-          _debounceTimer?.cancel();
+          _debouncer.cancel();
         });
       }
       return;
@@ -128,22 +131,28 @@ class DownloadManager extends StateNotifier<(int mBps, Item? currentItem)> {
   void _listener(received, totalSize, file, reason, state) {
     DateTime now = DateTime.now();
 
-    if (_debounceTimer == null || !_debounceTimer!.isActive) {
-      _debounceTimer?.cancel();
-      _debounceTimer = Timer(const Duration(seconds: 1), () {
-        final duration = now.difference(_previouseReceivedTime).inSeconds;
-        final bytesPerInterval =
-            (received - _previouseReceivedByte) ~/ duration;
-        final mBps = bytesPerInterval.isNegative
-            ? _previousMBps
-            : bytesPerInterval.toInt();
-        this.state = (mBps, this.state.$2);
-        _previousMBps = mBps;
+    _debouncer.debounce(
+      () => debouncedFunction(now, received, totalSize, file, reason, state),
+    );
+  }
 
-        log(bytesPerInterval.toString());
-        _previouseReceivedTime = now;
-        _previouseReceivedByte = received;
-      });
-    }
+  void debouncedFunction(
+    DateTime now,
+    int received,
+    int totalSize,
+    file,
+    String reason,
+    IState state,
+  ) {
+    final duration = now.difference(_previouseReceivedTime).inSeconds;
+    final bytesPerInterval = (received - _previouseReceivedByte) ~/ duration;
+    final mBps =
+        bytesPerInterval.isNegative ? _previousMBps : bytesPerInterval.toInt();
+    this.state = (mBps, this.state.$2);
+    _previousMBps = mBps;
+
+    log(bytesPerInterval.toString());
+    _previouseReceivedTime = now;
+    _previouseReceivedByte = received;
   }
 }
