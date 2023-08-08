@@ -11,3 +11,4 @@ export 'utils/extensions.dart';
 export 'utils/file_size.dart';
 export 'utils/globals.dart';
 export 'utils/my_icons.dart';
+export 'utils/generic_provider_ref.dart';

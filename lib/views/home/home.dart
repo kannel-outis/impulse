@@ -48,34 +48,6 @@ class _HomePageState extends ConsumerState<HomePage>
     super.initState();
   }
 
-  Future<void> _share() async {
-    final destination = ref.read(connectUserStateProvider);
-    if (destination == null) return;
-    final hostController = ref.read(senderProvider);
-
-    final files = ref.read(selectedItemsProvider);
-    for (final item in files) {
-      item.homeDestination ??= (
-        ref.read(serverControllerProvider).ipAddress!,
-        ref.read(serverControllerProvider).port!
-      );
-    }
-    ref.read(shareableItemsProvider.notifier).addAllItems(files);
-    final shareableFiles = ref
-        .read(shareableItemsProvider.notifier)
-        .filteredList
-        .map((e) => e.toMap())
-        .toList();
-    // print(files);
-    print(shareableFiles.length);
-
-    // return;
-
-    await hostController.shareDownloadableFiles(
-        shareableFiles, (destination.ipAddress!, destination.port!));
-    ref.read(selectedItemsProvider.notifier).clear();
-  }
-
   Offset get getPositionOffset {
     final renderBox = _key.currentContext!.findRenderObject() as RenderBox?;
 
@@ -149,7 +121,12 @@ class _HomePageState extends ConsumerState<HomePage>
                             //   log("${e.path}: ${e.fileSize}");
                             // }
                             // return;
-                            await _share();
+
+                            log("object");
+                            final genericRef =
+                                GenericProviderRef<WidgetRef>(ref);
+
+                            await share(genericRef);
                           },
                           child: Container(
                             height: 40.scale,
@@ -242,7 +219,9 @@ class _HomePageState extends ConsumerState<HomePage>
                 if (connectionState == ConnectionState.notConnected &&
                     selectedItems.isNotEmpty) {
                   return GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      showModel(true, context);
+                    },
                     child: Container(
                       height: 50,
                       width: 50,

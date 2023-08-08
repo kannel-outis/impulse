@@ -7,4 +7,4 @@ export 'selected_item_provider.dart';
 export 'selecting_item_provider.dart';
 export 'sender_controller.dart';
 export 'server_controller.dart';
-export 'user_state_notifier.dart';
+export 'user_type_state_notifier.dart';

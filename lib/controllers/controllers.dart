@@ -14,4 +14,4 @@ export 'shared/selecting_item_provider.dart';
 export 'shared/sender_controller.dart';
 export 'shared/server_controller.dart';
 export 'shared/shared.dart';
-export 'shared/user_state_notifier.dart';
+export 'shared/user_type_state_notifier.dart';
