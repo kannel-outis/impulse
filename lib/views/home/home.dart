@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart' hide ConnectionState;
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
@@ -238,80 +239,102 @@ class _HomePageState extends ConsumerState<HomePage>
                 final connectionState = ref.watch(connectionStateProvider);
                 final selectedItems = ref.watch(selectedItemsProvider);
 
-                return connectionState == ConnectionState.notConnected &&
-                        selectedItems.isNotEmpty
-                    ? Container()
-                    : connectionState == ConnectionState.connected
-                        ? Container()
-                        : CustomSpeedDial(
-                            open: isOverlayOpen,
-                            disable: hostController.host.isServerRunning ||
-                                connectionState == ConnectionState.connected,
-                            toolTipMessage: homeController.isWaitingForReceiver
-                                ? connectionState == ConnectionState.connected
-                                    ? "Connected"
-                                    : "Waiting for connection"
-                                : "Connect",
-                            waitForReverseAnimation:
-                                waitForOverlayReverseAnimation,
-                            onToggle: (isOpen) {
-                              waitforOverlayReverseAnimation(true);
-                              if (isOpen != isOverlayOpen) {
-                                isOverlayOpen = isOpen;
-                                setState(() {});
-                              }
-                            },
-                            overlayChildrenOffset: const Offset(0.0, -10),
-                            duration: $styles.times.med,
-                            child: Stack(
-                              children: [
-                                Container(
-                                  height: 50,
-                                  width: 50,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(100),
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
+                if (connectionState == ConnectionState.notConnected &&
+                    selectedItems.isNotEmpty) {
+                  return GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
 
-                                  /// This particular icon is not aligned properly
-                                  /// it had to be manually done
-                                  alignment: const Alignment(0.0, .2),
-                                  child: const Icon(
-                                    ImpulseIcons.transfer5,
-                                    size: 30,
-                                  ),
-                                ),
-                                if (hostController.host.isServerRunning ||
-                                    connectionState ==
-                                        ConnectionState.connected)
-                                  Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(100),
-                                      color: Colors.black.withOpacity(.5),
-                                    ),
-                                  ),
-                              ],
+                      /// This particular icon is not aligned properly
+                      /// it had to be manually done
+                      alignment: const Alignment(0.0, .2),
+                      child: SvgPicture.asset(
+                        AssetsImage.send,
+                        theme: SvgTheme(
+                          currentColor: Colors.white,
+                          fontSize: 50.scale,
+                        ),
+                      ),
+                    ),
+                  );
+                } else {
+                  if (connectionState == ConnectionState.connected) {
+                    return Container();
+                  } else {
+                    return CustomSpeedDial(
+                      open: isOverlayOpen,
+                      disable: hostController.host.isServerRunning ||
+                          connectionState == ConnectionState.connected,
+                      toolTipMessage: homeController.isWaitingForReceiver
+                          ? connectionState == ConnectionState.connected
+                              ? "Connected"
+                              : "Waiting for connection"
+                          : "Connect",
+                      waitForReverseAnimation: waitForOverlayReverseAnimation,
+                      onToggle: (isOpen) {
+                        waitforOverlayReverseAnimation(true);
+                        if (isOpen != isOverlayOpen) {
+                          isOverlayOpen = isOpen;
+                          setState(() {});
+                        }
+                      },
+                      overlayChildrenOffset: const Offset(0.0, -10),
+                      duration: $styles.times.med,
+                      child: Stack(
+                        children: [
+                          Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(100),
+                              color: Theme.of(context).colorScheme.primary,
                             ),
-                            // childSpacing: .4,
-                            children: [
-                              SpeedChild(
-                                onTap: () {
-                                  closeOverlay();
-                                },
-                                icon: Icons.file_upload_rounded,
+
+                            /// This particular icon is not aligned properly
+                            /// it had to be manually done
+                            alignment: const Alignment(0.0, .2),
+                            child: const Icon(
+                              ImpulseIcons.transfer5,
+                              size: 30,
+                            ),
+                          ),
+                          if (hostController.host.isServerRunning ||
+                              connectionState == ConnectionState.connected)
+                            Container(
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: Colors.black.withOpacity(.5),
                               ),
-                              SpeedChild(
-                                isHost: false,
-                                onTap: () {
-                                  closeOverlay();
-                                },
-                                icon: Icons.file_download_rounded,
-                              ),
-                            ].reversed.toList(),
-                          );
+                            ),
+                        ],
+                      ),
+                      // childSpacing: .4,
+                      children: [
+                        SpeedChild(
+                          onTap: () {
+                            closeOverlay();
+                          },
+                          icon: Icons.file_upload_rounded,
+                        ),
+                        SpeedChild(
+                          isHost: false,
+                          onTap: () {
+                            closeOverlay();
+                          },
+                          icon: Icons.file_download_rounded,
+                        ),
+                      ].reversed.toList(),
+                    );
+                  }
+                }
               }),
               bottomNavigationBar: MyBottomNavBar(
                 index: widget.navigationShell.currentIndex,

@@ -8,11 +8,12 @@ class AssetsImage {
   static const String image_placeholder = "assets/images/image_placeholder.png";
   static const String android_icon_placeholder =
       "assets/images/android_icon_placeholder.webp";
+  static const String video_placeholder = "assets/images/video_placeholder.png";
 
   ///SVGs
   static const String setting_filled = "assets/svgs/settings_filled.svg";
   static const String setting_filled_moon =
       "assets/svgs/settings_filled_moon.svg";
   static const String home_filled = "assets/svgs/home_filled.svg";
-  static const String video_placeholder = "assets/images/video_placeholder.png";
+  static const String send = "assets/svgs/send.svg";
 }
