@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:impulse/app/utils/enums.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
@@ -10,10 +9,12 @@ class SelectableItemWidget extends ConsumerStatefulWidget {
   final Application? app;
   final File? file;
   final Widget child;
+  final bool isSelectable;
   const SelectableItemWidget({
     super.key,
     this.app,
     this.file,
+    this.isSelectable = false,
     required this.child,
   });
 
@@ -51,6 +52,7 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
         // }
 
         ///if Already in selecting mode, cancel
+        if (widget.isSelectable == false) return;
         if (selectingItemPRovider.isSelectingApp) return;
 
         /// enter selecting mode
@@ -65,6 +67,8 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
         setState(() {});
       },
       onTap: () {
+        if (widget.isSelectable == false) return;
+
         if (selectingItemPRovider.isSelectingApp) {
           ///Adds to selected apps or remove app if already added
           if (_isSelected == false) {

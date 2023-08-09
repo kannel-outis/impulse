@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart' hide ConnectionState;
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
-import 'package:impulse/views/shared/padded_body.dart';
+import 'package:impulse/views/home/widgets/spinner.dart';
 
 class TopStack extends ConsumerStatefulWidget {
   const TopStack({
@@ -37,33 +39,41 @@ class _TopStackState extends ConsumerState<TopStack>
   Widget build(BuildContext context) {
     final connectionState = ref.watch(connectionStateProvider);
     final isConnected = connectionState == ConnectionState.connected;
-    return SlideTransition(
-      position:
-          Tween<Offset>(begin: Offset.zero, end: const Offset(0, 1)).animate(
+    return ScaleTransition(
+      scale: Tween<double>(begin: 0, end: 1).animate(
         CurvedAnimation(
           parent: _animationController,
           curve: $styles.curves.defaultCurve,
         ),
       ),
-      child: AnimatedContainer(
-        duration: $styles.times.fast,
-        height: 30,
-        width: MediaQuery.of(context).size.width,
-        color: isConnected ? Colors.green : $styles.colors.iconColor3,
-        child: PaddedBody(
-          child: Row(
-            children: [
-              Icon(
-                Icons.wifi_tethering,
-                size: $styles.sizes.xSmallIconSize,
-                color: $styles.colors.iconColor1,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: () {},
+          child: Spinner(
+            size: 35,
+            spin: isConnected,
+            color: isConnected ? Colors.green : $styles.colors.iconColor3,
+            child: AnimatedContainer(
+              duration: $styles.times.fast,
+              // height: 25,
+              // width: 25,
+              decoration: BoxDecoration(
+                // color: isConnected ? Colors.green : $styles.colors.iconColor3,
+                borderRadius: BorderRadius.circular(100),
               ),
-              const SizedBox(width: 10),
-              Text(
-                isConnected ? "Connected" : "Waiting for Connection...",
-                style: $styles.text.bodySmall,
+              child: SizedBox(
+                child: SvgPicture.asset(
+                  AssetsImage.wifi,
+                  height: 20,
+                  width: 20,
+                  theme: SvgTheme(
+                    currentColor:
+                        isConnected ? Colors.green : $styles.colors.iconColor3,
+                  ),
+                ),
               ),
-            ],
+            ),
           ),
         ),
       ),

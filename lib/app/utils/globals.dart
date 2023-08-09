@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:impulse/app/utils/enums.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/views/home/components/custom_modal.dart';
@@ -66,4 +66,26 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
 
   /// Selected items list is cleared and made ready for another bunch of items
   ref.read(selectedItemsProvider.notifier).clear();
+}
+
+Future<void> disconnect(GenericProviderRef ref) async {
+  //set connecteduser to null
+  ref
+      .read(connectUserStateProvider.notifier)
+      .setUserState(null, disconnected: true);
+  //clear all lists
+  ref.read(shareableItemsProvider.notifier).clear();
+  ref.read(selectedItemsProvider.notifier).clear();
+
+  //is user was a client, close server
+  if (ref.read(userTypeProvider) != UserType.host) {
+    ref.read(receiverProvider).disconnet();
+  }
+
+  // set connection state to disconneted
+  ref
+      .read(connectionStateProvider.notifier)
+      .setState(ConnectionState.disconnected);
+  //remove all server list for shareable items
+  ref.read(serverControllerProvider).setSelectedItems([]);
 }

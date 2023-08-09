@@ -144,4 +144,8 @@ class ReceiverProvider extends ChangeNotifier {
       return null;
     }
   }
+
+  void disconnet() {
+    (client as Host).closeServer();
+  }
 }

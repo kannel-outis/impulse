@@ -54,6 +54,13 @@ class ImpulseRouter {
       //   ],
       // ),
 
+      // ImpulseRoute(
+      // //   parentNavKey: mainNavKey,
+      // //   path: routes.settings,
+      // //   builder: (s) {
+      // //     return const SettingScreen();
+      // //   },
+      // // ),
       ShellRoute(
         builder: (context, state, child) {
           return ImpulseScaffold(child: child);
@@ -154,13 +161,14 @@ class ImpulseRoute extends GoRoute {
               resizeToAvoidBottomInset: false,
             );
 
-            return CustomTransitionPage(
+            return NoTransitionPage(
               key: state.pageKey,
               child: pageContent,
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
+
+              // transitionsBuilder:
+              //     (context, animation, secondaryAnimation, child) {
+              //   return FadeTransition(opacity: animation, child: child);
+              // },
             );
           },
         );

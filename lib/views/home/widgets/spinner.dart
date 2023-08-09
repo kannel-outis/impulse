@@ -6,8 +6,16 @@ import 'package:impulse/app/app.dart';
 import 'transfer_painter.dart';
 
 class Spinner extends StatefulWidget {
+  final Widget? child;
+  final double? size;
+  final Color? color;
+  final bool spin;
   const Spinner({
     super.key,
+    this.child,
+    this.size,
+    this.color,
+    this.spin = false,
   });
 
   @override
@@ -24,7 +32,26 @@ class _SpinnerState extends State<Spinner> with SingleTickerProviderStateMixin {
       vsync: this,
       duration: const Duration(seconds: 5),
     );
-    _controller.repeat();
+    if (widget.spin == true) {
+      _controller.repeat();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant Spinner oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.spin != oldWidget.spin) {
+      if (widget.spin == true) {
+        _controller.stop();
+        _controller.repeat();
+      } else {
+        _controller.reset();
+      }
+      setState(() {});
+    }
+    if (widget.size != oldWidget.size || widget.color != oldWidget.color) {
+      setState(() {});
+    }
   }
 
   @override
@@ -44,29 +71,30 @@ class _SpinnerState extends State<Spinner> with SingleTickerProviderStateMixin {
             return Transform.rotate(
               angle: (_controller.value * 2 * pi),
               child: CustomPaint(
-                size: Size(70.scale, 70.scale),
+                size: Size(widget.size ?? 40, widget.size ?? 40),
                 painter: TransferPainter(
-                  color: $styles.colors.fontColor1,
+                  color: widget.color ?? $styles.colors.fontColor1,
                   weight: 1.5,
                 ),
               ),
             );
           },
         ),
-        Container(
-          height: 45,
-          width: 45,
-          decoration: BoxDecoration(
-            color: $styles.colors.secondaryColor,
-            borderRadius: BorderRadius.circular(100),
-          ),
-          // child: RotatedBox(
-          //   quarterTurns: 1,
-          //   child: Icon(
-          //     Icons.sync_alt_rounded,
-          //   ),
-          // ),
-        ),
+        widget.child ??
+            Container(
+              height: 45,
+              width: 45,
+              decoration: BoxDecoration(
+                color: $styles.colors.secondaryColor,
+                borderRadius: BorderRadius.circular(100),
+              ),
+              // child: RotatedBox(
+              //   quarterTurns: 1,
+              //   child: Icon(
+              //     Icons.sync_alt_rounded,
+              //   ),
+              // ),
+            ),
       ],
     );
   }

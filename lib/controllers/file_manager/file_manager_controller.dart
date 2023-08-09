@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse_utils/impulse_utils.dart';
@@ -14,7 +12,7 @@ class FileManagerController extends ChangeNotifier {
   }
 
   Future<List<ImpulseFileEntity>> goToPathAsync(
-      [ImpulseFileEntity? _dir]) async {
+      [ImpulseFileEntity? dir]) async {
     // late final ImpulseFileEntity dir;
     // if (_dir == null) {
     //   final d = goToPath(
@@ -24,6 +22,6 @@ class FileManagerController extends ChangeNotifier {
     //   }
     // }
     // } else {}
-    return await FileManager.instance.getFileInDirAsync(_dir);
+    return await FileManager.instance.getFileInDirAsync(dir);
   }
 }

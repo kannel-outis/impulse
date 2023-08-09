@@ -1,6 +1,3 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart' hide ConnectionState;
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -108,34 +105,40 @@ class _HomePageState extends ConsumerState<HomePage>
                             fontWeight: FontWeight.w400,
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () async {
-                            ///TODO: To be removed,
-                            ///
-                            ///
-                            // log("object");
-                            // return;
-                            // final d =
-                            //     HiveManagerImpl().getAllReceiveableItems();
-                            // for (var e in d) {
-                            //   log("${e.path}: ${e.fileSize}");
-                            // }
-                            // return;
+                        SizedBox(
+                          child: Row(
+                            children: [
+                              if (ref.watch(homeProvider).shouldShowTopStack)
+                                const TopStack(),
+                              // SizedBox(width: $styles.insets.md * .5),
 
-                            log("object");
-                            final genericRef =
-                                GenericProviderRef<WidgetRef>(ref);
+                              SizedBox(width: $styles.insets.md),
+                              GestureDetector(
+                                onTap: () async {
+                                  final genericRef =
+                                      GenericProviderRef<WidgetRef>(ref);
 
-                            await share(genericRef);
-                          },
-                          child: Container(
-                            height: 40.scale,
-                            width: 40.scale,
-                            decoration: BoxDecoration(
-                              color: $styles.colors.fontColor2,
-                              borderRadius:
-                                  BorderRadius.circular($styles.corners.xxlg),
-                            ),
+                                  await share(genericRef);
+                                },
+                                child: GestureDetector(
+                                  child: Container(
+                                    height: 40.scale,
+                                    width: 40.scale,
+                                    decoration: BoxDecoration(
+                                      color: $styles.colors.fontColor2,
+                                      borderRadius: BorderRadius.circular(
+                                          $styles.corners.xxlg),
+                                      image: const DecorationImage(
+                                        image: AssetImage(
+                                          //replace with shared pref info
+                                          AssetsImage.DEFAULT_DISPLAY_IMAGE_2,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
@@ -153,7 +156,7 @@ class _HomePageState extends ConsumerState<HomePage>
                       child: SingleChildScrollView(
                         // controller: _controller,
                         scrollDirection: Axis.horizontal,
-                        physics: const NeverScrollableScrollPhysics(),
+                        // physics: const NeverScrollableScrollPhysics(),
                         // reverse: true,
                         child: Consumer(builder: (context, ref, child) {
                           final paths = ref.watch(pathController);
@@ -320,17 +323,6 @@ class _HomePageState extends ConsumerState<HomePage>
                 onChanged: onChanged,
               ),
             ),
-
-            ///TODO: change to overlay later
-            if (ref.watch(homeProvider).shouldShowTopStack)
-              Positioned(
-
-                  ///plus the size of the top stack
-                  top: getPositionOffset.dy + (Platform.isAndroid ? -40 : 20),
-                  right: 0,
-                  // top: $styles.sizes.defaultAppBarSize.height,
-                  // width: MediaQuery.of(context).size.width,
-                  child: const TopStack()),
             Consumer(
               builder: (context, ref, child) {
                 final connectionState = ref.watch(connectionStateProvider);
