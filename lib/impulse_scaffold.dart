@@ -5,9 +5,11 @@ import 'app/app.dart';
 
 class ImpulseScaffold extends StatelessWidget {
   final Widget child;
+  final bool showOverlay;
   const ImpulseScaffold({
     super.key,
     required this.child,
+    this.showOverlay = true,
   });
 
   static AppStyle get style => _style;
@@ -18,6 +20,7 @@ class ImpulseScaffold extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     _style = AppStyle(screenSize: size);
     return AlertOverlay(
+      showOverlay: showOverlay,
       child: KeyedSubtree(
         key: ValueKey($styles.scale),
         child: Theme(

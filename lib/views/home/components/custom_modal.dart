@@ -33,7 +33,7 @@ class _CustomHostBottomModalSheetState
       final hostController = ref.read(senderProvider);
       hostController.createServer().then((value) {
         homeController.isWaitingForReceiver = true;
-        ref.read(userProvider.notifier).setUserState(UserType.host);
+        ref.read(userTypeProvider.notifier).setUserState(UserType.host);
         // print(hostController.clientServerInfo);
       });
     });
@@ -284,7 +284,7 @@ class _CustomClientBottomModalSheetState
                               await provider.createServerAndNotifyHost();
                           if (result == null) {
                             ref
-                                .read(userProvider.notifier)
+                                .read(userTypeProvider.notifier)
                                 .setUserState(UserType.client);
                             ref.read(homeProvider).shouldShowTopStack = true;
                           }

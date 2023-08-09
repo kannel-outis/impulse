@@ -24,41 +24,32 @@ class FileManagerScreen extends ConsumerStatefulWidget {
 class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
     with AutomaticKeepAliveClientMixin {
   List<ImpulseFileEntity> files = [];
-  // late final ScrollController _controller;
   late final ImpulseDirectory? dir;
 
   @override
   void initState() {
     super.initState();
 
-    // _controller = ScrollController();
     if (isAndroid) {
       dir = widget.path == null
           ? null
           : ImpulseDirectory(
               directory: Directory(widget.path!.path),
             );
-      // _init_(dir);
     } else {
       dir = ImpulseDirectory(
         directory: Directory(widget.path?.path ??
             "C:${Platform.pathSeparator}Users${Platform.pathSeparator}emirb${Platform.pathSeparator}Downloads${Platform.pathSeparator}"),
       );
-      // _init_(dir);
     }
   }
 
   Future<List<ImpulseFileEntity>> _init_([ImpulseDirectory? dir]) async {
-    // await Future.delayed(const Duration(seconds: 2));
-    print(widget.path?.path);
     if (widget.files != null) {
       files = widget.files!;
-      // setState(() {});
     } else {
-      // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final controller = ref.read(fileManagerProvider);
       files = await controller.goToPathAsync(dir);
-      // });
     }
     return files;
   }
@@ -119,6 +110,7 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
                             file: (item.fileSystemEntity is File)
                                 ? item.fileSystemEntity as File
                                 : null,
+                            isSelectable: item is! ImpulseDirectory,
                             child: FileManagerTile(
                               item: item,
                             ),

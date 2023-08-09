@@ -104,6 +104,10 @@ class ShareableItemsProvider extends StateNotifier<List<ShareableItem>> {
     state = [...state];
   }
 
+  void clear() {
+    state = [];
+  }
+
   List<Item> get filteredList => _filtered;
 
   ///filter list so that they are not sent more than once

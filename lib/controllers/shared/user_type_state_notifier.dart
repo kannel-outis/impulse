@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 
-final userProvider = StateNotifierProvider<UserStateNotifier, UserType>(
+final userTypeProvider = StateNotifierProvider<UserStateNotifier, UserType>(
     (ref) => UserStateNotifier(UserType.undecided));
 
 class UserStateNotifier extends StateNotifier<UserType> {

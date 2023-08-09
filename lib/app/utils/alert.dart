@@ -7,7 +7,12 @@ import 'package:impulse/controllers/controllers.dart';
 
 class AlertOverlay extends ConsumerStatefulWidget {
   final Widget child;
-  const AlertOverlay({super.key, required this.child});
+  final bool showOverlay;
+  const AlertOverlay({
+    super.key,
+    required this.child,
+    this.showOverlay = true,
+  });
 
   // ignore: library_private_types_in_public_api
   // static _AlertOverlayState of(BuildContext context) {
@@ -74,6 +79,7 @@ class _AlertOverlayState extends ConsumerState<AlertOverlay>
     bool close = false,
     bool forceClose = true,
   }) async {
+    if (widget.showOverlay == false) return;
     if (_isOpen == false && close == true) return;
     if (_isOpen && forceClose == false) {
       return;

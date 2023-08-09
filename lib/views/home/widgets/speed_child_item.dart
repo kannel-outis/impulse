@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
 
-import '../components/custom_modal.dart';
-
 class SpeedChild extends StatelessWidget {
   final bool isHost;
   final VoidCallback? onTap;
@@ -32,16 +30,7 @@ class SpeedChild extends StatelessWidget {
           // }
 
           onTap?.call();
-          showModalBottomSheet(
-            context: context,
-            constraints: $styles.constraints.modalConstraints,
-            builder: (context) {
-              if (isHost) {
-                return const CustomHostBottomModalSheet();
-              }
-              return const CustomClientBottomModalSheet();
-            },
-          );
+          showModel(isHost, context);
         },
         child: Container(
           height: 50,

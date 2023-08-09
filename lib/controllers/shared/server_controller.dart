@@ -133,9 +133,9 @@ class ServerController extends ServerManager with ChangeNotifier {
     alertResponder = Completer<bool>();
   }
 
-  void reset() {
-    _receivableStreamController = StreamController<Map<String, dynamic>>();
-  }
+  // void reset() {
+  //   _receivableStreamController = StreamController<Map<String, dynamic>>();
+  // }
 
   @override
   StreamController<Map<String, dynamic>> get receivablesStreamController =>

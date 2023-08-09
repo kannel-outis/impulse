@@ -16,4 +16,6 @@ class AssetsImage {
       "assets/svgs/settings_filled_moon.svg";
   static const String home_filled = "assets/svgs/home_filled.svg";
   static const String send = "assets/svgs/send.svg";
+  static const String info = "assets/svgs/info.svg";
+  static const String wifi = "assets/svgs/wifi.svg";
 }
