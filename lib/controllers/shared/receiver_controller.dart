@@ -145,7 +145,9 @@ class ReceiverProvider extends ChangeNotifier {
     }
   }
 
-  void disconnet() {
+  void disconnect() {
+    _availableHostsServers.clear();
+    _selectedHost = null;
     (client as Host).closeServer();
   }
 }

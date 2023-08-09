@@ -79,13 +79,19 @@ Future<void> disconnect(GenericProviderRef ref) async {
 
   //is user was a client, close server
   if (ref.read(userTypeProvider) != UserType.host) {
-    ref.read(receiverProvider).disconnet();
+    ref.read(receiverProvider).disconnect();
   }
 
   // set connection state to disconneted
   ref
       .read(connectionStateProvider.notifier)
       .setState(ConnectionState.disconnected);
+
+  //set port and ip to null
+  if (ref.read(userTypeProvider) == UserType.client) {
+    ref.read(serverControllerProvider).port = null;
+    ref.read(serverControllerProvider).ipAddress = null;
+  }
   //remove all server list for shareable items
   ref.read(serverControllerProvider).setSelectedItems([]);
 }
