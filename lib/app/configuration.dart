@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:impulse/models/models.dart';
 import 'package:impulse/services/offline/hive/hive_init.dart';
 import 'package:impulse/services/services.dart';
+import 'package:impulse_utils/impulse_utils.dart';
 import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -17,12 +19,17 @@ class Configurations {
 
   late final Directory impulseDir;
 
+  FileManager get fileManager => FileManager.instance;
+
+  ImpulseUtils get impulseUtils => ImpulseUtils();
+
   Future<void> _loadPaths() async {
     ///TODO: Ask for permission
     final applicationDocumentDir = await getApplicationDocumentsDirectory();
     if (Platform.isAndroid) {
+      await fileManager.getRootPaths(true);
       impulseDir = await Directory(
-              "${Platform.pathSeparator}storage${Platform.pathSeparator}emulated${Platform.pathSeparator}0${Platform.pathSeparator}impulse files${Platform.pathSeparator}")
+              "${fileManager.rootPath.where((element) => element.contains("emulated")).toList().first}${Platform.pathSeparator}impulse files${Platform.pathSeparator}")
           .create();
       return;
     }
@@ -39,12 +46,19 @@ class Configurations {
 
   ImpulseSharedPref get localPref => ImpulseSharedPrefImpl.instance;
 
+  User? user;
+
+  void loadUser() {
+    user = ImpulseSharedPrefImpl.instance.getUserInfo() == null
+        ? null
+        : User.fromMap(ImpulseSharedPrefImpl.instance.getUserInfo()!);
+  }
+
   Future<void> loadAllInit() async {
-    await Future.value([
-      ImpulseSharedPrefImpl.instance.loadInstance(),
-      _loadHiveInit(),
-      _loadPaths(),
-    ]);
+    await ImpulseSharedPrefImpl.instance.loadInstance();
+    await _loadHiveInit();
+    await _loadPaths();
+    loadUser();
     composition = await AssetLottie("assets/lottie/waiting.json").load();
   }
 }

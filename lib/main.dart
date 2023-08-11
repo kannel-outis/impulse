@@ -12,7 +12,7 @@ void main() async {
   // container.
   if (isAndroid) {
     container.read(homeProvider).getAllApplications();
-    await FileManager.instance.getRootPaths(true);
+    // await FileManager.instance.getRootPaths(true);
   }
   runApp(
     UncontrolledProviderScope(

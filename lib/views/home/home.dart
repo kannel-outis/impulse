@@ -128,11 +128,13 @@ class _HomePageState extends ConsumerState<HomePage>
                                       color: $styles.colors.fontColor2,
                                       borderRadius: BorderRadius.circular(
                                           $styles.corners.xxlg),
-                                      image: const DecorationImage(
-                                        image: AssetImage(
+                                      image: DecorationImage(
+                                        image: MemoryImage(
                                           //replace with shared pref info
-                                          AssetsImage.DEFAULT_DISPLAY_IMAGE_2,
+                                          Configurations
+                                              .instance.user!.displayImage,
                                         ),
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),

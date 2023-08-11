@@ -83,7 +83,7 @@ class ServerController extends ServerManager with ChangeNotifier {
 
   @override
   ServerInfo get myServerInfo {
-    final me = User.fromMap(Configurations.instance.localPref.getUserInfo()!);
+    final me = Configurations.instance.user!;
     return ServerInfo(
       user: me,
       ipAddress: _ipAddress,

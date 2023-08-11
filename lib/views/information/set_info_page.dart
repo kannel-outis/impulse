@@ -33,6 +33,8 @@ class _SetInfoPageState extends State<SetInfoPage> {
   late final TextEditingController _controller;
   int currentIndex = 0;
 
+  bool isLoadingImage = false;
+
   List<(_ImageType imageTyper, String path)> images = [
     (_ImageType.Assets, AssetsImage.DEFAULT_DISPLAY_IMAGE),
     (_ImageType.Assets, AssetsImage.DEFAULT_DISPLAY_IMAGE_2),
@@ -98,6 +100,7 @@ class _SetInfoPageState extends State<SetInfoPage> {
                           : MouseCursor.defer,
                       child: GestureDetector(
                         onTap: () async {
+                          if (isLoadingImage) return;
                           if (currentIndex == images.length) {
                             final result =
                                 await picker.FilePicker.platform.pickFiles(
@@ -109,8 +112,18 @@ class _SetInfoPageState extends State<SetInfoPage> {
 
                             if (result != null) {
                               print(result.files.first.size);
-                              images
-                                  .add((_ImageType.File, result.paths.single!));
+                              isLoadingImage = true;
+                              setState(() {});
+                              final thumbNail = await Configurations
+                                  .instance.impulseUtils
+                                  .getMediaThumbNail(
+                                file: result.paths.first!,
+                                isVideo: false,
+                                returnPath: true,
+                                size: const Size(512, 384),
+                              );
+                              images.add((_ImageType.File, thumbNail.$1!));
+                              isLoadingImage = false;
                               setState(() {});
                             }
 
@@ -127,18 +140,22 @@ class _SetInfoPageState extends State<SetInfoPage> {
                           assetImages: images,
                           index: images.length,
                           child: Center(
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: $styles.insets.md,
-                                vertical: $styles.insets.sm,
-                              ),
-                              child: FittedBox(
-                                child: Text(
-                                  "PickImage",
-                                  style: $styles.text.bodySmall,
-                                ),
-                              ),
-                            ),
+                            child: isLoadingImage
+                                ? const CircularProgressIndicator(
+                                    strokeWidth: 1,
+                                  )
+                                : Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: $styles.insets.md,
+                                      vertical: $styles.insets.sm,
+                                    ),
+                                    child: FittedBox(
+                                      child: Text(
+                                        "PickImage",
+                                        style: $styles.text.bodySmall,
+                                      ),
+                                    ),
+                                  ),
                           ),
                         ),
                       ),
@@ -189,8 +206,8 @@ class _SetInfoPageState extends State<SetInfoPage> {
                     name: _controller.value.text.trim(),
                     id: const Uuid().v4(),
                     displayImage: bytes,
-                    deviceName: Platform.localeName,
-                    deviceOsVersion: Platform.operatingSystem,
+                    deviceName: Platform.operatingSystem,
+                    deviceOsVersion: Platform.operatingSystemVersion,
                   );
                   Configurations.instance.localPref.saveUserInfo(user.toMap());
                   bytes = null;

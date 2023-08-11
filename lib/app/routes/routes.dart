@@ -15,7 +15,7 @@ class ImpulseRouter {
   static final nestedFolderNavKey = GlobalKey<NavigatorState>();
 
   static final router = GoRouter(
-    initialLocation: Configurations.instance.localPref.getUserInfo() == null
+    initialLocation: Configurations.instance.user == null
         ? routes.setInfo
         : isAndroid
             ? routes.home
