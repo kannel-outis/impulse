@@ -24,7 +24,7 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
   }) : super([]);
   final items = <ShareableItem>[];
 
-  void addSelected({File? file, String? path, String? altName}) async {
+  void addSelected({File? file, String? path, String? altName}) {
     if (path == null && file == null) {
       onError?.call(const AppException("Invalid Selected item"), null);
       return;
@@ -32,12 +32,12 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
     if (path != null) {
       final file = File(path);
       if (file.existsSync()) {
-        final item = await itemFromFile(file, altName);
+        final item = itemFromFile(file, altName);
         items.add(item);
       }
     } else {
       if (file != null) {
-        final item = await itemFromFile(file, altName);
+        final item = itemFromFile(file, altName);
         items.add(item);
         // items.add(file);
       }
@@ -66,8 +66,8 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
     state = [];
   }
 
-  Future<ShareableItem> itemFromFile(File file, [String? altName]) async {
-    final myInfo = await serverManager.myServerInfo();
+  ShareableItem itemFromFile(File file, [String? altName]) {
+    final myInfo = serverManager.myServerInfo;
     return ShareableItem(
       file: file,
       fileType: file.path.getFileType.type,

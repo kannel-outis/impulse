@@ -80,7 +80,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
     if (url == "http://${address.address}:$port/impulse/connect") {
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;
-      final hostInfo = await serverManager.myServerInfo();
+      final hostInfo = serverManager.myServerInfo;
       // hostInfo.port = _httpServer.port;
       // hostInfo.ipAddress = _httpServer.address.address;
       httpRequest.response.write(

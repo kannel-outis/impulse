@@ -7,8 +7,8 @@ class User extends Equatable {
   final String id;
   final String deviceName;
   final String deviceOsVersion;
-  final bool isHost;
-  final String? ipAddress;
+  // final bool isHost;
+  // final String? ipAddress;
   final Uint8List displayImage;
 
   const User({
@@ -17,8 +17,8 @@ class User extends Equatable {
     this.deviceName = "unknown",
     this.deviceOsVersion = "unknown",
     required this.displayImage,
-    required this.ipAddress,
-    this.isHost = false,
+    // this.ipAddress,
+    // this.isHost = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -28,8 +28,8 @@ class User extends Equatable {
       "deviceName": deviceName,
       "deviceOsVersion": deviceOsVersion,
       "displayImage": displayImage,
-      "isHost": isHost,
-      "ipAddress": ipAddress,
+      // "isHost": isHost,
+      // "ipAddress": ipAddress,
     };
   }
 
@@ -42,8 +42,8 @@ class User extends Equatable {
       ),
       deviceName: map["deviceName"] as String,
       deviceOsVersion: map["deviceOsVersion"] as String,
-      isHost: map["isHost"] as bool,
-      ipAddress: map["ipAddress"] as String?,
+      // isHost: map["isHost"] as bool,
+      // ipAddress: map["ipAddress"] as String?,
     );
   }
 
@@ -51,9 +51,9 @@ class User extends Equatable {
   List<Object?> get props => [
         deviceName,
         deviceOsVersion,
-        ipAddress,
+        // ipAddress,
         id,
         name,
-        isHost,
+        // isHost,
       ];
 }

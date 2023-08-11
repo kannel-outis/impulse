@@ -120,7 +120,7 @@ class ReceiverProvider extends ChangeNotifier {
     } else {
       /// if [selectedHost] is not null that means we have the host ipAddress and port
       /// make a post request to the host with our (the client) info as body
-      final myInfo = await _myServer.myServerInfo();
+      final myInfo = _myServer.myServerInfo;
       final notifyHost = await client.createServerAndNotifyHost(
         address: selectedHost!.ipAddress!,
         port: selectedHost?.port,

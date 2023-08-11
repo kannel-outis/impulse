@@ -29,6 +29,7 @@ class _AppsPageState extends ConsumerState<AppsPage>
               .where((element) => element.isSystemApp == false))
             SelectableItemWidget(
               app: app,
+              isSelectable: true,
               child: AppItem(app: app),
             ),
         ],

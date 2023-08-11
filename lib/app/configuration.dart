@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:impulse/services/offline/hive/hive_init.dart';
+import 'package:impulse/services/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -36,8 +37,11 @@ class Configurations {
 
   late final LottieComposition composition;
 
+  ImpulseSharedPref get localPref => ImpulseSharedPrefImpl.instance;
+
   Future<void> loadAllInit() async {
     await Future.value([
+      ImpulseSharedPrefImpl.instance.loadInstance(),
       _loadHiveInit(),
       _loadPaths(),
     ]);

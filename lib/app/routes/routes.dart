@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:impulse/models/models.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/impulse_scaffold.dart';
+import 'package:impulse/views/information/set_info_page.dart';
 import 'package:impulse/views/settings/settings_screen.dart';
 import 'package:impulse/views/files/file_manager.dart';
 import 'package:impulse/views/home/home.dart';
@@ -14,53 +15,24 @@ class ImpulseRouter {
   static final nestedFolderNavKey = GlobalKey<NavigatorState>();
 
   static final router = GoRouter(
-    initialLocation: isAndroid ? routes.home : routes.folder,
+    initialLocation: Configurations.instance.localPref.getUserInfo() == null
+        ? routes.setInfo
+        : isAndroid
+            ? routes.home
+            : routes.folder,
+    // initialLocation: routes.setInfo,
     navigatorKey: mainNavKey,
     routes: [
-      // ShellRoute(
-      //   navigatorKey: mainNavKey,
-      //   builder: (context, state, child) {
-      //     return ImpulseScaffold(child: child);
-      //   },
-      //   routes: [
-      //     // ImpulseRoute(routes.test, (_) => const TestPage()),
-
-      //     ImpulseRoute(routes.home, (_) => const HomePage()),
-
-      //     ///TODO: will remove later
-      //     ShellRoute(
-      //       navigatorKey: nestedFolderNavKey,
-      //       builder: (context, state, child) {
-      //         return ImpulseScaffold(child: child);
-      //       },
-      //       routes: [
-      //         ImpulseRoute(
-      //           "${routes.folder}/:folder",
-      //           (s) {
-      //             return FileManagerScreen(
-      //               files: s.extra != null
-      //                   ? s.extra as List<ImpulseFileEntity>
-      //                   : null,
-      //             );
-      //           },
-      //           parentNavKey: nestedFolderNavKey,
-      //         ),
-      //       ],
-      //     ),
-      //     ImpulseRoute(
-      //       routes.transfer,
-      //       (s) => const TransferPage(),
-      //     )
-      //   ],
-      // ),
-
-      // ImpulseRoute(
-      // //   parentNavKey: mainNavKey,
-      // //   path: routes.settings,
-      // //   builder: (s) {
-      // //     return const SettingScreen();
-      // //   },
-      // // ),
+      ImpulseRoute(
+        parentNavKey: mainNavKey,
+        path: routes.setInfo,
+        builder: (s) {
+          return const ImpulseScaffold(
+            showOverlay: false,
+            child: SetInfoPage(),
+          );
+        },
+      ),
       ShellRoute(
         builder: (context, state, child) {
           return ImpulseScaffold(child: child);
@@ -141,6 +113,7 @@ class _Routes {
   ////
   final String folder = "/folder";
   final String settings = "/settings";
+  final String setInfo = "/setInfo";
 }
 
 class ImpulseRoute extends GoRoute {
