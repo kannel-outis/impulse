@@ -95,7 +95,8 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       if (httpRequest.requestedUri.queryParameters.containsKey("file")) {
         final file =
             File(httpRequest.requestedUri.queryParameters["file"] as String);
-        if (await file.exists()) {
+        if (!await file.exists()) {
+          httpRequest.response.statusCode = 404;
           httpRequest.response.write(
             json.encode(
               {
@@ -106,7 +107,8 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           httpRequest.response.close();
           return;
         } else {
-          await file.openRead().pipe(httpRequest.response);
+          final fileStream = file.openRead();
+          await httpRequest.response.addStream(fileStream);
           httpRequest.response.close();
           return;
         }

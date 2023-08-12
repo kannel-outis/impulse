@@ -114,15 +114,15 @@ class _SetInfoPageState extends State<SetInfoPage> {
                               print(result.files.first.size);
                               isLoadingImage = true;
                               setState(() {});
-                              final thumbNail = await Configurations
-                                  .instance.impulseUtils
-                                  .getMediaThumbNail(
-                                file: result.paths.first!,
-                                isVideo: false,
-                                returnPath: true,
-                                size: const Size(512, 384),
-                              );
-                              images.add((_ImageType.File, thumbNail.$1!));
+                              // final thumbNail = await Configurations
+                              //     .instance.impulseUtils
+                              //     .getMediaThumbNail(
+                              //   file: result.paths.first!,
+                              //   isVideo: false,
+                              //   returnPath: true,
+                              //   size: const Size(512, 384),
+                              // );
+                              images.add((_ImageType.File, result.paths.first!));
                               isLoadingImage = false;
                               setState(() {});
                             }

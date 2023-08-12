@@ -45,10 +45,19 @@ class Configurations {
 
   ImpulseSharedPref get localPref => ImpulseSharedPrefImpl.instance;
 
-  User? user;
+  User? _user;
+
+  //for first start
+  User? get user =>
+      _user ??
+      (ImpulseSharedPrefImpl.instance.getUserInfo() == null
+          ? null
+          : User.fromMap(
+              ImpulseSharedPrefImpl.instance.getUserInfo()!,
+            ));
 
   void loadUser() {
-    user = ImpulseSharedPrefImpl.instance.getUserInfo() == null
+    _user = ImpulseSharedPrefImpl.instance.getUserInfo() == null
         ? null
         : User.fromMap(ImpulseSharedPrefImpl.instance.getUserInfo()!);
   }

@@ -305,7 +305,7 @@ class _CustomClientBottomModalSheetState
                                   image: DecorationImage(
                                     image: NetworkImage(
                                       receiverController.availableHostServers[i]
-                                          .user.flingUrl,
+                                          .user.displayImage,
                                     ),
                                     fit: BoxFit.cover,
                                   ),

@@ -50,7 +50,9 @@ class User extends Equatable {
     );
   }
 
-  String get flingUrl => "http://$ipAddress:$port/download?file=$displayImage";
+  String get _flingUrl {
+    return "http://$ipAddress:$port/download?file=$displayImage";
+  }
 
   Map<String, dynamic> toFlingMap() {
     return {
@@ -58,7 +60,7 @@ class User extends Equatable {
       "id": id,
       "deviceName": deviceName,
       "deviceOsVersion": deviceOsVersion,
-      "displayImage": flingUrl,
+      "displayImage": _flingUrl,
     };
   }
 
