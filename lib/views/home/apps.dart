@@ -11,6 +11,20 @@ class AppsPage extends ConsumerStatefulWidget {
 
 class _AppsPageState extends ConsumerState<AppsPage>
     with AutomaticKeepAliveClientMixin {
+  List<Application> get list => ref
+      .read(homeProvider)
+      .applications
+      .where((element) => element.isSystemApp == false)
+      .toList();
+
+  double _appBox() {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    ///The total width of device minus the padding on both side
+    ///divided by the number of items we'd like to fit in a row
+    return (screenWidth - ($styles.insets.md * 2)) / 4;
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -22,18 +36,22 @@ class _AppsPageState extends ConsumerState<AppsPage>
       );
     }
 
-    return SingleChildScrollView(
-      child: Wrap(
-        children: [
-          for (final app in homeController.applications
-              .where((element) => element.isSystemApp == false))
-            SelectableItemWidget(
-              app: app,
-              isSelectable: true,
-              child: AppItem(app: app),
-            ),
-        ],
+    return GridView.builder(
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: _appBox(),
+        childAspectRatio: ((MediaQuery.of(context).size.width) /
+            (MediaQuery.of(context).size.height * .6)),
       ),
+      itemCount: list.length,
+      itemBuilder: (context, index) {
+        return SelectableItemWidget(
+          app: list[index],
+          isSelectable: true,
+          child: AppItem(
+            app: list[index],
+          ),
+        );
+      },
     );
   }
 

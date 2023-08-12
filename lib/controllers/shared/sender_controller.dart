@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,6 +58,14 @@ class SenderProvider extends ChangeNotifier {
       notifyListeners();
       return null;
     }
+  }
+
+  String serverInfoBarcodeMap() {
+    final map = {
+      "ip": ipAddress,
+      "port": port,
+    };
+    return jsonEncode(map);
   }
 
   Future<AppException?> shareDownloadableFiles(

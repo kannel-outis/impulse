@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
-import 'package:lottie/lottie.dart';
 
 import '../widgets/scan_animation_painter.dart';
 
@@ -27,16 +27,22 @@ class _CustomHostBottomModalSheetState
   void initState() {
     super.initState();
     _controller =
-        AnimationController(vsync: this, duration: $styles.times.xSlow);
+        AnimationController(vsync: this, duration: $styles.times.fast);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       final homeController = ref.read(homeProvider);
       final hostController = ref.read(senderProvider);
-      hostController.createServer().then((value) {
-        homeController.isWaitingForReceiver = true;
-        ref.read(userTypeProvider.notifier).setUserState(UserType.host);
-        // print(hostController.clientServerInfo);
-      });
+
+      // if both ip address and port are null, that means we have not created ther server yet
+      //but if they are not, we can skip creating the server and just display the qr image
+      if (hostController.ipAddress == null && hostController.port == null) {
+        hostController.createServer().then((value) {
+          homeController.isWaitingForReceiver = true;
+          ref.read(userTypeProvider.notifier).setUserState(UserType.host);
+          // print(hostController.clientServerInfo);
+        });
+      }
     });
+    Future.delayed($styles.times.fast).then((value) => _controller.forward());
   }
 
   @override
@@ -57,11 +63,9 @@ class _CustomHostBottomModalSheetState
 
   @override
   Widget build(BuildContext context) {
-    final homeController = ref.watch(homeProvider);
-
     return WillPopScope(
       onWillPop: () async {
-        homeController.shouldShowTopStack = true;
+        ref.read(homeProvider).shouldShowTopStack = true;
 
         return true;
       },
@@ -73,48 +77,61 @@ class _CustomHostBottomModalSheetState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Icon(
-            //   Icons.wifi_tethering,
-            //   color: $styles.colors.iconColor3,
-            //   size: $styles.sizes.xLargeIconSize,
-            // ),
-            Lottie(
-              composition: Configurations.instance.composition,
-              height: $styles.sizes.xxLargeIconSize,
-              width: $styles.sizes.xxLargeIconSize,
-              controller: _controller..repeat(),
-              fit: BoxFit.contain,
-            ),
-            // } else {
-            //   return const Center(
-            //     child: CircularProgressIndicator(),
-            //   );
-            // }
-            // return LottieBuilder.asset(
-            //   "assets/lottie/waiting.json",
+            // Lottie(
+            //   composition: Configurations.instance.composition,
             //   height: $styles.sizes.xxLargeIconSize,
             //   width: $styles.sizes.xxLargeIconSize,
-            //   controller: _controller,
-            //   frameRate: FrameRate.max,
-            //   frameBuilder: (context, child, composition) {
-            //     return child;
-            //   },
-            //   // delegates: LottieDelegates(
-            //   //     // values: [
-            //   //     //   ValueDelegate.color(
-            //   //     //     ['bout', 'bout 3', 'bmid'],
-            //   //     //     callback: (s) {
+            //   controller: _controller..repeat(),
+            //   fit: BoxFit.contain,
+            // ),
+            Consumer(
+              builder: (context, ref, child) {
+                final hostProvider = ref.watch(senderProvider);
+                if (hostProvider.ipAddress == null &&
+                    hostProvider.port == null) {
+                  return Center(
+                    child: Text("Loading...", style: $styles.text.h3),
+                  );
+                }
+                return ScaleTransition(
+                  scale: Tween<double>(begin: 0, end: 1).animate(
+                    CurvedAnimation(
+                      parent: _controller,
+                      curve: $styles.curves.defaultCurve,
+                    ),
+                  ),
+                  child: BarcodeWidget(
+                    height: 200,
+                    width: 200,
+                    backgroundColor: $styles.colors.fontColor1,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.black
+                        : Colors.white,
+                    data: hostProvider.serverInfoBarcodeMap(),
+                    barcode: Barcode.qrCode(),
+                    padding: EdgeInsets.all($styles.insets.xxs),
+                  ),
+                );
+              },
+            ),
 
-            //   //     //       return Color(0xff78ee34);
-            //   //     //     },
-            //   //     // )
-            //   //     // ],
-            //   //     ),
-            // );
-            // }),
-            Text(
-              "Waitng for receivers....",
-              style: $styles.text.h3,
+            Padding(
+              padding: EdgeInsets.only(top: $styles.insets.sm),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.wifi_tethering,
+                    color: $styles.colors.secondaryColor,
+                    size: $styles.sizes.smallIconSize2,
+                  ),
+                  SizedBox(width: $styles.insets.xxs),
+                  Text(
+                    "Waitng for receivers....",
+                    style: $styles.text.h3,
+                  ),
+                ],
+              ),
             ),
           ],
         ),

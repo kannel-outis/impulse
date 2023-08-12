@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart' hide ConnectionState;
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +12,7 @@ import 'package:impulse/views/shared/custom_speed_dial.dart';
 import 'package:impulse/views/shared/padded_body.dart';
 import 'package:impulse/views/shared/selectable_item_widget.dart';
 import 'package:impulse/views/transfer/transfer_page.dart';
+import 'package:impulse_utils/impulse_utils.dart';
 
 import 'components/bottom_nav_bar.dart';
 import 'widgets/speed_child_item.dart';
@@ -259,6 +262,9 @@ class _HomePageState extends ConsumerState<HomePage>
                       open: isOverlayOpen,
                       disable: hostController.host.isServerRunning ||
                           connectionState == ConnectionState.connected,
+                      disabledFunction: () {
+                        showModel(true, context);
+                      },
                       toolTipMessage: homeController.isWaitingForReceiver
                           ? connectionState == ConnectionState.connected
                               ? "Connected"

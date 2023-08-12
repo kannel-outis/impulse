@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  barcode_widget: ^2.0.4
   cupertino_icons: ^1.0.2
   dartz: ^0.10.1
   dio: ^5.2.1+1
@@ -50,6 +51,7 @@ dependencies:
   mime: ^1.0.4
   path_drawing: ^1.0.1
   path_provider: ^2.0.15
+  qr_code_scanner: ^1.0.1
   riverpod: ^2.3.6
   shared_preferences: ^2.2.0
   uuid: ^3.0.7

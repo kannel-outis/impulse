@@ -27,8 +27,8 @@ class _AppItemState extends State<AppItem> {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      height: _appBox(),
-      width: _appBox(),
+      // height: _appBox(),
+      // width: _appBox(),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

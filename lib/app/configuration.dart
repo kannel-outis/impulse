@@ -41,7 +41,7 @@ class Configurations {
     await HiveInit.init();
   }
 
-  late final LottieComposition composition;
+  // late final LottieComposition composition;
 
   ImpulseSharedPref get localPref => ImpulseSharedPrefImpl.instance;
 
@@ -67,6 +67,6 @@ class Configurations {
     await _loadHiveInit();
     await _loadPaths();
     loadUser();
-    composition = await AssetLottie("assets/lottie/waiting.json").load();
+    // composition = await AssetLottie("assets/lottie/waiting.json").load();
   }
 }

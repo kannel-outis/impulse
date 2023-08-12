@@ -12,6 +12,7 @@ class CustomSpeedDial extends StatefulWidget {
   final bool? disable;
   final String toolTipMessage;
   final bool waitForReverseAnimation;
+  final VoidCallback? disabledFunction;
   const CustomSpeedDial({
     super.key,
     required this.children,
@@ -24,6 +25,7 @@ class CustomSpeedDial extends StatefulWidget {
     this.disable = false,
     this.toolTipMessage = "Connect",
     this.waitForReverseAnimation = false,
+    this.disabledFunction,
   });
 
   @override
@@ -102,7 +104,7 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
           child: GestureDetector(
             // borderRadius: widget.borderRadius ?? BorderRadius.zero,
             onTap: widget.disable!
-                ? null
+                ? widget.disabledFunction
                 : () {
                     _toggleOverlay(context);
                   },
