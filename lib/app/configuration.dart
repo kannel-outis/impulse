@@ -28,7 +28,7 @@ class Configurations {
     if (Platform.isAndroid) {
       await fileManager.getRootPaths(true);
       impulseDir = await Directory(
-              "${fileManager.rootPath.where((element) => element.contains("emulated")).toList().first}${Platform.pathSeparator}impulse files${Platform.pathSeparator}")
+              "${fileManager.rootPath.where((element) => element.contains("emulated")).toList().first}impulse files${Platform.pathSeparator}")
           .create();
       return;
     }
