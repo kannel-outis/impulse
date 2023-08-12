@@ -303,9 +303,9 @@ class _CustomClientBottomModalSheetState
                                   borderRadius:
                                       BorderRadius.circular($styles.corners.lg),
                                   image: DecorationImage(
-                                    image: MemoryImage(
+                                    image: NetworkImage(
                                       receiverController.availableHostServers[i]
-                                          .user.displayImage,
+                                          .user.flingUrl,
                                     ),
                                     fit: BoxFit.cover,
                                   ),

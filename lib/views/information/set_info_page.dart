@@ -194,23 +194,15 @@ class _SetInfoPageState extends State<SetInfoPage> {
               SizedBox(height: $styles.insets.offset),
               GestureDetector(
                 onTap: () async {
-                  Uint8List? bytes;
                   final selectedImage = images[currentIndex];
-                  if (selectedImage.$1.isAsset) {
-                    final byteData = await rootBundle.load(selectedImage.$2);
-                    bytes = byteData.buffer.asUint8List();
-                  } else {
-                    bytes = await File(selectedImage.$2).readAsBytes();
-                  }
                   final user = User(
                     name: _controller.value.text.trim(),
                     id: const Uuid().v4(),
-                    displayImage: bytes,
                     deviceName: Platform.operatingSystem,
                     deviceOsVersion: Platform.operatingSystemVersion,
+                    displayImage: selectedImage.$2,
                   );
                   Configurations.instance.localPref.saveUserInfo(user.toMap());
-                  bytes = null;
                   // ignore: use_build_context_synchronously
                   context.go(
                     isAndroid

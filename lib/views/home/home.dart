@@ -65,6 +65,14 @@ class _HomePageState extends ConsumerState<HomePage>
     waitForOverlayReverseAnimation = wait;
   }
 
+  ImageProvider get _imageProvider {
+    if (Configurations.instance.user!.displayImage.isAsset) {
+      return AssetImage(Configurations.instance.user!.displayImage);
+    } else {
+      return FileImage(Configurations.instance.user!.displayImage.toFile);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -129,11 +137,7 @@ class _HomePageState extends ConsumerState<HomePage>
                                       borderRadius: BorderRadius.circular(
                                           $styles.corners.xxlg),
                                       image: DecorationImage(
-                                        image: MemoryImage(
-                                          //replace with shared pref info
-                                          Configurations
-                                              .instance.user!.displayImage,
-                                        ),
+                                        image: _imageProvider,
                                         fit: BoxFit.cover,
                                       ),
                                     ),

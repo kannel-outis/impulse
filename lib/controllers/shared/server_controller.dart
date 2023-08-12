@@ -83,7 +83,10 @@ class ServerController extends ServerManager with ChangeNotifier {
 
   @override
   ServerInfo get myServerInfo {
-    final me = Configurations.instance.user!;
+    final me = Configurations.instance.user!.copyWith(
+      ipAddress: _ipAddress,
+      port: _port,
+    );
     return ServerInfo(
       user: me,
       ipAddress: _ipAddress,

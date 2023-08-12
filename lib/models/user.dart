@@ -8,8 +8,9 @@ class User extends Equatable {
   final String deviceName;
   final String deviceOsVersion;
   // final bool isHost;
-  // final String? ipAddress;
-  final Uint8List displayImage;
+  final int? port;
+  final String? ipAddress;
+  final String displayImage;
 
   const User({
     required this.name,
@@ -17,7 +18,8 @@ class User extends Equatable {
     this.deviceName = "unknown",
     this.deviceOsVersion = "unknown",
     required this.displayImage,
-    // this.ipAddress,
+    this.ipAddress,
+    this.port,
     // this.isHost = false,
   });
 
@@ -33,13 +35,38 @@ class User extends Equatable {
     };
   }
 
+  User copyWith({
+    String? ipAddress,
+    int? port,
+  }) {
+    return User(
+      name: name,
+      id: id,
+      displayImage: displayImage,
+      deviceName: deviceName,
+      deviceOsVersion: deviceOsVersion,
+      ipAddress: ipAddress ?? this.ipAddress,
+      port: port ?? this.port,
+    );
+  }
+
+  String get flingUrl => "http://$ipAddress:$port/download?file=$displayImage";
+
+  Map<String, dynamic> toFlingMap() {
+    return {
+      "name": name,
+      "id": id,
+      "deviceName": deviceName,
+      "deviceOsVersion": deviceOsVersion,
+      "displayImage": flingUrl,
+    };
+  }
+
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
       name: map["name"] as String,
       id: map["id"] as String,
-      displayImage: Uint8List.fromList(
-        List<int>.from(map["displayImage"]),
-      ),
+      displayImage: map["displayImage"] as String,
       deviceName: map["deviceName"] as String,
       deviceOsVersion: map["deviceOsVersion"] as String,
       // isHost: map["isHost"] as bool,

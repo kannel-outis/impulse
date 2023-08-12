@@ -232,20 +232,12 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
-  image:
-    dependency: transitive
-    description:
-      name: image
-      sha256: a72242c9a0ffb65d03de1b7113bc4e189686fc07c7147b8b41811d0dd0e0d9bf
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.17"
   impulse_utils:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: c4d9cba68baf471235fd92c878aa0dcd9c9edd2e
+      ref: fc7b1d7b41fa26055f240b17656d31beeed09886
+      resolved-ref: fc7b1d7b41fa26055f240b17656d31beeed09886
       url: "https://github.com/kannel-outis/impulse_utils.git"
     source: git
     version: "0.0.1"

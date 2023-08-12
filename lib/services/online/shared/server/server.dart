@@ -92,12 +92,28 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       );
       httpRequest.response.close();
     } else if (url.contains("http://${address.address}:$port/download")) {
-      print("object......................................");
+      if (httpRequest.requestedUri.queryParameters.containsKey("file")) {
+        final file =
+            File(httpRequest.requestedUri.queryParameters["file"] as String);
+        if (await file.exists()) {
+          httpRequest.response.write(
+            json.encode(
+              {
+                "msg": "File not Found available",
+              },
+            ),
+          );
+          httpRequest.response.close();
+          return;
+        } else {
+          await file.openRead().pipe(httpRequest.response);
+          httpRequest.response.close();
+          return;
+        }
+      }
 
       ///get the id of the file from the url query parameter
       final fileId = httpRequest.requestedUri.queryParameters["id"];
-      print("$fileId from server.....");
-      print(httpRequest.requestedUri.queryParameters);
 
       String rangeHeader = httpRequest.headers.value(HttpHeaders.rangeHeader)!;
       final start = int.parse(rangeHeader.split('=')[1].split('-')[0]);
@@ -118,7 +134,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
             },
           ),
         );
-        print("Close....");
         httpRequest.response.close();
         return;
       }
@@ -135,7 +150,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           ..headers
               .set("Content-Disposition", "attachment; filename=${item.name}")
           ..headers.set("Content-Length", "${item.file.lengthSync() - start}");
-        print(item.file.lengthSync());
 
         final hiveItem = await serverManager.getHiveItemForShareable(item);
         void listener(int received, int totalSize, File? file, String? reason,
@@ -152,7 +166,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         ///This should be start
         int bytesDownloadedByClient = start;
         final response = httpRequest.response;
-        print(start);
         final fileStream = item.file.openRead(start);
         await response.addStream(fileStream.map((event) {
           bytesDownloadedByClient += event.length;

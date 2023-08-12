@@ -24,7 +24,6 @@ class Configurations {
   ImpulseUtils get impulseUtils => ImpulseUtils();
 
   Future<void> _loadPaths() async {
-    ///TODO: Ask for permission
     final applicationDocumentDir = await getApplicationDocumentsDirectory();
     if (Platform.isAndroid) {
       await fileManager.getRootPaths(true);
