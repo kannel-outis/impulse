@@ -325,6 +325,16 @@ class _HomePageState extends ConsumerState<HomePage>
                           },
                           icon: Icons.file_download_rounded,
                         ),
+                        if (isAndroid)
+                          SpeedChild(
+                            isHost: false,
+                            disableDefaultFunc: true,
+                            onTap: () {
+                              closeOverlay();
+                              context.push(ImpulseRouter.routes.scanPage);
+                            },
+                            icon: Icons.ac_unit,
+                          ),
                       ].reversed.toList(),
                     );
                   }

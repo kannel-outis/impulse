@@ -6,6 +6,7 @@ import 'package:impulse/app/app.dart';
 class ScanCustomPainter extends CustomPainter {
   final int circles;
   final AnimationController _animationController;
+  //position to place the middle of the circle in the animation
   final double setPosition;
 
   ScanCustomPainter(

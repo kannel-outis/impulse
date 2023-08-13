@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/models/models.dart';
 
 import '../widgets/scan_animation_painter.dart';
 
@@ -228,6 +231,9 @@ class _CustomClientBottomModalSheetState
     return completer.future;
   }
 
+  final containerSize = 70.0;
+  final setPosition = 15.0;
+
   @override
   Widget build(BuildContext context) {
     // final receiverController = ref.watch(receiverProvider);
@@ -250,7 +256,7 @@ class _CustomClientBottomModalSheetState
                     _animationController,
 
                     ///
-                    setPosition: 15,
+                    setPosition: setPosition,
                   ),
                 );
               },
@@ -260,20 +266,30 @@ class _CustomClientBottomModalSheetState
             /// -(half of container size) + setPosition
             /// it gives the perfect animation position
             /// e.g: -(70/2) + 15 == -20
-            bottom: -20,
-            child: Container(
-              key: _searchKey,
-              height: 70,
-              width: 70,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular($styles.corners.xxlg),
-                color: $styles.colors.secondaryColor,
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.search,
-                  color: $styles.colors.iconColor1,
-                  size: $styles.sizes.smallIconSize2,
+            bottom: -(containerSize * .5) + setPosition,
+            child: GestureDetector(
+              onTap: () async {
+                if (!Platform.isAndroid && !Platform.isIOS) return;
+                // Navigator.pop(context);
+                // Future.delayed(const Duration(milliseconds: 195)).then((value) {
+                context.push(ImpulseRouter.routes.scanPage);
+                // });
+                // ignore: use_build_context_synchronously
+              },
+              child: Container(
+                key: _searchKey,
+                height: containerSize,
+                width: containerSize,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular($styles.corners.xxlg),
+                  color: $styles.colors.secondaryColor,
+                ),
+                child: Center(
+                  child: Icon(
+                    Icons.search,
+                    color: $styles.colors.iconColor1,
+                    size: $styles.sizes.smallIconSize2,
+                  ),
                 ),
               ),
             ),
@@ -294,17 +310,10 @@ class _CustomClientBottomModalSheetState
                           $styles.sizes.modalBoxSize, context),
                       child: GestureDetector(
                         onTap: () async {
-                          final provider = ref.read(receiverProvider);
-                          provider.selectHost(
-                              receiverController.availableHostServers[i]);
-                          final result =
-                              await provider.createServerAndNotifyHost();
-                          if (result == null) {
-                            ref
-                                .read(userTypeProvider.notifier)
-                                .setUserState(UserType.client);
-                            ref.read(homeProvider).shouldShowTopStack = true;
-                          }
+                          await _createServerAndConnect(
+                            serverInfo:
+                                receiverController.availableHostServers[i],
+                          );
                         },
                         child: SizedBox(
                           height: _modalInnerPadding + 30.scale,
@@ -425,5 +434,21 @@ class _CustomClientBottomModalSheetState
     final y = (offset.dy / (height / 2)) - 1;
     final s = Alignment(x, y);
     return s;
+  }
+
+  Future<void> _createServerAndConnect(
+      {String? ipAddress, int? port, ServerInfo? serverInfo}) async {
+    final provider = ref.read(receiverProvider);
+    if (serverInfo != null) {
+      provider.selectHost(serverInfo);
+    }
+    final result = await provider.createServerAndNotifyHost(
+      ipAddress: ipAddress,
+      port: port,
+    );
+    if (result == null) {
+      ref.read(userTypeProvider.notifier).setUserState(UserType.client);
+      ref.read(homeProvider).shouldShowTopStack = true;
+    }
   }
 }

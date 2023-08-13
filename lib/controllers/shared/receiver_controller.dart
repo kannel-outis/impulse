@@ -109,8 +109,9 @@ class ReceiverProvider extends ChangeNotifier {
 
   ///This method is called from the ui immediately after selecting a host preferably.
   ///It creates the client server and notifies the host by making a post request to the host server
-  Future<AppException?> createServerAndNotifyHost() async {
-    if (selectedHost == null) {
+  Future<AppException?> createServerAndNotifyHost(
+      {String? ipAddress, int? port}) async {
+    if (selectedHost == null && (ipAddress == null || port == null)) {
       return const AppException("No Host has been Selected or found");
     }
     // ignore: unnecessary_this
@@ -120,10 +121,12 @@ class ReceiverProvider extends ChangeNotifier {
     } else {
       /// if [selectedHost] is not null that means we have the host ipAddress and port
       /// make a post request to the host with our (the client) info as body
+      ///
+      /// and in case a qr code is used, ipAddress and port parameters should not be empty
       final myInfo = _myServer.myServerInfo;
       final notifyHost = await client.createServerAndNotifyHost(
-        address: selectedHost!.ipAddress!,
-        port: selectedHost?.port,
+        address: ipAddress ?? selectedHost!.ipAddress!,
+        port: port ?? selectedHost?.port,
         body: myInfo.toMap(),
       );
       if (notifyHost is Left) {

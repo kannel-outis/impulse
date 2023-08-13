@@ -1,8 +1,7 @@
-import 'dart:convert';
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:impulse/app/app.dart';
 import 'package:impulse/app/impulse_exception.dart';
 import 'package:impulse/services/services.dart';
 
@@ -62,8 +61,8 @@ class SenderProvider extends ChangeNotifier {
 
   String serverInfoBarcodeMap() {
     final map = {
-      "ip": ipAddress,
-      "port": port,
+      "ip": ipAddress!,
+      "port": port!,
     };
     return jsonEncode(map);
   }
