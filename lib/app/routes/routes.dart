@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart' hide Path;
 import 'package:go_router/go_router.dart';
+import 'package:impulse/app/routes/dialog_route.dart';
 import 'package:impulse/models/models.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/impulse_scaffold.dart';
+import 'package:impulse/views/information/set_info_page.dart';
+import 'package:impulse/views/scan/scan_page.dart';
+import 'package:impulse/views/scan/widget/scan_dialog.dart';
 import 'package:impulse/views/settings/settings_screen.dart';
 import 'package:impulse/views/files/file_manager.dart';
 import 'package:impulse/views/home/home.dart';
@@ -14,53 +18,52 @@ class ImpulseRouter {
   static final nestedFolderNavKey = GlobalKey<NavigatorState>();
 
   static final router = GoRouter(
-    initialLocation: isAndroid ? routes.home : routes.folder,
+    initialLocation: Configurations.instance.user == null
+        ? routes.setInfo
+        : isAndroid
+            ? routes.home
+            : routes.folder,
+    // initialLocation: routes.setInfo,
     navigatorKey: mainNavKey,
     routes: [
-      // ShellRoute(
-      //   navigatorKey: mainNavKey,
-      //   builder: (context, state, child) {
-      //     return ImpulseScaffold(child: child);
-      //   },
-      //   routes: [
-      //     // ImpulseRoute(routes.test, (_) => const TestPage()),
-
-      //     ImpulseRoute(routes.home, (_) => const HomePage()),
-
-      //     ///TODO: will remove later
-      //     ShellRoute(
-      //       navigatorKey: nestedFolderNavKey,
-      //       builder: (context, state, child) {
-      //         return ImpulseScaffold(child: child);
-      //       },
-      //       routes: [
-      //         ImpulseRoute(
-      //           "${routes.folder}/:folder",
-      //           (s) {
-      //             return FileManagerScreen(
-      //               files: s.extra != null
-      //                   ? s.extra as List<ImpulseFileEntity>
-      //                   : null,
-      //             );
-      //           },
-      //           parentNavKey: nestedFolderNavKey,
-      //         ),
-      //       ],
-      //     ),
-      //     ImpulseRoute(
-      //       routes.transfer,
-      //       (s) => const TransferPage(),
-      //     )
-      //   ],
-      // ),
-
-      // ImpulseRoute(
-      // //   parentNavKey: mainNavKey,
-      // //   path: routes.settings,
-      // //   builder: (s) {
-      // //     return const SettingScreen();
-      // //   },
-      // // ),
+      ImpulseRoute(
+        parentNavKey: mainNavKey,
+        path: routes.setInfo,
+        builder: (s) {
+          return const ImpulseScaffold(
+            showOverlay: false,
+            child: SetInfoPage(),
+          );
+        },
+      ),
+      ImpulseRoute(
+        parentNavKey: mainNavKey,
+        path: routes.scanPage,
+        builder: (s) {
+          return const ImpulseScaffold(
+            showOverlay: false,
+            child: ScanPage(),
+          );
+        },
+      ),
+      ImpulseRoute(
+        parentNavKey: mainNavKey,
+        path: routes.scanDialog,
+        name: "scan_dialog",
+        pageBuilder: (context, state) {
+          final data = jsonDecode(state.queryParameters["data"] as String)
+              as Map<String, dynamic>;
+          return DialogPage(
+            barrierColor: Colors.black.withOpacity(.5),
+            builder: (context) {
+              return ScanDialog(
+                ip: data["ip"] as String,
+                port: data["port"] as int,
+              );
+            },
+          );
+        },
+      ),
       ShellRoute(
         builder: (context, state, child) {
           return ImpulseScaffold(child: child);
@@ -141,36 +144,41 @@ class _Routes {
   ////
   final String folder = "/folder";
   final String settings = "/settings";
+  final String setInfo = "/setInfo";
+  final String scanPage = "/scanPage";
+  final String scanDialog = "/qrDialog";
 }
 
 class ImpulseRoute extends GoRoute {
   final GlobalKey<NavigatorState>? parentNavKey;
-  ImpulseRoute(
-      {required String path,
-      required Widget Function(GoRouterState s) builder,
-      List<RouteBase> routes = const [],
-      String? name,
-      this.parentNavKey})
-      : super(
+  ImpulseRoute({
+    required String path,
+    Widget Function(GoRouterState s)? builder,
+    GoRouterPageBuilder? pageBuilder,
+    List<RouteBase> routes = const [],
+    String? name,
+    this.parentNavKey,
+  }) : super(
           path: path,
           name: name,
           routes: routes,
-          pageBuilder: (context, state) {
-            final pageContent = Scaffold(
-              body: builder(state),
-              resizeToAvoidBottomInset: false,
-            );
+          pageBuilder: pageBuilder ??
+              (context, state) {
+                final pageContent = Scaffold(
+                  body: builder!(state),
+                  resizeToAvoidBottomInset: false,
+                );
 
-            return NoTransitionPage(
-              key: state.pageKey,
-              child: pageContent,
+                return NoTransitionPage(
+                  key: state.pageKey,
+                  child: pageContent,
 
-              // transitionsBuilder:
-              //     (context, animation, secondaryAnimation, child) {
-              //   return FadeTransition(opacity: animation, child: child);
-              // },
-            );
-          },
+                  // transitionsBuilder:
+                  //     (context, animation, secondaryAnimation, child) {
+                  //   return FadeTransition(opacity: animation, child: child);
+                  // },
+                );
+              },
         );
 
   @override

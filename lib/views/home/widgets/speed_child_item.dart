@@ -5,11 +5,13 @@ class SpeedChild extends StatelessWidget {
   final bool isHost;
   final VoidCallback? onTap;
   final IconData icon;
+  final bool disableDefaultFunc;
   const SpeedChild({
     super.key,
     required this.icon,
     this.onTap,
     this.isHost = true,
+    this.disableDefaultFunc = false,
   });
 
   @override
@@ -30,7 +32,7 @@ class SpeedChild extends StatelessWidget {
           // }
 
           onTap?.call();
-          showModel(isHost, context);
+          if (!disableDefaultFunc) showModel(isHost, context);
         },
         child: Container(
           height: 50,

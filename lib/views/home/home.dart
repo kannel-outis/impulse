@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart' hide ConnectionState;
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +12,7 @@ import 'package:impulse/views/shared/custom_speed_dial.dart';
 import 'package:impulse/views/shared/padded_body.dart';
 import 'package:impulse/views/shared/selectable_item_widget.dart';
 import 'package:impulse/views/transfer/transfer_page.dart';
+import 'package:impulse_utils/impulse_utils.dart';
 
 import 'components/bottom_nav_bar.dart';
 import 'widgets/speed_child_item.dart';
@@ -63,6 +66,14 @@ class _HomePageState extends ConsumerState<HomePage>
     /// e.g when we wan to show a modal or a dialog because, the overlay stays on top on the dialog
     /// and makes it weird. so instead of waiting we just snap it out unnoticable.
     waitForOverlayReverseAnimation = wait;
+  }
+
+  ImageProvider get _imageProvider {
+    if (Configurations.instance.user!.displayImage.isAsset) {
+      return AssetImage(Configurations.instance.user!.displayImage);
+    } else {
+      return FileImage(Configurations.instance.user!.displayImage.toFile);
+    }
   }
 
   @override
@@ -128,11 +139,9 @@ class _HomePageState extends ConsumerState<HomePage>
                                       color: $styles.colors.fontColor2,
                                       borderRadius: BorderRadius.circular(
                                           $styles.corners.xxlg),
-                                      image: const DecorationImage(
-                                        image: AssetImage(
-                                          //replace with shared pref info
-                                          AssetsImage.DEFAULT_DISPLAY_IMAGE_2,
-                                        ),
+                                      image: DecorationImage(
+                                        image: _imageProvider,
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
@@ -253,6 +262,9 @@ class _HomePageState extends ConsumerState<HomePage>
                       open: isOverlayOpen,
                       disable: hostController.host.isServerRunning ||
                           connectionState == ConnectionState.connected,
+                      disabledFunction: () {
+                        showModel(true, context);
+                      },
                       toolTipMessage: homeController.isWaitingForReceiver
                           ? connectionState == ConnectionState.connected
                               ? "Connected"
@@ -313,6 +325,16 @@ class _HomePageState extends ConsumerState<HomePage>
                           },
                           icon: Icons.file_download_rounded,
                         ),
+                        if (isAndroid)
+                          SpeedChild(
+                            isHost: false,
+                            disableDefaultFunc: true,
+                            onTap: () {
+                              closeOverlay();
+                              context.push(ImpulseRouter.routes.scanPage);
+                            },
+                            icon: Icons.ac_unit,
+                          ),
                       ].reversed.toList(),
                     );
                   }

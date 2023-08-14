@@ -4,11 +4,22 @@ import 'package:impulse/services/offline/shared_pref/shared_pref.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ImpulseSharedPrefImpl implements ImpulseSharedPref {
-  final SharedPreferences _preferences;
-
-  ImpulseSharedPrefImpl(this._preferences);
+  ImpulseSharedPrefImpl._();
 
   static const String _userShared = "user";
+
+  static late final SharedPreferences _preferences;
+
+  static ImpulseSharedPref? _instance;
+  static ImpulseSharedPref get instance {
+    _instance ??= ImpulseSharedPrefImpl._();
+    return _instance!;
+  }
+
+  @override
+  Future<void> loadInstance() async {
+    _preferences = await SharedPreferences.getInstance();
+  }
 
   @override
   Map<String, dynamic>? getUserInfo() {
@@ -20,6 +31,8 @@ class ImpulseSharedPrefImpl implements ImpulseSharedPref {
   @override
   Future<bool> saveUserInfo(Map<String, dynamic> userMap) async {
     final value = json.encode(userMap);
-    return await _preferences.setString(_userShared, value);
+    final result = await _preferences.setString(_userShared, value);
+    _preferences.reload();
+    return result;
   }
 }

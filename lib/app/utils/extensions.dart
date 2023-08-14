@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -72,6 +73,14 @@ extension Cut on String {
     final strings = split(":");
     strings.removeLast();
     return strings.join(":");
+  }
+
+  bool get isAsset {
+    return contains("assets");
+  }
+
+  File get toFile {
+    return File(this);
   }
 }
 

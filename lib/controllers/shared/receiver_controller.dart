@@ -78,21 +78,34 @@ class ReceiverProvider extends ChangeNotifier {
       /// for each ip address found, try to make a connection using the default port.
       /// the number of successful connections we make equals the number of available host users or servers
       /// on the network.
-      final result = await client.establishConnectionToHost(address: hostIp);
-      final response = result.map(
-        (r) => ServerInfo.fromMap(r["hostServerInfo"]),
-      );
-      if (response is Right) {
-        final user = (response as Right).value as ServerInfo;
-        if (!_availableHostsServers
-            .map((e) => e.ipAddress)
-            .toList()
-            .contains(user.ipAddress)) {
-          _availableHostsServers.add(user);
-        }
-      }
+
+      await establishConnection(hostIp: hostIp);
+    }
+  }
+
+  Future<void> establishConnection(
+      {required String hostIp, int? port, bool listReset = false}) async {
+    if (listReset) {
+      /// we want to be able to have one availableUser when a user uses the QR feature
+      /// since only one user can be scanned at once
+      clearAvailableUsers();
       notifyListeners();
     }
+    final result =
+        await client.establishConnectionToHost(address: hostIp, port: port);
+    final response = result.map(
+      (r) => ServerInfo.fromMap(r["hostServerInfo"]),
+    );
+    if (response is Right) {
+      final user = (response as Right).value as ServerInfo;
+      if (!_availableHostsServers
+          .map((e) => e.ipAddress)
+          .toList()
+          .contains(user.ipAddress)) {
+        _availableHostsServers.add(user);
+      }
+    }
+    notifyListeners();
   }
 
   Future<List<String>> _scan() async {
@@ -109,8 +122,9 @@ class ReceiverProvider extends ChangeNotifier {
 
   ///This method is called from the ui immediately after selecting a host preferably.
   ///It creates the client server and notifies the host by making a post request to the host server
-  Future<AppException?> createServerAndNotifyHost() async {
-    if (selectedHost == null) {
+  Future<AppException?> createServerAndNotifyHost(
+      {String? ipAddress, int? port}) async {
+    if (selectedHost == null && (ipAddress == null || port == null)) {
       return const AppException("No Host has been Selected or found");
     }
     // ignore: unnecessary_this
@@ -120,10 +134,12 @@ class ReceiverProvider extends ChangeNotifier {
     } else {
       /// if [selectedHost] is not null that means we have the host ipAddress and port
       /// make a post request to the host with our (the client) info as body
-      final myInfo = await _myServer.myServerInfo();
+      ///
+      /// and in case a qr code is used, ipAddress and port parameters should not be empty
+      final myInfo = _myServer.myServerInfo;
       final notifyHost = await client.createServerAndNotifyHost(
-        address: selectedHost!.ipAddress!,
-        port: selectedHost?.port,
+        address: ipAddress ?? selectedHost!.ipAddress!,
+        port: port ?? selectedHost?.port,
         body: myInfo.toMap(),
       );
       if (notifyHost is Left) {

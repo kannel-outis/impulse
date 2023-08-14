@@ -15,20 +15,10 @@ class AppItem extends StatefulWidget {
 }
 
 class _AppItemState extends State<AppItem> {
-  double _appBox() {
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    ///The total width of device minus the padding on both side
-    ///divided by the number of items we'd like to fit in a row
-    return (screenWidth - ($styles.insets.md * 2)) / 4;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent,
-      height: _appBox(),
-      width: _appBox(),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,

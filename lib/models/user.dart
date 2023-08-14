@@ -7,9 +7,10 @@ class User extends Equatable {
   final String id;
   final String deviceName;
   final String deviceOsVersion;
-  final bool isHost;
+  // final bool isHost;
+  final int? port;
   final String? ipAddress;
-  final Uint8List displayImage;
+  final String displayImage;
 
   const User({
     required this.name,
@@ -17,8 +18,9 @@ class User extends Equatable {
     this.deviceName = "unknown",
     this.deviceOsVersion = "unknown",
     required this.displayImage,
-    required this.ipAddress,
-    this.isHost = false,
+    this.ipAddress,
+    this.port,
+    // this.isHost = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -28,8 +30,37 @@ class User extends Equatable {
       "deviceName": deviceName,
       "deviceOsVersion": deviceOsVersion,
       "displayImage": displayImage,
-      "isHost": isHost,
-      "ipAddress": ipAddress,
+      // "isHost": isHost,
+      // "ipAddress": ipAddress,
+    };
+  }
+
+  User copyWith({
+    String? ipAddress,
+    int? port,
+  }) {
+    return User(
+      name: name,
+      id: id,
+      displayImage: displayImage,
+      deviceName: deviceName,
+      deviceOsVersion: deviceOsVersion,
+      ipAddress: ipAddress ?? this.ipAddress,
+      port: port ?? this.port,
+    );
+  }
+
+  String get _flingUrl {
+    return "http://$ipAddress:$port/download?file=$displayImage";
+  }
+
+  Map<String, dynamic> toFlingMap() {
+    return {
+      "name": name,
+      "id": id,
+      "deviceName": deviceName,
+      "deviceOsVersion": deviceOsVersion,
+      "displayImage": _flingUrl,
     };
   }
 
@@ -37,13 +68,11 @@ class User extends Equatable {
     return User(
       name: map["name"] as String,
       id: map["id"] as String,
-      displayImage: Uint8List.fromList(
-        List<int>.from(map["displayImage"]),
-      ),
+      displayImage: map["displayImage"] as String,
       deviceName: map["deviceName"] as String,
       deviceOsVersion: map["deviceOsVersion"] as String,
-      isHost: map["isHost"] as bool,
-      ipAddress: map["ipAddress"] as String?,
+      // isHost: map["isHost"] as bool,
+      // ipAddress: map["ipAddress"] as String?,
     );
   }
 
@@ -51,9 +80,9 @@ class User extends Equatable {
   List<Object?> get props => [
         deviceName,
         deviceOsVersion,
-        ipAddress,
+        // ipAddress,
         id,
         name,
-        isHost,
+        // isHost,
       ];
 }

@@ -6,7 +6,7 @@ import 'package:impulse/services/services.dart';
 abstract class ServerManager {
   //TODO: should change to sync function later
   // Future<ServerInfo> get hostInfo;
-  Future<ServerInfo> myServerInfo();
+  ServerInfo get myServerInfo;
   void setSelectedItems(List<Item> items);
   List<Item> getSelectedItems();
   List<String> getPaths();

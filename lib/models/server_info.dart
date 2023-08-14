@@ -1,5 +1,3 @@
-
-
 import 'package:equatable/equatable.dart';
 
 import 'user.dart';
@@ -17,7 +15,7 @@ class ServerInfo extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
-      "user": user.toMap(),
+      "user": user.toFlingMap(),
       "ip": ipAddress,
       "port": port,
     };

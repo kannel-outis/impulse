@@ -4,7 +4,7 @@ import 'package:impulse/app/app.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
 final homeProvider = ChangeNotifierProvider<HomeController>((ref) {
-  return HomeController(ImpulseUtils());
+  return HomeController(Configurations.instance.impulseUtils);
 });
 
 class HomeController extends ChangeNotifier {
@@ -37,11 +37,13 @@ class HomeController extends ChangeNotifier {
   }
 
   set isWaitingForReceiver(bool isWaiting) {
+    if (isWaiting == _isWaitingForReceiver) return;
     _isWaitingForReceiver = isWaiting;
     notifyListeners();
   }
 
   set shouldShowTopStack(bool topStack) {
+    if (topStack == _shouldShowTopStack) return;
     _shouldShowTopStack = topStack;
     notifyListeners();
   }
