@@ -85,6 +85,12 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
   }
 
   @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CompositedTransformTarget(
       link: _layerLink,

@@ -51,14 +51,15 @@ class ImpulseRouter {
         path: routes.scanDialog,
         name: "scan_dialog",
         pageBuilder: (context, state) {
+          final data = jsonDecode(state.queryParameters["data"] as String)
+              as Map<String, dynamic>;
           return DialogPage(
             barrierColor: Colors.black.withOpacity(.5),
             builder: (context) {
               return ScanDialog(
-              parentLocation: state.queryParameters["parentLocation"],
-              ip: state.queryParameters["id"] as String,
-              port: state.queryParameters["port"] as int,
-            );
+                ip: data["ip"] as String,
+                port: data["port"] as int,
+              );
             },
           );
         },

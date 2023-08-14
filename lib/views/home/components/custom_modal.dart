@@ -269,10 +269,10 @@ class _CustomClientBottomModalSheetState
             bottom: -(containerSize * .5) + setPosition,
             child: GestureDetector(
               onTap: () async {
-                if (!Platform.isAndroid && !Platform.isIOS) return;
+                // if (!Platform.isAndroid && !Platform.isIOS) return;
                 // Navigator.pop(context);
                 // Future.delayed(const Duration(milliseconds: 195)).then((value) {
-                context.push(ImpulseRouter.routes.scanPage);
+                // context.push(ImpulseRouter.routes.scanPage);
                 // });
                 // ignore: use_build_context_synchronously
               },

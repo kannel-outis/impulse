@@ -78,21 +78,34 @@ class ReceiverProvider extends ChangeNotifier {
       /// for each ip address found, try to make a connection using the default port.
       /// the number of successful connections we make equals the number of available host users or servers
       /// on the network.
-      final result = await client.establishConnectionToHost(address: hostIp);
-      final response = result.map(
-        (r) => ServerInfo.fromMap(r["hostServerInfo"]),
-      );
-      if (response is Right) {
-        final user = (response as Right).value as ServerInfo;
-        if (!_availableHostsServers
-            .map((e) => e.ipAddress)
-            .toList()
-            .contains(user.ipAddress)) {
-          _availableHostsServers.add(user);
-        }
-      }
+
+      await establishConnection(hostIp: hostIp);
+    }
+  }
+
+  Future<void> establishConnection(
+      {required String hostIp, int? port, bool listReset = false}) async {
+    if (listReset) {
+      /// we want to be able to have one availableUser when a user uses the QR feature
+      /// since only one user can be scanned at once
+      clearAvailableUsers();
       notifyListeners();
     }
+    final result =
+        await client.establishConnectionToHost(address: hostIp, port: port);
+    final response = result.map(
+      (r) => ServerInfo.fromMap(r["hostServerInfo"]),
+    );
+    if (response is Right) {
+      final user = (response as Right).value as ServerInfo;
+      if (!_availableHostsServers
+          .map((e) => e.ipAddress)
+          .toList()
+          .contains(user.ipAddress)) {
+        _availableHostsServers.add(user);
+      }
+    }
+    notifyListeners();
   }
 
   Future<List<String>> _scan() async {
