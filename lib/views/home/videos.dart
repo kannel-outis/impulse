@@ -1,4 +1,4 @@
-part of "home.dart";
+part of 'home.dart';
 
 class VideosPage extends StatelessWidget {
   const VideosPage({

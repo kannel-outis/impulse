@@ -12,12 +12,14 @@ class TransferListTile extends StatelessWidget {
   final bool mini;
   final String? mBps;
   final Item item;
+  final double? width;
   const TransferListTile({
     this.height = 100,
     this.mini = false,
     required this.item,
     this.mBps,
     super.key,
+    this.width,
   });
 
   double get factor {
@@ -54,9 +56,10 @@ class TransferListTile extends StatelessWidget {
                 children: [
                   Container(
                     height: height,
-                    width: MediaQuery.of(context).size.width > 700
+                    width: (width ?? MediaQuery.of(context).size.width) > 700
                         ? 700 * percentage
-                        : MediaQuery.of(context).size.width * percentage,
+                        : (width ?? MediaQuery.of(context).size.width) *
+                            percentage,
                     constraints:
                         mini ? null : const BoxConstraints(maxWidth: 700),
                     margin: EdgeInsets.only(
@@ -76,7 +79,7 @@ class TransferListTile extends StatelessWidget {
                   ),
                   Container(
                     height: height,
-                    width: MediaQuery.of(context).size.width,
+                    width: (width ?? MediaQuery.of(context).size.width),
                     margin: EdgeInsets.only(
                       bottom: mini ? 0 : $styles.insets.lg,
                     ),

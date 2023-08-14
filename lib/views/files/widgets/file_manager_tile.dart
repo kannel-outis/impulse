@@ -91,29 +91,32 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
                       ],
                     ),
                   )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: _itemTileWidth(padding: leftItemPadding * 4),
-                        child: Text(
-                          widget.item.name,
-                          overflow: TextOverflow.ellipsis,
+                : Expanded(
+                    flex: 1,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          // width: _itemTileWidth(padding: leftItemPadding * 4),
+                          child: Text(
+                            widget.item.name,
+                            overflow: TextOverflow.ellipsis,
+                            style: $styles.text.body,
+                          ),
+                        ),
+                        Text(
+                          widget.item.isFolder
+                              ? widget.item.fileSystemEntity
+                                  .statSync()
+                                  .modified
+                                  .toString()
+                                  .cutTimeDateString
+                              : widget.item.sizeToString,
                           style: $styles.text.body,
                         ),
-                      ),
-                      Text(
-                        widget.item.isFolder
-                            ? widget.item.fileSystemEntity
-                                .statSync()
-                                .modified
-                                .toString()
-                                .cutTimeDateString
-                            : widget.item.sizeToString,
-                        style: $styles.text.body,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
           ],
         ),
