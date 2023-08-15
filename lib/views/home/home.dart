@@ -4,12 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/views/home/components/side_bar.dart';
 import 'package:impulse/views/home/widgets/app_item.dart';
 import 'package:impulse/views/shared/custom_speed_dial.dart';
 import 'package:impulse/views/shared/padded_body.dart';
 import 'package:impulse/views/shared/selectable_item_widget.dart';
 import 'package:impulse/views/transfer/transfer_page.dart';
-import 'package:impulse/views/transfer/widgets/transfer_list_tile.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
 import 'components/bottom_nav_bar.dart';
@@ -34,8 +34,6 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage>
     with SingleTickerProviderStateMixin {
-  int index = 0;
-
   bool tabBarTapped = false;
   bool isOverlayOpen = false;
   bool waitForOverlayReverseAnimation = true;
@@ -61,153 +59,10 @@ class _HomePageState extends ConsumerState<HomePage>
     return size > $styles.tabletLg;
   }
 
-  Map<String, (IconData, IconData)> get bars => {
-        "Files": (ImpulseIcons.bx_folder, ImpulseIcons.bxs_folder),
-        "Settings": (ImpulseIcons.bx_cog, ImpulseIcons.bxs_cog),
-      };
-
   Widget _sideBar(double size) {
     if (_isPhone(size)) {
-      return Container(
-        width: (MediaQuery.of(context).size.width / 100) * 20,
-        constraints: const BoxConstraints(maxWidth: 500),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  Container(
-                    height: 50,
-                    width: double.infinity,
-                    margin: $styles.insets.xs.insetsBottom,
-                  ),
-                  for (var i = 0; i < bars.length; i++)
-                    InkWell(
-                      splashColor: Colors.transparent,
-                      highlightColor: Colors.transparent,
-                      onTap: () {
-                        onChanged(i);
-                        index = i;
-                        setState(() {});
-                      },
-                      child: Container(
-                        width: double.infinity,
-                        height: 50,
-                        color: Colors.transparent,
-                        padding: $styles.insets.md.insetsLeft,
-                        margin: $styles.insets.xs.insetsBottom,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 1.5,
-                              height: (80 / 100) * 50,
-                              color: i == index
-                                  ? $styles.colors.secondaryColor
-                                  : null,
-                            ),
-                            SizedBox(width: $styles.insets.sm),
-                            Expanded(
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    index == i
-                                        ? bars.values.toList()[i].$2
-                                        : bars.values.toList()[i].$1,
-                                  ),
-                                  SizedBox(width: $styles.insets.sm),
-                                  Text(
-                                    bars.keys.toList()[i],
-                                    style: $styles.text.bodySmall,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            Consumer(
-              builder: (context, ref, child) {
-                final connectionState = ref.watch(connectionStateProvider);
-                if (connectionState == ConnectionState.connected) {
-                  return Consumer(
-                    builder: (context, ref, child) {
-                      final shareable = ref.watch(shareableItemsProvider);
-                      final downloadManager =
-                          ref.watch(downloadManagerProvider);
-
-                      ref.watch(receivableListItems);
-                      if (downloadManager.$2 != null) {
-                        return TransferListTile(
-                          item: downloadManager.$2!,
-                          mini: true,
-                          mBps:
-                              ImpulseFileSize(downloadManager.$1).sizeToString,
-                          height: 70,
-                          width: (MediaQuery.of(context).size.width / 100) * 20,
-                        );
-                      }
-
-                      if (shareable.isEmpty) {
-                        return Container(
-                          height: 70,
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            border: Border(
-                              top: BorderSide(
-                                color: Colors.white,
-                                width: .5,
-                              ),
-                              // bottom: BorderSide(
-                              //   color: Colors.white,
-                              //   width: 1,
-                              // ),
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "No Shared Item yet",
-                              style: $styles.text.body,
-                            ),
-                          ),
-                        );
-                      }
-                      final inProgressItemsWidget = shareable
-                          .where((element) => element.state.isInProgress)
-                          .toList()
-                          .map(
-                            (e) => TransferListTile(
-                              height: 70,
-                              mini: true,
-                              item: e,
-                              width: (MediaQuery.of(context).size.width / 100) *
-                                  20,
-                            ),
-                          )
-                          .toList();
-                      return inProgressItemsWidget.isEmpty
-                          ? TransferListTile(
-                              item: shareable.last,
-                              mini: true,
-                              height: 70,
-                              width: (MediaQuery.of(context).size.width / 100) *
-                                  20,
-                            )
-                          : inProgressItemsWidget.first;
-                    },
-                  );
-                } else {
-                  return const SizedBox();
-                }
-              },
-            ),
-          ],
-        ),
+      return SideBar(
+        navigationShell: widget.navigationShell,
       );
     } else {
       return const SizedBox();
