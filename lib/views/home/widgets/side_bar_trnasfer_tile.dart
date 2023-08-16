@@ -33,7 +33,6 @@ class _SideBarProgressTileState extends ConsumerState<SideBarProgressTile> {
                   mini: true,
                   mBps: ImpulseFileSize(downloadManager.$1).sizeToString,
                   height: 70,
-                  width: (MediaQuery.of(context).size.width / 100) * 20,
                 );
               }
 
@@ -69,7 +68,6 @@ class _SideBarProgressTileState extends ConsumerState<SideBarProgressTile> {
                       height: 70,
                       mini: true,
                       item: e,
-                      width: (MediaQuery.of(context).size.width / 100) * 20,
                     ),
                   )
                   .toList();
@@ -78,7 +76,6 @@ class _SideBarProgressTileState extends ConsumerState<SideBarProgressTile> {
                       item: shareable.last,
                       mini: true,
                       height: 70,
-                      width: (MediaQuery.of(context).size.width / 100) * 20,
                     )
                   : inProgressItemsWidget.first;
             },

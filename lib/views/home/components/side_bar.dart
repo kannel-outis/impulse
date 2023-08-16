@@ -20,8 +20,6 @@ class SideBar extends ConsumerStatefulWidget {
 }
 
 class _SideBarState extends ConsumerState<SideBar> {
-  int index = 0;
-
   Map<String, (IconData, IconData)> get bars => {
         if (isAndroid)
           "Home": (ImpulseIcons.bx_home_alt_2, ImpulseIcons.bxs_home_alt_2),
@@ -42,27 +40,15 @@ class _SideBarState extends ConsumerState<SideBar> {
               padding: ($styles.insets.xs, $styles.insets.xs).insetsLeftRight,
               child: Column(
                 children: [
-                  InkWell(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        useRootNavigator: true,
-                        builder: (context) {
-                          return const TransferDialog();
-                        },
-                      );
-                    },
-                    child: Container(
-                      height: 50,
-                      width: double.infinity,
-                      color: Theme.of(context).hoverColor,
-                      margin: $styles.insets.xs.insetsBottom,
-                      child: Center(
-                        child: Icon(
-                          CupertinoIcons.add,
-                          size: 20.scale,
-                        ),
+                  Container(
+                    height: 50,
+                    width: double.infinity,
+                    color: Theme.of(context).hoverColor,
+                    margin: $styles.insets.xs.insetsBottom,
+                    child: Center(
+                      child: Icon(
+                        CupertinoIcons.add,
+                        size: 20.scale,
                       ),
                     ),
                   ),
@@ -74,7 +60,6 @@ class _SideBarState extends ConsumerState<SideBar> {
                           highlightColor: Colors.transparent,
                           onTap: () {
                             onChanged(i);
-                            index = i;
                             setState(() {});
                           },
                           child: Container(
@@ -88,16 +73,17 @@ class _SideBarState extends ConsumerState<SideBar> {
                                 Container(
                                   width: 1.5,
                                   height: (80 / 100) * 50,
-                                  color: i == index
-                                      ? $styles.colors.secondaryColor
-                                      : null,
+                                  color:
+                                      i == widget.navigationShell.currentIndex
+                                          ? $styles.colors.secondaryColor
+                                          : null,
                                 ),
                                 SizedBox(width: $styles.insets.sm),
                                 Expanded(
                                   child: Row(
                                     children: [
                                       Icon(
-                                        index == i
+                                        i == widget.navigationShell.currentIndex
                                             ? bars.values.toList()[i].$2
                                             : bars.values.toList()[i].$1,
                                       ),
@@ -131,16 +117,10 @@ class _SideBarState extends ConsumerState<SideBar> {
             onTap: () {
               showDialog(
                 context: context,
-                barrierDismissible: false,
+                barrierDismissible: true,
                 useRootNavigator: true,
                 builder: (context) {
-                  return Dialog(
-                    child: Container(
-                      child: Material(
-                        child: FullTransferPage(),
-                      ),
-                    ),
-                  );
+                  return const TransferDialog();
                 },
               );
             },
@@ -168,14 +148,7 @@ class TransferDialog extends ConsumerStatefulWidget {
   ConsumerState<TransferDialog> createState() => _TransferDialogState();
 }
 
-class _TransferDialogState extends ConsumerState<TransferDialog>
-    with WidgetsBindingObserver {
-  @override
-  void didChangeMetrics() {
-    super.didChangeMetrics();
-    print("Changed");
-  }
-
+class _TransferDialogState extends ConsumerState<TransferDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(

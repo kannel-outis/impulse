@@ -36,7 +36,7 @@ class _FullTransferPageState extends ConsumerState<FullTransferPage>
           Container(
             height: 200,
             width: double.infinity,
-            color: $styles.colors.secondaryColor,
+            color: Theme.of(context).colorScheme.primary,
             margin: const EdgeInsets.only(bottom: 20),
             child: Column(
               children: [

@@ -7,9 +7,13 @@ final pathController = StateNotifierProvider<PathController, List<Path>>((ref) {
 });
 
 class PathController extends StateNotifier<List<Path>> {
-  PathController() : super([Path(location: ImpulseRouter.routes.folder, altName: "Root")]);
+  PathController()
+      : super([Path(location: ImpulseRouter.routes.folder, altName: "Root")]);
 
   void addPathToNav(Path path) {
+    if (state.map((e) => e.location).toList().contains(path.location)) {
+      return;
+    }
     state = [...state, path];
   }
 
