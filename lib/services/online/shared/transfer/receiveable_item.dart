@@ -32,7 +32,7 @@ class ReceiveableItem extends Item {
           // onStateChange: stateChange,
           homeDestination: homeDestination,
           // onProgressCallback: progressCallBack,
-          fileName: file.path.split("/").last,
+          fileName: file.path.split(Platform.pathSeparator).last,
         );
 
   factory ReceiveableItem.fromShareableMap(Map<String, dynamic> map) {

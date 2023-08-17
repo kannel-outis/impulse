@@ -60,27 +60,47 @@ class _TopStackState extends ConsumerState<TopStack>
               },
             );
           },
-          child: Spinner(
-            size: 35,
-            spin: isConnected,
-            color: isConnected ? Colors.green : $styles.colors.iconColor3,
-            child: AnimatedContainer(
-              duration: $styles.times.fast,
-              // height: 25,
-              // width: 25,
-              decoration: BoxDecoration(
-                // color: isConnected ? Colors.green : $styles.colors.iconColor3,
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: SizedBox(
-                child: SvgPicture.asset(
-                  AssetsImage.wifi,
-                  height: 20,
-                  width: 20,
-                  theme: SvgTheme(
-                    currentColor:
-                        isConnected ? Colors.green : $styles.colors.iconColor3,
-                  ),
+          // child: Spinner(
+          //   size: 35,
+          //   spin: isConnected,
+          //   color: isConnected ? Colors.green : $styles.colors.iconColor3,
+          //   child: AnimatedContainer(
+          //     duration: $styles.times.fast,
+          //     // height: 25,
+          //     // width: 25,
+          //     decoration: BoxDecoration(
+          //       // color: isConnected ? Colors.green : $styles.colors.iconColor3,
+          //       borderRadius: BorderRadius.circular(100),
+          //     ),
+          //     child: SizedBox(
+          //       child: SvgPicture.asset(
+          //         AssetsImage.wifi,
+          //         height: 20,
+          //         width: 20,
+          //         theme: SvgTheme(
+          //           currentColor:
+          //               isConnected ? Colors.green : $styles.colors.iconColor3,
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+          child: AnimatedContainer(
+            duration: $styles.times.fast,
+            // height: 25,
+            // width: 25,
+            decoration: BoxDecoration(
+              // color: isConnected ? Colors.green : $styles.colors.iconColor3,
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: SizedBox(
+              child: SvgPicture.asset(
+                AssetsImage.wifi,
+                height: 20,
+                width: 20,
+                theme: SvgTheme(
+                  currentColor:
+                      isConnected ? Colors.green : $styles.colors.iconColor3,
                 ),
               ),
             ),

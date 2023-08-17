@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/controllers/controllers.dart';
-import 'package:impulse_utils/impulse_utils.dart';
-
 import 'app/app.dart';
 
 void main() async {

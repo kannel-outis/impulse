@@ -24,9 +24,11 @@ class AppStyle {
     const tabletSm = 600;
     const phoneLg = 400;
     if (shortestSide > tabletXl) {
-      scale = 1.25;
+      scale = 1;
+      // scale = 1.25;
     } else if (shortestSide > tabletLg) {
-      scale = 1.15;
+      // scale = 1.15;
+      scale = 1;
     } else if (shortestSide > tabletSm) {
       scale = 1;
     } else if (shortestSide > phoneLg) {
@@ -39,7 +41,14 @@ class AppStyle {
 
   late final Size _screenSize;
 
+  final tabletXl = 1000;
+  final tabletLg = 800;
+  final tabletSm = 600;
+  final phoneLg = 400;
+
   Size get screenSize => _screenSize;
+
+  bool get isNotPhone => _screenSize.width > tabletLg;
 
   late final double scale;
 

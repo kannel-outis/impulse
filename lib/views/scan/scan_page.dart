@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
-import 'package:impulse/main.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class ScanPage extends ConsumerStatefulWidget {

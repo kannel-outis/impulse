@@ -1,4 +1,4 @@
-part of 'home.dart';
+part of '../home.dart';
 
 class AppsPage extends ConsumerStatefulWidget {
   const AppsPage({
@@ -36,23 +36,27 @@ class _AppsPageState extends ConsumerState<AppsPage>
       );
     }
 
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: _appBox(),
-        childAspectRatio: ((MediaQuery.of(context).size.width) /
-            (MediaQuery.of(context).size.height * .6)),
-      ),
-      itemCount: list.length,
-      itemBuilder: (context, index) {
-        return SelectableItemWidget(
-          app: list[index],
-          isSelectable: true,
-          child: AppItem(
+    //  (MediaQuery.of(context).size.width / 100) * 20
+
+    return LayoutBuilder(builder: (context, constraints) {
+      return GridView.builder(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: _appBox(),
+          childAspectRatio: ((constraints.maxWidth) /
+              (MediaQuery.of(context).size.height * .6)),
+        ),
+        itemCount: list.length,
+        itemBuilder: (context, index) {
+          return SelectableItemWidget(
             app: list[index],
-          ),
-        );
-      },
-    );
+            isSelectable: true,
+            child: AppItem(
+              app: list[index],
+            ),
+          );
+        },
+      );
+    });
   }
 
   @override
