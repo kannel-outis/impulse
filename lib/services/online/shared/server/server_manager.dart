@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:impulse/models/server_info.dart';
 import 'package:impulse/services/services.dart';
+import 'package:impulse_utils/impulse_utils.dart';
 
 abstract class ServerManager {
   //TODO: should change to sync function later
@@ -21,6 +23,18 @@ abstract class ServerManager {
   // ServerInfo? get clientServerInfo;
   Future<bool> handleClientServerNotification(Map<String, dynamic> serverMap) {
     throw UnimplementedError();
+  }
+
+  Future<List<Map<String, dynamic>>> getEntitiesInDir(String path,
+      [Function()? _]);
+
+  Future<List<FileSystemEntity>> getEntities(Directory dir) async {
+    final listSync = <FileSystemEntity>[];
+
+    await for (final entity in dir.list()) {
+      listSync.add(entity);
+    }
+    return listSync;
   }
 
   StreamController<Map<String, dynamic>> get receivablesStreamController;

@@ -115,4 +115,13 @@ class HostImpl extends Client implements Host {
       body,
     );
   }
+
+  @override
+  Future<Either<AppException?, List<Map<String, dynamic>>>> getNetworkFiles(
+      String path, (String, int) destination) {
+    final url =
+        "http://${destination.$1}:${destination.$2}/download?folder=$path";
+
+    return RequestHelper.getList(Uri.parse(url));
+  }
 }

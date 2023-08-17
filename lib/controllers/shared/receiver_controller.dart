@@ -1,8 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:impulse/app/app.dart';
 import 'package:impulse/app/impulse_exception.dart';
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/models/models.dart';
 import 'package:impulse/models/server_info.dart';
 import 'package:impulse/services/services.dart';
 
@@ -159,6 +161,22 @@ class ReceiverProvider extends ChangeNotifier {
       }
       return null;
     }
+  }
+
+  Future<List<NetworkImpulseFileEntity>?> getNetworkFiles(
+      {String? path, required (String, int) destination}) async {
+    final result = <NetworkImpulseFileEntity>[];
+
+    final response = await client.getNetworkFiles(path ?? "root", destination);
+    if (response is Left) {
+      return null;
+    } else {
+      final entities = (response as Right).value as List<Map<String, dynamic>>;
+      for (var entity in entities) {
+        result.add(NetworkImpulseFileEntity.fromMap(entity));
+      }
+    }
+    return result;
   }
 
   void disconnect() {
