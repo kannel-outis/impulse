@@ -1,21 +1,21 @@
 import 'package:impulse/models/models.dart';
+import 'package:impulse_utils/impulse_utils.dart';
 
-class NetworkImpulseFileEntity {
+class NetworkImpulseFileEntity extends FileSize {
   final bool isFolder;
   final String name;
-  final int size;
   final DateTime modified;
   final ServerInfo serverInfo;
   final String path;
 
-  const NetworkImpulseFileEntity({
+  NetworkImpulseFileEntity({
     required this.isFolder,
     required this.name,
-    this.size = 0,
+    int size = 0,
     required this.modified,
     required this.serverInfo,
     required this.path,
-  });
+  }) : super(size);
 
   factory NetworkImpulseFileEntity.fromMap(Map<String, dynamic> map) {
     return NetworkImpulseFileEntity(
@@ -33,11 +33,13 @@ class NetworkImpulseFileEntity {
       "isFolder": isFolder,
       "name": name,
       "size": size,
-      "modified": modified,
-      "path": isFolder ? _folderDir : _filePath,
+      "modified": modified.toString(),
+      "path": path,
       "serverInfo": serverInfo.toMap(),
     };
   }
+
+  Uri get fileUri => Uri.parse(isFolder ? _folderDir : _filePath);
 
   String get _filePath =>
       "http://${serverInfo.ipAddress}:${serverInfo.port}/download?file=$path";

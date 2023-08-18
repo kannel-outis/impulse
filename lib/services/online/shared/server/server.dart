@@ -96,20 +96,22 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         return;
       } else if (httpRequest.requestedUri.queryParameters
           .containsKey("folder")) {
+        print(httpRequest.requestedUri);
         final entitiesInDir = await serverManager.getEntitiesInDir(
             httpRequest.requestedUri.queryParameters["folder"] as String, () {
+          log(httpRequest.requestedUri.queryParameters["folder"].toString());
           httpRequest.response.statusCode = 404;
           httpRequest.response.write(
             json.encode(
               {
-                "msg": "File not Found available",
+                "msg": "Directory Not Found",
               },
             ),
           );
           httpRequest.response.close();
           return;
         });
-        httpRequest.response.write(entitiesInDir);
+        httpRequest.response.write(json.encode(entitiesInDir));
         httpRequest.response.close();
         return;
       }

@@ -163,13 +163,13 @@ class ReceiverProvider extends ChangeNotifier {
     }
   }
 
-  Future<List<NetworkImpulseFileEntity>?> getNetworkFiles(
+  Future<List<NetworkImpulseFileEntity>> getNetworkFiles(
       {String? path, required (String, int) destination}) async {
     final result = <NetworkImpulseFileEntity>[];
 
     final response = await client.getNetworkFiles(path ?? "root", destination);
     if (response is Left) {
-      return null;
+      return [];
     } else {
       final entities = (response as Right).value as List<Map<String, dynamic>>;
       for (var entity in entities) {

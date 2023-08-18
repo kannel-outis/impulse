@@ -15,5 +15,6 @@ export 'utils/generic_provider_ref.dart';
 export 'utils/globals.dart';
 export 'utils/helper_.dart';
 export 'utils/my_icons.dart';
+export 'utils/file_placeholder.dart';
 
 export 'dart:convert';

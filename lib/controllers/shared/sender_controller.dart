@@ -2,7 +2,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
-import 'package:impulse/app/impulse_exception.dart';
 import 'package:impulse/services/services.dart';
 
 import 'server_controller.dart';

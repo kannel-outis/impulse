@@ -55,69 +55,70 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
           children: [
             _getPreffix(widget.item),
             SizedBox(width: leftItemPadding),
-            widget.item is ImpulseFileStorage
-                ? Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: _itemTileWidth(padding: leftItemPadding * 4),
-                          child: Text(
-                            asStorageFile.type.label,
-                            overflow: TextOverflow.ellipsis,
-                            style: $styles.text.body,
-                          ),
-                        ),
-                        Row(
-                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Used: ${asStorageFile.usedSizeToFileSize.sizeToString}",
-                              style: $styles.text.body,
-                            ),
-                            SizedBox(width: $styles.insets.xl),
-                            Text(
-                              "Available: ${asStorageFile.remainingSizeToFileSize.sizeToString}",
-                              style: $styles.text.body,
-                            ),
-                            SizedBox(width: $styles.insets.xl),
-                            Text(
-                              "Total: ${asStorageFile.totalSizeToFileSize.sizeToString}",
-                              style: $styles.text.body,
-                            ),
-                          ],
-                        )
-                      ],
+            if (widget.item is ImpulseFileStorage)
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: _itemTileWidth(padding: leftItemPadding * 4),
+                      child: Text(
+                        asStorageFile.type.label,
+                        overflow: TextOverflow.ellipsis,
+                        style: $styles.text.body,
+                      ),
                     ),
-                  )
-                : Expanded(
-                    flex: 1,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        SizedBox(
-                          // width: _itemTileWidth(padding: leftItemPadding * 4),
-                          child: Text(
-                            widget.item.name,
-                            overflow: TextOverflow.ellipsis,
-                            style: $styles.text.body,
-                          ),
-                        ),
                         Text(
-                          widget.item.isFolder
-                              ? widget.item.fileSystemEntity
-                                  .statSync()
-                                  .modified
-                                  .toString()
-                                  .cutTimeDateString
-                              : widget.item.sizeToString,
+                          "Used: ${asStorageFile.usedSizeToFileSize.sizeToString}",
+                          style: $styles.text.body,
+                        ),
+                        SizedBox(width: $styles.insets.xl),
+                        Text(
+                          "Available: ${asStorageFile.remainingSizeToFileSize.sizeToString}",
+                          style: $styles.text.body,
+                        ),
+                        SizedBox(width: $styles.insets.xl),
+                        Text(
+                          "Total: ${asStorageFile.totalSizeToFileSize.sizeToString}",
                           style: $styles.text.body,
                         ),
                       ],
+                    )
+                  ],
+                ),
+              )
+            else
+              Expanded(
+                flex: 1,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      // width: _itemTileWidth(padding: leftItemPadding * 4),
+                      child: Text(
+                        widget.item.name,
+                        overflow: TextOverflow.ellipsis,
+                        style: $styles.text.body,
+                      ),
                     ),
-                  ),
+                    Text(
+                      widget.item.isFolder
+                          ? widget.item.fileSystemEntity
+                              .statSync()
+                              .modified
+                              .toString()
+                              .cutTimeDateString
+                          : widget.item.sizeToString,
+                      style: $styles.text.body,
+                    ),
+                  ],
+                ),
+              ),
           ],
         ),
       ),
@@ -125,39 +126,35 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
   }
 
   Widget _getPreffix(ImpulseFileEntity file) {
-    // log("${file.fileType?.isImage.toString()}");
-    if (file.fileType != null && file.fileType!.isImage) {
+    if (file.isFolder) {
+      return _buildFolderPreffix();
+    }
+    if (file.fileType == null) {
+      return const FilePlaceHolder(name: "unknown");
+    }
+    if (file.fileType!.isImage) {
       if (!Platform.isAndroid) {
-        return _buildPlaceholder(AssetsImage.image_placeholder);
+        return FilePlaceHolder(name: file.name);
       }
       return MediaThumbnail(
         file: (file as ImpulseFile).file.path,
         isVideo: false,
         size: const Size(150, 150),
-        placeHolder: _buildPlaceholder(AssetsImage.image_placeholder),
+        placeHolder: FilePlaceHolder(name: file.name),
       );
     }
-    if (file.fileType != null && file.fileType!.isVideo) {
+    if (file.fileType!.isVideo) {
       if (!Platform.isAndroid) {
-        return _buildPlaceholder(AssetsImage.video_placeholder);
+        return FilePlaceHolder(name: file.name);
       }
       return MediaThumbnail(
         file: (file as ImpulseFile).file.path,
         isVideo: true,
-        placeHolder: _buildPlaceholder(AssetsImage.video_placeholder),
+        placeHolder: FilePlaceHolder(name: file.name),
       );
+    } else {
+      return FilePlaceHolder(name: file.name);
     }
-    return _buildFolderPreffix();
-  }
-
-  Container _buildPlaceholder(String asset) {
-    return Container(
-      height: 50,
-      width: 50,
-      decoration: BoxDecoration(
-        image: DecorationImage(image: AssetImage(asset), fit: BoxFit.cover),
-      ),
-    );
   }
 
   Container _buildFolderPreffix() {

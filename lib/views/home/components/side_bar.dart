@@ -1,8 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart' hide ConnectionState;
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
+import 'package:impulse/models/models.dart' as m;
+import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/views/transfer/widgets/full_transfer_page.dart';
 
 import '../widgets/side_bar_trnasfer_tile.dart';
@@ -27,6 +31,38 @@ class _SideBarState extends ConsumerState<SideBar> {
         "Settings": (ImpulseIcons.bx_cog, ImpulseIcons.bxs_cog),
       };
 
+  void _doNav() {
+    if (GoRouter.of(context)
+        .location
+        .contains(ref.read(connectUserStateProvider)!.user.name)) {
+      return;
+    }
+
+    ///if we are in our file manager already, we want to pop all nested routes and start browsing connected user's files
+    ///on a new route. that way it starts anew navigation/pages chain.
+    ///
+    ///starting a new navigation/pages chain is important because that means we wont be able to jump back and forth
+    ///connected user's files by just pushing and popping pages. this does not makes sense since both file managers are not
+    ///connected to each other.
+    ///
+    ///
+    while (GoRouter.of(context).location.contains("files") &&
+        GoRouter.of(context).location != ImpulseRouter.routes.folder) {
+      ref
+          .read(pathController.notifier)
+          .removeUntil(m.Path(location: ImpulseRouter.routes.folder));
+      context.pop();
+    }
+    context.pushNamed(
+      "NetworkfilesPath",
+      pathParameters: {
+        "path": "root",
+        "username": ref.read(connectUserStateProvider)!.user.name,
+      },
+      // extra: widget.item.fileSystemEntity.path,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,15 +76,17 @@ class _SideBarState extends ConsumerState<SideBar> {
               padding: ($styles.insets.xs, $styles.insets.xs).insetsLeftRight,
               child: Column(
                 children: [
-                  Container(
-                    height: 50,
-                    width: double.infinity,
-                    color: Theme.of(context).hoverColor,
-                    margin: $styles.insets.xs.insetsBottom,
-                    child: Center(
-                      child: Icon(
-                        CupertinoIcons.add,
-                        size: 20.scale,
+                  InkWell(
+                    child: Container(
+                      height: 50,
+                      width: double.infinity,
+                      color: Theme.of(context).hoverColor,
+                      margin: $styles.insets.xs.insetsBottom,
+                      child: Center(
+                        child: Icon(
+                          CupertinoIcons.add,
+                          size: 20.scale,
+                        ),
                       ),
                     ),
                   ),
@@ -68,7 +106,7 @@ class _SideBarState extends ConsumerState<SideBar> {
                             color: Colors.transparent,
                             // padding: 5.scale.insetsLeft,
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              // crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Container(
                                   width: 1.5,
@@ -109,6 +147,55 @@ class _SideBarState extends ConsumerState<SideBar> {
                       color: $styles.colors.fontColor1.withOpacity(.2),
                     ),
                   ),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      if (ref.watch(connectionStateProvider).isConnected) {
+                        return InkWell(
+                          onTap: () async {
+                            ///since the only tab for file manager naviagtion if the file manager tab, we want to check
+                            ///if we are already on the tab, (for android its 0 and for other platforms its 1). if we are we
+                            ///do the navigation and if we are not, we move to the file manager tab before doing the navigation,
+                            ///
+                            ///
+                            ///if we dont do this, it pushes a new page on top of whichever tab we have at that moment
+                            if (widget.navigationShell.currentIndex !=
+                                (isAndroid ? 1 : 0)) {
+                              widget.navigationShell
+                                  .goBranch((isAndroid ? 1 : 0));
+                              await Future.delayed(
+                                      const Duration(milliseconds: 50))
+                                  .then((value) => _doNav());
+                            } else {
+                              _doNav();
+                            }
+                          },
+                          child: Container(
+                            height: 50,
+                            width: double.infinity,
+                            color: Colors.transparent,
+                            child: Center(
+                              child: Row(
+                                children: [
+                                  SizedBox(width: $styles.insets.sm),
+                                  const FilePlaceHolder(
+                                      name: "", isFolder: true, folderSize: 30),
+                                  SizedBox(width: $styles.insets.sm),
+                                  Text(
+                                    ref
+                                        .read(connectUserStateProvider)!
+                                        .user
+                                        .name,
+                                    style: $styles.text.bodySmall,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+                      return const SizedBox();
+                    },
+                  ),
                 ],
               ),
             ),
@@ -132,6 +219,7 @@ class _SideBarState extends ConsumerState<SideBar> {
   }
 
   void onChanged(int index) {
+    if (index == widget.navigationShell.currentIndex) return;
     widget.navigationShell.goBranch(
       index,
       initialLocation: index == widget.navigationShell.currentIndex,

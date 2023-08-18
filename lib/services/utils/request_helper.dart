@@ -35,8 +35,7 @@ class RequestHelper {
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
-        log(response.body);
-        final decodedBody = response.body as List;
+        final decodedBody = json.decode(response.body) as List;
         for (final entity in decodedBody) {
           results.add(entity);
         }

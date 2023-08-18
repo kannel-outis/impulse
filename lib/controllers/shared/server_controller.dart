@@ -152,12 +152,13 @@ class ServerController extends ServerManager with ChangeNotifier {
   @override
   Future<List<Map<String, dynamic>>> getEntitiesInDir(String path,
       [Function()? _]) async {
-    final entitiesToMap = <Map<String, dynamic>>[];
+    final directoryToMap = <Map<String, dynamic>>[];
+    final fileToMap = <Map<String, dynamic>>[];
 
     final dir = path == "root" ? _getRootDir : Directory(path);
     if (!await dir.exists() || Platform.isIOS) {
       _?.call();
-      return entitiesToMap;
+      return [];
     }
 
     final listAsync = await getEntities(dir);
@@ -172,12 +173,15 @@ class ServerController extends ServerManager with ChangeNotifier {
         name: item.path.split(Platform.pathSeparator).last,
         serverInfo: myServerInfo,
         path: item.path,
+        size: item.statSync().size,
       );
 
-      entitiesToMap.add(file.toMap());
+      item is Directory
+          ? directoryToMap.add(file.toMap())
+          : fileToMap.add(file.toMap());
     }
 
-    return entitiesToMap;
+    return [...directoryToMap, ...fileToMap];
   }
 
   Directory get _getRootDir {
