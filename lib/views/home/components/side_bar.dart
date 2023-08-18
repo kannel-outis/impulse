@@ -178,7 +178,7 @@ class _SideBarState extends ConsumerState<SideBar> {
                                 children: [
                                   SizedBox(width: $styles.insets.sm),
                                   const FilePlaceHolder(
-                                      name: "", isFolder: true, folderSize: 30),
+                                      name: "", isFolder: true, size: 30),
                                   SizedBox(width: $styles.insets.sm),
                                   Text(
                                     ref

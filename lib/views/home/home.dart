@@ -55,12 +55,12 @@ class _HomePageState extends ConsumerState<HomePage>
     waitForOverlayReverseAnimation = wait;
   }
 
-  bool _isPhone(double size) {
+  bool _isNotPhoneSize(double size) {
     return size > $styles.tabletLg;
   }
 
   Widget _sideBar(double size) {
-    if (_isPhone(size)) {
+    if (_isNotPhoneSize(size)) {
       return SideBar(
         navigationShell: widget.navigationShell,
       );
@@ -88,7 +88,7 @@ class _HomePageState extends ConsumerState<HomePage>
               Scaffold(
                 appBar: const HomeAppBar(),
                 body: Flex(
-                  direction: _isPhone(constraints.maxWidth)
+                  direction: _isNotPhoneSize(constraints.maxWidth)
                       ? Axis.horizontal
                       : Axis.vertical,
                   children: [
@@ -227,14 +227,14 @@ class _HomePageState extends ConsumerState<HomePage>
                     }
                   }
                 }),
-                bottomNavigationBar: _isPhone(constraints.maxWidth)
+                bottomNavigationBar: _isNotPhoneSize(constraints.maxWidth)
                     ? null
                     : MyBottomNavBar(
                         index: widget.navigationShell.currentIndex,
                         onChanged: onChanged,
                       ),
               ),
-              if (!_isPhone(constraints.maxWidth))
+              if (!_isNotPhoneSize(constraints.maxWidth))
                 Consumer(
                   builder: (context, ref, child) {
                     final connectionState = ref.watch(connectionStateProvider);

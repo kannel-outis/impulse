@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
 import 'package:mime/mime.dart';
@@ -5,12 +7,12 @@ import 'package:mime/mime.dart';
 class FilePlaceHolder extends StatelessWidget {
   final String name;
   final bool isFolder;
-  final double? folderSize;
+  final double? size;
   const FilePlaceHolder({
     super.key,
     required this.name,
     this.isFolder = false,
-    this.folderSize,
+    this.size,
   });
 
   @override
@@ -44,14 +46,16 @@ class FilePlaceHolder extends StatelessWidget {
       return _buildPlaceholder(AssetsImage.excel_placeholder);
     } else if (_("pdf")) {
       return _buildPlaceholder(AssetsImage.pdf_placeholder);
+    } else if (_("presentation")) {
+      return _buildPlaceholder(AssetsImage.ppt_placeholder);
     }
     return _buildPlaceholder(AssetsImage.unknown_placeholder);
   }
 
   Container _buildPlaceholder(String asset) {
     return Container(
-      height: 50,
-      width: 50,
+      height: size ?? 50,
+      width: size ?? 50,
       decoration: BoxDecoration(
         image: DecorationImage(image: AssetImage(asset), fit: BoxFit.cover),
       ),
@@ -60,16 +64,16 @@ class FilePlaceHolder extends StatelessWidget {
 
   Container _buildFolderPreffix() {
     return Container(
-      height: folderSize ?? 45,
-      width: folderSize ?? 45,
+      height: size ?? 45,
+      width: size ?? 45,
       decoration: BoxDecoration(
         color: $styles.colors.folderColor2,
-        borderRadius: BorderRadius.circular(
-            ((folderSize ?? 45) / 45) * ($styles.corners.md)),
+        borderRadius:
+            BorderRadius.circular(((size ?? 45) / 45) * ($styles.corners.md)),
       ),
       child: Icon(
         isFolder ? ImpulseIcons.bxs_folder : Icons.file_copy,
-        size: ((folderSize ?? 45) / 45) * ($styles.sizes.prefixIconSize / 2),
+        size: ((size ?? 45) / 45) * ($styles.sizes.prefixIconSize / 2),
         color: Colors.white,
       ),
     );

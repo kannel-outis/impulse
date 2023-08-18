@@ -112,17 +112,21 @@ class TransferListTile extends StatelessWidget {
                         padding: EdgeInsets.symmetric(horizontal: tilePadding),
                         child: Row(
                           children: [
-                            Container(
-                              height: fileImageSize,
-                              width: fileImageSize,
-                              decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(
-                                    AssetsImage.android_icon_placeholder,
-                                  ),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
+                            // Container(
+                            //   height: fileImageSize,
+                            //   width: fileImageSize,
+                            //   decoration: const BoxDecoration(
+                            //     image: DecorationImage(
+                            //       image: AssetImage(
+                            //         AssetsImage.android_icon_placeholder,
+                            //       ),
+                            //       fit: BoxFit.cover,
+                            //     ),
+                            //   ),
+                            // ),
+                            FilePlaceHolder(
+                              name: item.name,
+                              size: fileImageSize,
                             ),
                             SizedBox(width: paddingBtwFileImage),
                             Expanded(

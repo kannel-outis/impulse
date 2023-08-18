@@ -54,15 +54,9 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                       SizedBox(width: $styles.insets.md),
                       GestureDetector(
                         onTap: () async {
-                          // final genericRef = GenericProviderRef<WidgetRef>(ref);
+                          final genericRef = GenericProviderRef<WidgetRef>(ref);
 
-                          // await share(genericRef);
-                          ref.read(receiverProvider).getNetworkFiles(
-                            destination: (
-                              ref.read(connectUserStateProvider)!.ipAddress!,
-                              ref.read(connectUserStateProvider)!.port!
-                            ),
-                          );
+                          await share(genericRef);
                         },
                         child: GestureDetector(
                           child: Container(

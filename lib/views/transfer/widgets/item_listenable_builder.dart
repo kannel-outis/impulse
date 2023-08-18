@@ -42,7 +42,7 @@ class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
   }
 
   final Debouncer _debouncer =
-      Debouncer(duration: const Duration(milliseconds: 300), function: () {});
+      Debouncer(duration: const Duration(seconds: 1), function: () {});
 
   void updateStateAndProgress(
       {bool refreshListener = false, ItemListenableBuilder? oldWidget}) {
@@ -91,8 +91,7 @@ class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.child ??
-        widget.builder(context, _progress, _state, widget.child);
+    return widget.builder(context, _progress, _state, widget.child);
   }
 
   Item _listenableAsItem(ItemListenableBuilder widget) {

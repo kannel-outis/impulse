@@ -29,7 +29,7 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
             port: widget.port,
             listReset: true,
           );
-
+      //TODO: find a way to listen to this without using this approach
       ref.read(connectionStateProvider.notifier).addListener(_listener);
     });
   }
