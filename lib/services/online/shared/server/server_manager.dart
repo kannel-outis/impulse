@@ -14,7 +14,7 @@ abstract class ServerManager {
   List<String> getPaths();
   set ipAddress(String? ipAddress);
   String? get ipAddress;
-  set port(int? ipAddress);
+set port(int? ipAddress);
   int? get port;
   Future<HiveItem> getHiveItemForShareable(Item item);
   void removeCanceledItem(String id);

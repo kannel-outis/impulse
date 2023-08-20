@@ -247,9 +247,9 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
       ///This should be start
       int bytesDownloadedByClient = start;
-      final response = httpRequest.response;
-      final fileStream = item.file.openRead(start);
-      await response.addStream(fileStream.map((event) {
+      final fileSize = await item.file.length();
+      var fileStream = item.file.openRead(start);
+      await httpRequest.response.addStream(fileStream.map((event) {
         bytesDownloadedByClient += event.length;
 
         // final percentage =
@@ -263,7 +263,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
         (item as ShareableItem).updateProgress(
           bytesDownloadedByClient,
-          item.file.lengthSync(),
+          fileSize,
           IState.inProgress,
         );
         return event;
@@ -279,9 +279,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       (item as ShareableItem).updateProgress(
         bytesDownloadedByClient,
         item.file.lengthSync(),
-        bytesDownloadedByClient != item.file.lengthSync()
-            ? IState.paused
-            : IState.completed,
+        bytesDownloadedByClient != fileSize ? IState.paused : IState.completed,
       );
       // await response.flush();
       httpRequest.response.close();
@@ -289,6 +287,8 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       ///remove listener
       item.removeListener(listener);
       item.startTime = null;
+      item.dispose();
+      // fileStream = null;
       // print("Done");
     } else {
       httpRequest.response.write(

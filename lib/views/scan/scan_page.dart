@@ -103,7 +103,7 @@ class _ScanPageState extends ConsumerState<ScanPage> {
         final data = jsonDecode(result!.code ?? "{}") as Map<String, dynamic>;
         if (data.containsKey("ip") || data.containsKey("port")) {
           //Apparantely, go_router has a problem with ports :(
-          controller.stopCamera().then((value) async {
+          controller.pauseCamera().then((value) async {
             final result = await context.pushNamed<bool>(
               "scan_dialog",
               queryParameters: {
@@ -122,7 +122,6 @@ class _ScanPageState extends ConsumerState<ScanPage> {
 
   @override
   void dispose() {
-    controller?.stopCamera();
     controller?.dispose();
     super.dispose();
   }
