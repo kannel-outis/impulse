@@ -101,17 +101,21 @@ class _CustomHostBottomModalSheetState
                       curve: $styles.curves.defaultCurve,
                     ),
                   ),
-                  child: BarcodeWidget(
-                    height: 200,
-                    width: 200,
-                    backgroundColor: $styles.colors.fontColor1,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.black
-                        : Colors.white,
-                    data: hostProvider.serverInfoBarcodeMap(),
-                    barcode: Barcode.qrCode(),
-                    padding: EdgeInsets.all($styles.insets.xxs),
-                  ),
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    return BarcodeWidget(
+                      height:
+                          $styles.constraints.modalConstraints.maxHeight * .6,
+                      width:
+                          $styles.constraints.modalConstraints.maxHeight * .6,
+                      backgroundColor: $styles.colors.fontColor1,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.black
+                          : Colors.white,
+                      data: hostProvider.serverInfoBarcodeMap(),
+                      barcode: Barcode.qrCode(),
+                      padding: EdgeInsets.all($styles.insets.xxs),
+                    );
+                  }),
                 );
               },
             ),
@@ -121,15 +125,16 @@ class _CustomHostBottomModalSheetState
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.wifi_tethering,
-                    color: $styles.colors.secondaryColor,
-                    size: $styles.sizes.smallIconSize2,
-                  ),
-                  SizedBox(width: $styles.insets.xxs),
+                  // Icon(
+                  //   Icons.wifi_tethering,
+                  //   color: $styles.colors.secondaryColor,
+                  //   size: $styles.sizes.smallIconSize2,
+                  // ),
+                  // SizedBox(width: $styles.insets.xxs),
                   Text(
-                    "Waitng for receivers....",
-                    style: $styles.text.h3,
+                    // "Waitng for receivers....",
+                    "Scan the QR code to connect automatically",
+                    style: $styles.text.body,
                   ),
                 ],
               ),

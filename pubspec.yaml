@@ -111,6 +111,10 @@ flutter:
       fonts:
         - asset: assets/fonts/icons/transfer_icons.ttf
   #         weight: 700
+  
+    - family: transfer2
+      fonts:
+        - asset: assets/fonts/icons/transfer_2.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

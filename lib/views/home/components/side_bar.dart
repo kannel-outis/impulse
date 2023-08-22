@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart' hide ConnectionState;
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/models/models.dart' as m;
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/views/shared/impulse_ink_well.dart';
 import 'package:impulse/views/transfer/widgets/full_transfer_page.dart';
 
 import '../widgets/side_bar_trnasfer_tile.dart';
@@ -76,26 +75,71 @@ class _SideBarState extends ConsumerState<SideBar> {
               padding: ($styles.insets.xs, $styles.insets.xs).insetsLeftRight,
               child: Column(
                 children: [
-                  InkWell(
-                    child: Container(
-                      height: 50,
-                      width: double.infinity,
-                      color: Theme.of(context).hoverColor,
-                      margin: $styles.insets.xs.insetsBottom,
-                      child: Center(
-                        child: Icon(
-                          CupertinoIcons.add,
-                          size: 20.scale,
+                  Consumer(
+                    child: ImpulseInkWell(
+                      onTap: () {
+                        if (ref.read(senderProvider).host.isServerRunning ||
+                            ref.read(connectionStateProvider) ==
+                                ConnectionState.connected) {
+                          if (ref.read(userTypeProvider) == UserType.host) {
+                            showModel(true, context);
+                            return;
+                          }
+                          return;
+                        }
+
+                        showDialog(
+                          context: context,
+                          useRootNavigator: true,
+                          builder: (context) {
+                            return const NewWidget();
+                          },
+                        );
+                      },
+                      child: Container(
+                        height: 50,
+                        width: double.infinity,
+                        color: Theme.of(context).hoverColor,
+                        child: Center(
+                          child: Icon(
+                            CupertinoIcons.add,
+                            size: 20.scale,
+                          ),
                         ),
                       ),
                     ),
+                    builder: (context, ref, child) {
+                      final homeController = ref.watch(homeProvider);
+                      final connectionState =
+                          ref.watch(connectionStateProvider);
+                      return Tooltip(
+                        message: homeController.isWaitingForReceiver
+                            ? connectionState == ConnectionState.connected
+                                ? "Connected"
+                                : "Waiting for connection"
+                            : "Connect",
+                        textStyle: $styles.text.bodySmall.copyWith(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                        ),
+                        decoration: BoxDecoration(
+                          color: $styles.colors.fontColor1,
+                          borderRadius:
+                              BorderRadius.circular($styles.corners.sm),
+                        ),
+                        waitDuration: $styles.times.slow,
+                        preferBelow: false,
+                        verticalOffset: 35,
+                        child: child,
+                      );
+                    },
+                  ),
+                  SizedBox(
+                    height: $styles.insets.xs,
                   ),
                   for (var i = 0; i < bars.length; i++)
                     Column(
                       children: [
-                        InkWell(
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
+                        ImpulseInkWell(
                           onTap: () {
                             onChanged(i);
                             setState(() {});
@@ -150,7 +194,7 @@ class _SideBarState extends ConsumerState<SideBar> {
                   Consumer(
                     builder: (context, ref, child) {
                       if (ref.watch(connectionStateProvider).isConnected) {
-                        return InkWell(
+                        return ImpulseInkWell(
                           onTap: () async {
                             ///since the only tab for file manager naviagtion if the file manager tab, we want to check
                             ///if we are already on the tab, (for android its 0 and for other platforms its 1). if we are we
@@ -223,6 +267,130 @@ class _SideBarState extends ConsumerState<SideBar> {
     widget.navigationShell.goBranch(
       index,
       initialLocation: index == widget.navigationShell.currentIndex,
+    );
+  }
+}
+
+class NewWidget extends StatelessWidget {
+  const NewWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        width: 300,
+        height: 200 + (isAndroid ? 50 : 0.0),
+        padding: ($styles.insets.md, 0.0).insets,
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular($styles.corners.md),
+        ),
+        child: Column(
+          children: [
+            Container(
+              height: 50,
+              width: double.infinity,
+              alignment: Alignment.bottomLeft,
+              margin: $styles.insets.xs.insetsBottom,
+              child: Text(
+                "I want to",
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      fontFamily: $styles.text.body.fontFamily,
+                    ),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  if (isAndroid)
+                    ConnectDialogChild(
+                      icon: ImpulseIcons.scan,
+                      disableDefaultFunc: true,
+                      label: "Scan",
+                      additionalSize: 5,
+                      onTap: () {
+                        context.push(ImpulseRouter.routes.scanPage);
+                      },
+                    ),
+                  const ConnectDialogChild(
+                    icon: ImpulseIcons.send,
+                    label: "Send",
+                    isHost: true,
+                  ),
+                  const ConnectDialogChild(
+                    icon: ImpulseIcons.receive,
+                    label: "Receive",
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ConnectDialogChild extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final double additionalSize;
+  final VoidCallback? onTap;
+  final bool isHost;
+  final bool disableDefaultFunc;
+  const ConnectDialogChild({
+    super.key,
+    required this.label,
+    required this.icon,
+    this.additionalSize = 0.0,
+    this.isHost = false,
+    this.disableDefaultFunc = false,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Column(
+        children: [
+          ImpulseInkWell(
+            onTap: () {
+              Navigator.of(context).pop();
+              if (!disableDefaultFunc) showModel(isHost, context);
+              onTap?.call();
+            },
+            child: Container(
+              height: 50,
+              width: double.infinity,
+              color: Colors.transparent,
+              alignment: Alignment.center,
+              padding: ($styles.insets.sm, 0.0).insetsLeftRight,
+              child: Row(
+                // mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    icon,
+                    size: (IconTheme.of(context).size ?? 0.0) + additionalSize,
+                    color: $styles.colors.iconColor1,
+                  ),
+                  SizedBox(
+                    width: $styles.insets.sm,
+                  ),
+                  Text(
+                    label,
+                    style: $styles.text.body,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: $styles.insets.xs,
+          ),
+        ],
+      ),
     );
   }
 }
