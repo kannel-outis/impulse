@@ -5,6 +5,7 @@ class NetworkImpulseFileEntity extends FileSize {
   final bool isFolder;
   final String name;
   final DateTime modified;
+  //The home server of this item
   final ServerInfo serverInfo;
   final String path;
 

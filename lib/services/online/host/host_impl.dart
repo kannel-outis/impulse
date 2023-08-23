@@ -83,7 +83,8 @@ class HostImpl extends Client implements Host {
       int start = 0,
       required int end,
       Function(int p1, IClient p2)? init}) {
-    final url = "http://${destination.$1}:${destination.$2}/download?id=$id";
+    final url =
+        "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.download}?id=$id";
     return ServicesUtils.getStream(
       url,
       end: end,
@@ -96,8 +97,8 @@ class HostImpl extends Client implements Host {
   @override
   Future<Either<AppException?, Map<String, dynamic>>> shareDownloadableFiles(
       List<Map<String, dynamic>> files, (String, int) destination) {
-    final url =
-        Uri.parse("http://${destination.$1}:${destination.$2}/sharables");
+    final url = Uri.parse(
+        "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.shareables}");
     final body = {
       "files": files,
     };
@@ -106,7 +107,8 @@ class HostImpl extends Client implements Host {
 
   @override
   Future<void> cancelItem((String, int) destination, String fileId) {
-    final url = Uri.parse("http://${destination.$1}:${destination.$2}/cancel");
+    final url = Uri.parse(
+        "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.cancel}");
     final body = {
       "fileId": fileId,
     };
@@ -120,8 +122,21 @@ class HostImpl extends Client implements Host {
   Future<Either<AppException?, List<Map<String, dynamic>>>> getNetworkFiles(
       String path, (String, int) destination) {
     final url =
-        "http://${destination.$1}:${destination.$2}/download?folder=$path";
+        "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.download}?folder=$path";
 
     return RequestHelper.getList(Uri.parse(url));
+  }
+
+  @override
+  Future<Either<AppException?, Map<String, dynamic>>>
+      addMoreShareablesOnHostServer(
+          Map<String, dynamic> shareableItemMap, (String, int) destination) {
+    final url = Uri.parse(
+        "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.shareables_more}");
+
+    return RequestHelper.post(
+      url,
+      shareableItemMap,
+    );
   }
 }

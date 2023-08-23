@@ -73,6 +73,7 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        print("object");
         final miniPlayerControllerP = ref.read(miniPlayerController);
         if (miniPlayerControllerP.isClosed == false) {
           miniPlayerControllerP.closeMiniPlayer();

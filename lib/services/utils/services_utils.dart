@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
@@ -8,6 +10,7 @@ import 'package:impulse/app/impulse_exception.dart';
 import '../services.dart';
 
 class ServicesUtils {
+  static const serverRoutes = _ServerRoutes();
   static Future<List<InternetAddress>> getAvailableIp() async {
     final usableIps = <InternetAddress>[];
     final availableAddresses =
@@ -53,9 +56,6 @@ class ServicesUtils {
     for (var i = 0; i < 255; i++) {
       final ip = "$ipPrefix.$i";
       final s = await _tryToEstablishConnection(ip);
-      if (s != null) {
-        print(s);
-      }
       futures.add(s);
     }
 
@@ -111,7 +111,6 @@ class ServicesUtils {
           request.headers[key] = _defaultHeaders[key]!;
         }
       });
-      print("From Server utils");
 
       final response = await client.send(request);
       init?.call(
@@ -120,8 +119,6 @@ class ServicesUtils {
       );
 
       final stream = StreamController<List<int>>();
-      print(response.headers);
-      print("From Server utils");
       response.stream.listen(
         (data) {
           stream.add(data);
@@ -148,4 +145,15 @@ class ServicesUtils {
 class IClient {
   final http.Client client;
   IClient(this.client);
+}
+
+class _ServerRoutes {
+  const _ServerRoutes();
+
+  final connect = "impulse/connect";
+  final download = "download";
+  final client_server_info = "impulse/client_server_info";
+  final shareables = "shareables";
+  final shareables_more = "shareables/more";
+  final cancel = "cancel";
 }

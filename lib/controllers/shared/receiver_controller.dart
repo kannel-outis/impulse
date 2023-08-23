@@ -179,6 +179,13 @@ class ReceiverProvider extends ChangeNotifier {
     return result;
   }
 
+  Future<void> addMoreShareablesOnHostServer({
+    required Map<String, dynamic> shareableItemMap,
+    required (String, int) destination,
+  }) async {
+    await client.addMoreShareablesOnHostServer(shareableItemMap, destination);
+  }
+
   void disconnect() {
     _availableHostsServers.clear();
     _selectedHost = null;

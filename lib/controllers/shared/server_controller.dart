@@ -73,10 +73,10 @@ class ServerController extends ServerManager with ChangeNotifier {
     return _items;
   }
 
-  @override
-  List<String> getPaths() {
-    return <String>[];
-  }
+  // @override
+  // List<String> getPaths() {
+  //   return <String>[];
+  // }
 
   @override
   ServerInfo get myServerInfo {
@@ -131,6 +131,10 @@ class ServerController extends ServerManager with ChangeNotifier {
   @override
   StreamController<Map<String, dynamic>> get receivablesStreamController =>
       _receivableStreamController;
+
+  void addToReceivableStream(Map<String, dynamic> map) {
+    _receivableStreamController.add(map);
+  }
 
   @override
   Future<HiveItem> getHiveItemForShareable(Item item) async {
@@ -190,5 +194,12 @@ class ServerController extends ServerManager with ChangeNotifier {
     } else {
       return Configurations.instance.impulseDir;
     }
+  }
+
+  @override
+  void addSharableToList(Map<String, dynamic> shareableMap) {
+    final shareableItem = ShareableItem.fromMap(shareableMap);
+    shareableItemsProvider.addAllItems([shareableItem]);
+    _items.add(shareableItem);
   }
 }

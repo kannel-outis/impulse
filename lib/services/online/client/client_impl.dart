@@ -25,7 +25,8 @@ class ClientImpl implements ClientHost {
     //     AppException("Cannot make a connection if no host is found"),
     //   );
     // }
-    final uri = Uri.parse("http://$address:${port ?? _port}/impulse/connect");
+    final uri = Uri.parse(
+        "http://$address:${port ?? _port}/${ServicesUtils.serverRoutes.connect}");
     return await RequestHelper.get(uri);
   }
 
@@ -48,7 +49,7 @@ class ClientImpl implements ClientHost {
   }) async {
     ///seperate uri builder
     final uri = Uri.parse(
-        "http://$address:${port ?? _port}/impulse/client_server_info");
+        "http://$address:${port ?? _port}/${ServicesUtils.serverRoutes.client_server_info}");
     final s = await RequestHelper.post(uri, body);
     final result =
         s.map((r) => (r["msg"] as String) == "Denied" ? false : true);
@@ -72,7 +73,7 @@ class ClientImpl implements ClientHost {
       required int end,
       Function(int p1, IClient p2)? init}) {
     final url =
-        "http://${destination.$1}:${destination.$2}/download?id=$fileId";
+        "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.download}?id=$fileId";
     log("$fileId from cleint");
     log("$destination from cleint");
     // return Stream.empty();
@@ -103,7 +104,8 @@ class ClientImpl implements ClientHost {
 
   @override
   Future<void> cancelItem((String, int) destination, String fileId) {
-    final url = Uri.parse("http://${destination.$1}:${destination.$2}/cancel");
+    final url = Uri.parse(
+        "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.cancel}");
     final body = {
       "fileId": fileId,
     };
@@ -117,8 +119,21 @@ class ClientImpl implements ClientHost {
   Future<dartz.Either<AppException?, List<Map<String, dynamic>>>>
       getNetworkFiles(String path, (String, int) destination) {
     final url =
-        "http://${destination.$1}:${destination.$2}/download?folder=$path";
+        "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.download}?folder=$path";
 
     return RequestHelper.getList(Uri.parse(url));
+  }
+
+  @override
+  Future<dartz.Either<AppException?, Map<String, dynamic>>>
+      addMoreShareablesOnHostServer(
+          Map<String, dynamic> shareableItemMap, (String, int) destination) {
+    final url = Uri.parse(
+        "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.shareables_more}");
+
+    return RequestHelper.post(
+      url,
+      shareableItemMap,
+    );
   }
 }

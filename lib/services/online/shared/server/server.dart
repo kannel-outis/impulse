@@ -76,7 +76,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
   Future<void> _handleGetRequest(HttpRequest httpRequest) async {
     final url = httpRequest.requestedUri.toString();
-    if (url == "http://${address.address}:$port/impulse/connect") {
+    if (url == _buildUrl(ServicesUtils.serverRoutes.connect)) {
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;
       final hostInfo = serverManager.myServerInfo;
@@ -90,7 +90,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         ),
       );
       httpRequest.response.close();
-    } else if (url.contains("http://${address.address}:$port/download")) {
+    } else if (url.contains(_buildUrl(ServicesUtils.serverRoutes.download))) {
       if (httpRequest.requestedUri.queryParameters.containsKey("file")) {
         await _downloadFile(httpRequest);
         return;
@@ -123,7 +123,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
   Future<void> _handlePostRequest(HttpRequest httpRequest) async {
     final url = httpRequest.requestedUri.toString();
-    if (url == _buildUrl("impulse/client_server_info")) {
+    if (url == _buildUrl(ServicesUtils.serverRoutes.client_server_info)) {
       ///need to wait for the result to load to memory before closing and decoding
       ///else it may just enter in chunks. the image may make it too large
       final result = await httpRequest.fold<List<int>>(
@@ -159,7 +159,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       // ignore: todo
       // /TODO: do a response to close the connection
       httpRequest.response.close();
-    } else if (url == _buildUrl("sharables")) {
+    } else if (url == _buildUrl(ServicesUtils.serverRoutes.shareables)) {
       final result = await httpRequest.fold<List<int>>(
           [], (previous, element) => previous..addAll(element));
       final bodyEncoded = String.fromCharCodes(result);
@@ -179,7 +179,17 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         ),
       );
       httpRequest.response.close();
-    } else if (url == _buildUrl("cancel")) {
+    } else if (url == _buildUrl(ServicesUtils.serverRoutes.shareables_more)) {
+      ////////////////
+      final result = await httpRequest.fold<List<int>>(
+          [], (previous, element) => previous..addAll(element));
+      final bodyEncoded = String.fromCharCodes(result);
+      final map = json.decode(bodyEncoded) as Map<String, dynamic>;
+      serverManager.addSharableToList(map);
+      httpRequest.response.statusCode = Constants.STATUS_OK;
+      httpRequest.response.close();
+      ///////////////////
+    } else if (url == _buildUrl(ServicesUtils.serverRoutes.cancel)) {
       final result = await httpRequest.fold<List<int>>(
           [], (previous, element) => previous..addAll(element));
       final bodyEncoded = String.fromCharCodes(result);

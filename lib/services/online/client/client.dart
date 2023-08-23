@@ -31,6 +31,9 @@ abstract class Client {
 
   Future<Either<AppException?, List<Map<String, dynamic>>>> getNetworkFiles(
       String path, (String, int) destination);
+  Future<Either<AppException?, Map<String, dynamic>>>
+      addMoreShareablesOnHostServer(
+          Map<String, dynamic> shareableItemMap, (String, int) destination);
 }
 
 abstract interface class ClientHost implements Client, Host {}
