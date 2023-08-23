@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:http/http.dart' as http;
@@ -24,6 +25,25 @@ class RequestHelper {
       final response = await http.post(url, body: json.encode(body));
       return Right(json.decode(response.body));
     } catch (e) {
+      return Left(AppException(e.toString()));
+    }
+  }
+
+  static Future<Either<AppException, List<Map<String, dynamic>>>> getList(
+      Uri url) async {
+    List<Map<String, dynamic>> results = [];
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final decodedBody = json.decode(response.body) as List;
+        for (final entity in decodedBody) {
+          results.add(entity);
+        }
+
+        return Right(results);
+      }
+      throw const AppException("something went wrong");
+    } on AppException catch (e) {
       return Left(AppException(e.toString()));
     }
   }

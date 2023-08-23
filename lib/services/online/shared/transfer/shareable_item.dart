@@ -33,6 +33,18 @@ class ShareableItem extends Item {
           fileName: altName ?? file.path.split(Platform.pathSeparator).last,
         );
 
+  factory ShareableItem.fromMap(Map<String, dynamic> map) {
+    return ShareableItem(
+      file: File(map["path"] as String),
+      fileType: map["fileType"] as String,
+      fileSize: map["fileSize"] as int,
+      id: map["id"] as String,
+      authorId: map["authorId"] as String,
+      altName: map["altName"] as String?,
+      homeDestination: (map["ip"] as String, map["port"] as int),
+    );
+  }
+
   IState _state = IState.pending;
 
   int sentBytes = 0;

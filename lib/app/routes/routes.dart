@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart' hide Path;
 import 'package:go_router/go_router.dart';
-import 'package:impulse/app/routes/dialog_route.dart';
 import 'package:impulse/models/models.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/impulse_scaffold.dart';
+import 'package:impulse/views/files/network_file_manager.dart';
 import 'package:impulse/views/information/set_info_page.dart';
 import 'package:impulse/views/scan/scan_page.dart';
 import 'package:impulse/views/scan/widget/scan_dialog.dart';
@@ -16,6 +16,7 @@ class ImpulseRouter {
 
   static final mainNavKey = GlobalKey<NavigatorState>();
   static final nestedFolderNavKey = GlobalKey<NavigatorState>();
+  static late StatefulNavigationShell? statefulNavigationShell;
 
   static final router = GoRouter(
     initialLocation: Configurations.instance.user == null
@@ -71,6 +72,7 @@ class ImpulseRouter {
         routes: [
           StatefulShellRoute.indexedStack(
             builder: (context, state, navigationShell) {
+              statefulNavigationShell = navigationShell;
               return Scaffold(
                 body: HomePage(
                   navigationShell: navigationShell,
@@ -111,6 +113,22 @@ class ImpulseRouter {
                             //     : null,
                             // path: s.extra != null ? s.extra as String : null,
                             path: Path(location: s.location),
+                          );
+                        },
+                      ),
+                      ImpulseRoute(
+                        path: "files/:username/:path",
+                        name: "NetworkfilesPath",
+                        builder: (s) {
+                          return NetworkFileManagerScreen(
+                            path: Path(
+                              location: s.location,
+                              //if extra is null that means we are at the network root
+                              altName: s.extra == null
+                                  ? s.pathParameters["username"]
+                                  : s.extra as String?,
+                            ),
+                            networkPath: s.pathParameters["path"],
                           );
                         },
                       ),

@@ -20,6 +20,8 @@ enum ConnectionState {
   String toString() {
     return label;
   }
+
+  bool get isConnected => this == ConnectionState.connected;
 }
 
 enum UserType {

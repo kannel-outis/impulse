@@ -4,15 +4,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
-import 'package:impulse/app/assets/assets_images.dart';
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/models/network_impulse_file.dart';
 import 'package:impulse/models/server_info.dart';
-import 'package:impulse/models/user.dart';
 import 'package:impulse/services/services.dart';
-import 'package:uuid/uuid.dart';
 
 final serverControllerProvider =
     ChangeNotifierProvider<ServerController>((ref) {
@@ -41,7 +38,7 @@ class ServerController extends ServerManager with ChangeNotifier {
   });
 
   Completer<bool> alertResponder = Completer<bool>();
-  StreamController<Map<String, dynamic>> _receivableStreamController =
+  final StreamController<Map<String, dynamic>> _receivableStreamController =
       StreamController<Map<String, dynamic>>();
   Timer? _timer;
   List<Item> _items = [];
@@ -76,10 +73,10 @@ class ServerController extends ServerManager with ChangeNotifier {
     return _items;
   }
 
-  @override
-  List<String> getPaths() {
-    return <String>[];
-  }
+  // @override
+  // List<String> getPaths() {
+  //   return <String>[];
+  // }
 
   @override
   ServerInfo get myServerInfo {
@@ -135,6 +132,10 @@ class ServerController extends ServerManager with ChangeNotifier {
   StreamController<Map<String, dynamic>> get receivablesStreamController =>
       _receivableStreamController;
 
+  void addToReceivableStream(Map<String, dynamic> map) {
+    _receivableStreamController.add(map);
+  }
+
   @override
   Future<HiveItem> getHiveItemForShareable(Item item) async {
     final hiveItem = hiveManager.getShareableItemWithKey(item.id);
@@ -150,5 +151,55 @@ class ServerController extends ServerManager with ChangeNotifier {
   void removeCanceledItem(String id) {
     _items.removeWhere((element) => element.id == id);
     shareableItemsProvider.cancelItemWithId(id);
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getEntitiesInDir(String path,
+      [Function()? _]) async {
+    final directoryToMap = <Map<String, dynamic>>[];
+    final fileToMap = <Map<String, dynamic>>[];
+
+    final dir = path == "root" ? _getRootDir : Directory(path);
+    if (!await dir.exists() || Platform.isIOS) {
+      _?.call();
+      return [];
+    }
+
+    final listAsync = await getEntities(dir);
+
+    listAsync
+        .sort((a, b) => a.path.toLowerCase().compareTo(b.path.toLowerCase()));
+
+    for (var item in listAsync) {
+      final file = NetworkImpulseFileEntity(
+        isFolder: item is Directory,
+        modified: item.statSync().modified,
+        name: item.path.split(Platform.pathSeparator).last,
+        serverInfo: myServerInfo,
+        path: item.path,
+        size: item.statSync().size,
+      );
+
+      item is Directory
+          ? directoryToMap.add(file.toMap())
+          : fileToMap.add(file.toMap());
+    }
+
+    return [...directoryToMap, ...fileToMap];
+  }
+
+  Directory get _getRootDir {
+    if (Platform.isAndroid) {
+      return Directory(Configurations.instance.fileManager.rootPath.first);
+    } else {
+      return Configurations.instance.impulseDir;
+    }
+  }
+
+  @override
+  void addSharableToList(Map<String, dynamic> shareableMap) {
+    final shareableItem = ShareableItem.fromMap(shareableMap);
+    shareableItemsProvider.addAllItems([shareableItem]);
+    _items.add(shareableItem);
   }
 }

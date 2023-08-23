@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart' hide ConnectionState, Path;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/models.dart';
@@ -66,6 +67,21 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
 
   // List<String> get paths => widget.path!.path.split(Platform.pathSeparator);
 
+  // ignore: no_leading_underscores_for_local_identifiers
+  double _getHeight(WidgetRef _ref, BoxConstraints constraints) {
+    //if path == null , that means we are already in the root of the files
+    if (isAndroid && widget.path == null) {
+      //we dont want the height to take the whole screen and only set it based on the length of the files
+      //which cant be more than 2 or 3. so that we can utilize the remaining space
+      return (70.0 * files.length);
+    } else if (_ref.watch(connectionStateProvider).isConnected &&
+        MediaQuery.of(context).size.width <= $styles.tabletLg) {
+      return constraints.maxHeight - 70;
+    } else {
+      return constraints.maxHeight;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -97,30 +113,108 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
               );
             }
             return PaddedBody(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: AnimatedSwitcher(
+              child: LayoutBuilder(builder: (context, constraints) {
+                return Column(
+                  children: [
+                    AnimatedSwitcher(
                       duration: $styles.times.med,
-                      child: ListView.builder(
-                        itemCount: files.length,
-                        itemBuilder: (context, index) {
-                          final item = files[index];
-                          return SelectableItemWidget(
-                            file: (item.fileSystemEntity is File)
-                                ? item.fileSystemEntity as File
-                                : null,
-                            isSelectable: item is! ImpulseDirectory,
-                            child: FileManagerTile(
-                              item: item,
-                            ),
+                      child: Consumer(
+                        builder: (context, ref, child) {
+                          return SizedBox(
+                            ///if path is null, that means we are at the root
+                            height: _getHeight(ref, constraints),
+                            width: constraints.maxWidth,
+                            child: child,
                           );
                         },
+                        child: ListView.builder(
+                          itemCount: files.length,
+                          physics: isAndroid && widget.path == null
+                              ? const NeverScrollableScrollPhysics()
+                              : null,
+                          itemBuilder: (context, index) {
+                            final item = files[index];
+                            return SelectableItemWidget(
+                              file: (item.fileSystemEntity is File)
+                                  ? item.fileSystemEntity as File
+                                  : null,
+                              isSelectable: item is! ImpulseDirectory,
+                              child: FileManagerTile(
+                                item: item,
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                    if (isAndroid && widget.path == null)
+                      SizedBox(
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: ($styles.insets.xxl, $styles.insets.sm)
+                                  .insetsTopBottom,
+                              child: Divider(
+                                thickness: .5,
+                                color:
+                                    $styles.colors.fontColor1.withOpacity(.2),
+                              ),
+                            ),
+                            Consumer(
+                              builder: (context, ref, child) {
+                                if (ref
+                                    .watch(connectionStateProvider)
+                                    .isConnected) {
+                                  return InkWell(
+                                    onTap: () {
+                                      context.pushNamed(
+                                        "NetworkfilesPath",
+                                        pathParameters: {
+                                          "path": "root",
+                                          "username": ref
+                                              .read(connectUserStateProvider)!
+                                              .user
+                                              .name,
+                                        },
+                                      );
+                                    },
+                                    child: Container(
+                                      height: 50,
+                                      width: double.infinity,
+                                      color: Colors.transparent,
+                                      child: Center(
+                                        child: Row(
+                                          children: [
+                                            SizedBox(width: $styles.insets.sm),
+                                            const FilePlaceHolder(
+                                              name: "",
+                                              isFolder: true,
+                                            ),
+                                            SizedBox(width: $styles.insets.sm),
+                                            Text(
+                                              ref
+                                                  .read(
+                                                      connectUserStateProvider)!
+                                                  .user
+                                                  .name,
+                                              style: $styles.text.body,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                return const SizedBox();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                );
+              }),
             );
           }),
     );

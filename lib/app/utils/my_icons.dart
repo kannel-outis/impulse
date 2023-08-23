@@ -32,4 +32,12 @@ class ImpulseIcons {
       IconData(0xe703, fontFamily: "transfer", fontPackage: null);
   static const IconData transfer4 =
       IconData(0xe704, fontFamily: "transfer", fontPackage: null);
+
+  //
+  static const IconData send =
+      IconData(0xe900, fontFamily: "transfer2", fontPackage: null);
+  static const IconData scan =
+      IconData(0xe901, fontFamily: "transfer2", fontPackage: null);
+  static const IconData receive =
+      IconData(0xe902, fontFamily: "transfer2", fontPackage: null);
 }

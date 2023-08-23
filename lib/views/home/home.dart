@@ -55,12 +55,12 @@ class _HomePageState extends ConsumerState<HomePage>
     waitForOverlayReverseAnimation = wait;
   }
 
-  bool _isPhone(double size) {
+  bool _isNotPhoneSize(double size) {
     return size > $styles.tabletLg;
   }
 
   Widget _sideBar(double size) {
-    if (_isPhone(size)) {
+    if (_isNotPhoneSize(size)) {
       return SideBar(
         navigationShell: widget.navigationShell,
       );
@@ -73,6 +73,7 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        print("object");
         final miniPlayerControllerP = ref.read(miniPlayerController);
         if (miniPlayerControllerP.isClosed == false) {
           miniPlayerControllerP.closeMiniPlayer();
@@ -88,7 +89,7 @@ class _HomePageState extends ConsumerState<HomePage>
               Scaffold(
                 appBar: const HomeAppBar(),
                 body: Flex(
-                  direction: _isPhone(constraints.maxWidth)
+                  direction: _isNotPhoneSize(constraints.maxWidth)
                       ? Axis.horizontal
                       : Axis.vertical,
                   children: [
@@ -109,67 +110,22 @@ class _HomePageState extends ConsumerState<HomePage>
                     ),
                   ],
                 ),
-                floatingActionButton: Consumer(builder: (context, ref, child) {
-                  final homeController = ref.watch(homeProvider);
-                  final hostController = ref.watch(senderProvider);
-                  final connectionState = ref.watch(connectionStateProvider);
-                  final selectedItems = ref.watch(selectedItemsProvider);
+                floatingActionButton: _isNotPhoneSize(constraints.maxWidth)
+                    ? null
+                    : Consumer(builder: (context, ref, child) {
+                        final homeController = ref.watch(homeProvider);
+                        final hostController = ref.watch(senderProvider);
+                        final connectionState =
+                            ref.watch(connectionStateProvider);
+                        final selectedItems = ref.watch(selectedItemsProvider);
 
-                  if (connectionState == ConnectionState.notConnected &&
-                      selectedItems.isNotEmpty) {
-                    return GestureDetector(
-                      onTap: () {
-                        showModel(true, context);
-                      },
-                      child: Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100),
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-
-                        /// This particular icon is not aligned properly
-                        /// it had to be manually done
-                        alignment: const Alignment(0.0, .2),
-                        child: SvgPicture.asset(
-                          AssetsImage.send,
-                          theme: SvgTheme(
-                            currentColor: Colors.white,
-                            fontSize: 50.scale,
-                          ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    if (connectionState == ConnectionState.connected) {
-                      return Container();
-                    } else {
-                      return CustomSpeedDial(
-                        open: isOverlayOpen,
-                        disable: hostController.host.isServerRunning ||
-                            connectionState == ConnectionState.connected,
-                        disabledFunction: () {
-                          showModel(true, context);
-                        },
-                        toolTipMessage: homeController.isWaitingForReceiver
-                            ? connectionState == ConnectionState.connected
-                                ? "Connected"
-                                : "Waiting for connection"
-                            : "Connect",
-                        waitForReverseAnimation: waitForOverlayReverseAnimation,
-                        onToggle: (isOpen) {
-                          waitforOverlayReverseAnimation(true);
-                          if (isOpen != isOverlayOpen) {
-                            isOverlayOpen = isOpen;
-                            setState(() {});
-                          }
-                        },
-                        overlayChildrenOffset: const Offset(0.0, -10),
-                        duration: $styles.times.med,
-                        child: Stack(
-                          children: [
-                            Container(
+                        if (connectionState == ConnectionState.notConnected &&
+                            selectedItems.isNotEmpty) {
+                          return GestureDetector(
+                            onTap: () {
+                              showModel(true, context);
+                            },
+                            child: Container(
                               height: 50,
                               width: 50,
                               decoration: BoxDecoration(
@@ -180,61 +136,116 @@ class _HomePageState extends ConsumerState<HomePage>
                               /// This particular icon is not aligned properly
                               /// it had to be manually done
                               alignment: const Alignment(0.0, .2),
-                              child: const Icon(
-                                ImpulseIcons.transfer5,
-                                size: 30,
-                              ),
-                            ),
-                            if (hostController.host.isServerRunning ||
-                                connectionState == ConnectionState.connected)
-                              Container(
-                                height: 50,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(100),
-                                  color: Colors.black.withOpacity(.5),
+                              child: SvgPicture.asset(
+                                AssetsImage.send,
+                                theme: SvgTheme(
+                                  currentColor: Colors.white,
+                                  fontSize: 50.scale,
                                 ),
                               ),
-                          ],
-                        ),
-                        // childSpacing: .4,
-                        children: [
-                          SpeedChild(
-                            onTap: () {
-                              closeOverlay();
-                            },
-                            icon: Icons.file_upload_rounded,
-                          ),
-                          SpeedChild(
-                            isHost: false,
-                            onTap: () {
-                              closeOverlay();
-                            },
-                            icon: Icons.file_download_rounded,
-                          ),
-                          if (isAndroid)
-                            SpeedChild(
-                              isHost: false,
-                              disableDefaultFunc: true,
-                              onTap: () {
-                                closeOverlay();
-                                context.push(ImpulseRouter.routes.scanPage);
-                              },
-                              icon: Icons.ac_unit,
                             ),
-                        ].reversed.toList(),
-                      );
-                    }
-                  }
-                }),
-                bottomNavigationBar: _isPhone(constraints.maxWidth)
+                          );
+                        } else {
+                          if (connectionState == ConnectionState.connected) {
+                            return Container();
+                          } else {
+                            return CustomSpeedDial(
+                              open: isOverlayOpen,
+                              disable: hostController.host.isServerRunning ||
+                                  connectionState == ConnectionState.connected,
+                              disabledFunction: () {
+                                showModel(true, context);
+                              },
+                              toolTipMessage: homeController
+                                      .isWaitingForReceiver
+                                  ? connectionState == ConnectionState.connected
+                                      ? "Connected"
+                                      : "Waiting for connection"
+                                  : "Connect",
+                              waitForReverseAnimation:
+                                  waitForOverlayReverseAnimation,
+                              onToggle: (isOpen) {
+                                waitforOverlayReverseAnimation(true);
+                                if (isOpen != isOverlayOpen) {
+                                  isOverlayOpen = isOpen;
+                                  setState(() {});
+                                }
+                              },
+                              overlayChildrenOffset: const Offset(0.0, -10),
+                              duration: $styles.times.med,
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100),
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+
+                                    /// This particular icon is not aligned properly
+                                    /// it had to be manually done
+                                    alignment: const Alignment(0.0, .2),
+                                    child: const Icon(
+                                      ImpulseIcons.transfer5,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  if (hostController.host.isServerRunning ||
+                                      connectionState ==
+                                          ConnectionState.connected)
+                                    Container(
+                                      height: 50,
+                                      width: 50,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                        color: Colors.black.withOpacity(.5),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                              // childSpacing: .4,
+                              children: [
+                                SpeedChild(
+                                  onTap: () {
+                                    closeOverlay();
+                                  },
+                                  icon: ImpulseIcons.send,
+                                ),
+                                SpeedChild(
+                                  isHost: false,
+                                  onTap: () {
+                                    closeOverlay();
+                                  },
+                                  icon: ImpulseIcons.receive,
+                                ),
+                                if (isAndroid)
+                                  SpeedChild(
+                                    isHost: false,
+                                    disableDefaultFunc: true,
+                                    additionalIconSize: 5,
+                                    onTap: () {
+                                      closeOverlay();
+                                      context
+                                          .push(ImpulseRouter.routes.scanPage);
+                                    },
+                                    icon: ImpulseIcons.scan,
+                                  ),
+                              ].reversed.toList(),
+                            );
+                          }
+                        }
+                      }),
+                bottomNavigationBar: _isNotPhoneSize(constraints.maxWidth)
                     ? null
                     : MyBottomNavBar(
                         index: widget.navigationShell.currentIndex,
                         onChanged: onChanged,
                       ),
               ),
-              if (!_isPhone(constraints.maxWidth))
+              if (!_isNotPhoneSize(constraints.maxWidth))
                 Consumer(
                   builder: (context, ref, child) {
                     final connectionState = ref.watch(connectionStateProvider);

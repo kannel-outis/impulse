@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -77,7 +76,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
   Future<void> _handleGetRequest(HttpRequest httpRequest) async {
     final url = httpRequest.requestedUri.toString();
-    if (url == "http://${address.address}:$port/impulse/connect") {
+    if (url == _buildUrl(ServicesUtils.serverRoutes.connect)) {
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;
       final hostInfo = serverManager.myServerInfo;
@@ -91,141 +90,40 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         ),
       );
       httpRequest.response.close();
-    } else if (url.contains("http://${address.address}:$port/download")) {
+    } else if (url.contains(_buildUrl(ServicesUtils.serverRoutes.download))) {
       if (httpRequest.requestedUri.queryParameters.containsKey("file")) {
-        final file =
-            File(httpRequest.requestedUri.queryParameters["file"] as String);
-        if (!await file.exists()) {
+        await _downloadFile(httpRequest);
+        return;
+      } else if (httpRequest.requestedUri.queryParameters
+          .containsKey("folder")) {
+        print(httpRequest.requestedUri);
+        final entitiesInDir = await serverManager.getEntitiesInDir(
+            httpRequest.requestedUri.queryParameters["folder"] as String, () {
+          log(httpRequest.requestedUri.queryParameters["folder"].toString());
           httpRequest.response.statusCode = 404;
           httpRequest.response.write(
             json.encode(
               {
-                "msg": "File not Found available",
+                "msg": "Directory Not Found",
               },
             ),
           );
           httpRequest.response.close();
           return;
-        } else {
-          final fileStream = file.openRead();
-          await httpRequest.response.addStream(fileStream);
-          httpRequest.response.close();
-          return;
-        }
-      }
-
-      ///get the id of the file from the url query parameter
-      final fileId = httpRequest.requestedUri.queryParameters["id"];
-
-      String rangeHeader = httpRequest.headers.value(HttpHeaders.rangeHeader)!;
-      final start = int.parse(rangeHeader.split('=')[1].split('-')[0]);
-
-      ///Check if the id exists in the shareable files list
-      ///if the file was indeed shared, it should have an id in the list
-      final items = serverManager
-          .getSelectedItems()
-          .where((element) => element.id == fileId);
-      if (fileId == null || items.isEmpty) {
-        ///if this file cant be found, write a response and close connection
-        httpRequest.response.write(
-          json.encode(
-            {
-              "msg": items.isEmpty
-                  ? "File id: $fileId not Found"
-                  : "File not available",
-            },
-          ),
-        );
+        });
+        httpRequest.response.write(json.encode(entitiesInDir));
         httpRequest.response.close();
         return;
       }
 
-      ///if fpund retreive the item with the id
-      final item = items.single;
-
-      ///Check if the file with that id exists on the device,
-      ///if it does proceed to open the file and make it downloadable
-      if (await item.file.exists()) {
-        item.startTime = DateTime.now();
-        httpRequest.response
-          ..headers.set("Content-Type", item.mime ?? "application/octat-stream")
-          ..headers
-              .set("Content-Disposition", "attachment; filename=${item.name}")
-          ..headers.set("Content-Length", "${item.file.lengthSync() - start}");
-
-        final hiveItem = await serverManager.getHiveItemForShareable(item);
-        void listener(int received, int totalSize, File? file, String? reason,
-            IState state) {
-          hiveItem.iState = state;
-          hiveItem.processedBytes = received;
-          hiveItem.save();
-          // print("${state} ::::::::::::::::::");
-        }
-
-        ///add listener that works the hive operation
-        item.addListener(listener);
-
-        ///This should be start
-        int bytesDownloadedByClient = start;
-        final response = httpRequest.response;
-        final fileStream = item.file.openRead(start);
-        await response.addStream(fileStream.map((event) {
-          bytesDownloadedByClient += event.length;
-
-          // final percentage =
-          //     (bytesDownloadedByClient / item.file.lengthSync()) * 100;
-          // log("${item.fileName}: $percentage");
-          // item.onProgressCallback?.call(
-          // bytesDownloadedByClient,
-          // item.file.lengthSync(),
-          // IState.inProgress,
-          // );
-
-          (item as ShareableItem).updateProgress(
-            bytesDownloadedByClient,
-            item.file.lengthSync(),
-            IState.inProgress,
-          );
-          return event;
-        }));
-        // await httpRequest.response.addStream(item.file.openRead());
-
-        // item.onProgressCallback?.call(
-        //   bytesDownloadedByClient,
-        //   item.file.lengthSync(),
-        //   IState.completed,
-        // );
-
-        (item as ShareableItem).updateProgress(
-          bytesDownloadedByClient,
-          item.file.lengthSync(),
-          bytesDownloadedByClient != item.file.lengthSync()
-              ? IState.paused
-              : IState.completed,
-        );
-        // await response.flush();
-        httpRequest.response.close();
-
-        ///remove listener
-        item.removeListener(listener);
-        item.startTime = null;
-        // print("Done");
-      } else {
-        httpRequest.response.write(
-          json.encode(
-            {
-              "msg": "Something Went Wrong",
-            },
-          ),
-        );
-        httpRequest.response.close();
-      }
+      ///get the id of the file from the url query parameter
+      await _downloadShareableFile(httpRequest);
     }
   }
 
   Future<void> _handlePostRequest(HttpRequest httpRequest) async {
     final url = httpRequest.requestedUri.toString();
-    if (url == _buildUrl("impulse/client_server_info")) {
+    if (url == _buildUrl(ServicesUtils.serverRoutes.client_server_info)) {
       ///need to wait for the result to load to memory before closing and decoding
       ///else it may just enter in chunks. the image may make it too large
       final result = await httpRequest.fold<List<int>>(
@@ -261,7 +159,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       // ignore: todo
       // /TODO: do a response to close the connection
       httpRequest.response.close();
-    } else if (url == _buildUrl("sharables")) {
+    } else if (url == _buildUrl(ServicesUtils.serverRoutes.shareables)) {
       final result = await httpRequest.fold<List<int>>(
           [], (previous, element) => previous..addAll(element));
       final bodyEncoded = String.fromCharCodes(result);
@@ -281,7 +179,17 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         ),
       );
       httpRequest.response.close();
-    } else if (url == _buildUrl("cancel")) {
+    } else if (url == _buildUrl(ServicesUtils.serverRoutes.shareables_more)) {
+      ////////////////
+      final result = await httpRequest.fold<List<int>>(
+          [], (previous, element) => previous..addAll(element));
+      final bodyEncoded = String.fromCharCodes(result);
+      final map = json.decode(bodyEncoded) as Map<String, dynamic>;
+      serverManager.addSharableToList(map);
+      httpRequest.response.statusCode = Constants.STATUS_OK;
+      httpRequest.response.close();
+      ///////////////////
+    } else if (url == _buildUrl(ServicesUtils.serverRoutes.cancel)) {
       final result = await httpRequest.fold<List<int>>(
           [], (previous, element) => previous..addAll(element));
       final bodyEncoded = String.fromCharCodes(result);
@@ -294,6 +202,136 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
   String _buildUrl(String path) {
     return "http://${address.address}:$port/$path";
+  }
+
+  Future<void> _downloadShareableFile(HttpRequest httpRequest) async {
+    final fileId = httpRequest.requestedUri.queryParameters["id"];
+
+    String rangeHeader = httpRequest.headers.value(HttpHeaders.rangeHeader)!;
+    final start = int.parse(rangeHeader.split('=')[1].split('-')[0]);
+
+    ///Check if the id exists in the shareable files list
+    ///if the file was indeed shared, it should have an id in the list
+    final items = serverManager
+        .getSelectedItems()
+        .where((element) => element.id == fileId);
+    if (fileId == null || items.isEmpty) {
+      ///if this file cant be found, write a response and close connection
+      httpRequest.response.write(
+        json.encode(
+          {
+            "msg": items.isEmpty
+                ? "File id: $fileId not Found"
+                : "File not available",
+          },
+        ),
+      );
+      httpRequest.response.close();
+      return;
+    }
+
+    ///if fpund retreive the item with the id
+    final item = items.single;
+
+    ///Check if the file with that id exists on the device,
+    ///if it does proceed to open the file and make it downloadable
+    if (await item.file.exists()) {
+      item.startTime = DateTime.now();
+      httpRequest.response
+        ..headers.set("Content-Type", item.mime ?? "application/octat-stream")
+        ..headers
+            .set("Content-Disposition", "attachment; filename=${item.name}")
+        ..headers.set("Content-Length", "${item.file.lengthSync() - start}");
+
+      final hiveItem = await serverManager.getHiveItemForShareable(item);
+      void listener(int received, int totalSize, File? file, String? reason,
+          IState state) {
+        hiveItem.iState = state;
+        hiveItem.processedBytes = received;
+        hiveItem.save();
+        // print("${state} ::::::::::::::::::");
+      }
+
+      ///add listener that works the hive operation
+      item.addListener(listener);
+
+      ///This should be start
+      int bytesDownloadedByClient = start;
+      final fileSize = await item.file.length();
+      var fileStream = item.file.openRead(start);
+      await httpRequest.response.addStream(fileStream.map((event) {
+        bytesDownloadedByClient += event.length;
+
+        // final percentage =
+        //     (bytesDownloadedByClient / item.file.lengthSync()) * 100;
+        // log("${item.fileName}: $percentage");
+        // item.onProgressCallback?.call(
+        // bytesDownloadedByClient,
+        // item.file.lengthSync(),
+        // IState.inProgress,
+        // );
+
+        (item as ShareableItem).updateProgress(
+          bytesDownloadedByClient,
+          fileSize,
+          IState.inProgress,
+        );
+        return event;
+      }));
+      // await httpRequest.response.addStream(item.file.openRead());
+
+      // item.onProgressCallback?.call(
+      //   bytesDownloadedByClient,
+      //   item.file.lengthSync(),
+      //   IState.completed,
+      // );
+
+      (item as ShareableItem).updateProgress(
+        bytesDownloadedByClient,
+        item.file.lengthSync(),
+        bytesDownloadedByClient != fileSize ? IState.paused : IState.completed,
+      );
+      // await response.flush();
+      httpRequest.response.close();
+
+      ///remove listener
+      item.removeListener(listener);
+      item.startTime = null;
+      item.dispose();
+      // fileStream = null;
+      // print("Done");
+    } else {
+      httpRequest.response.write(
+        json.encode(
+          {
+            "msg": "Something Went Wrong",
+          },
+        ),
+      );
+      httpRequest.response.close();
+    }
+  }
+
+  Future<void> _downloadFile(HttpRequest httpRequest) async {
+    final file =
+        File(httpRequest.requestedUri.queryParameters["file"] as String);
+    if (!await file.exists()) {
+      httpRequest.response.statusCode = 404;
+      httpRequest.response.write(
+        json.encode(
+          {
+            "msg": "File not Found available",
+          },
+        ),
+      );
+      httpRequest.response.close();
+      return;
+    } else {
+      final fileStream = file.openRead();
+      await httpRequest.response.addStream(fileStream);
+      httpRequest.response.close();
+      return;
+    }
   }
 
   @override

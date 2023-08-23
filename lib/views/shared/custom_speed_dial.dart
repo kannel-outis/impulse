@@ -97,7 +97,7 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
       child: Tooltip(
         message: widget.toolTipMessage,
         // verticalOffset: -70,
-        textStyle: $styles.text.body.copyWith(
+        textStyle: $styles.text.bodySmall.copyWith(
           color: Theme.of(context).scaffoldBackgroundColor,
         ),
         decoration: BoxDecoration(

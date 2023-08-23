@@ -292,6 +292,5 @@ class _Constraints {
         // maxHeight: _sizes.maxContentHeight1,
         maxHeight:
             screenSize.width < 420 ? 200 : (screenSize.height / 100) * 30,
-        minHeight: 150,
       );
 }

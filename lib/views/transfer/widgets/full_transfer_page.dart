@@ -46,6 +46,7 @@ class _FullTransferPageState extends ConsumerState<FullTransferPage>
                   child: TabBar(
                     controller: _tabController,
                     indicatorSize: TabBarIndicatorSize.label,
+                    // physics: NeverScrollableScrollPhysics(),
                     labelPadding: EdgeInsets.only(
                       bottom: $styles.insets.xs,
                       right: $styles.insets.md,
@@ -79,46 +80,54 @@ class _FullTransferPageState extends ConsumerState<FullTransferPage>
             ),
           ),
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                Consumer(
-                  builder: (context, ref, child) {
-                    final shareable = ref.watch(shareableItemsProvider);
-                    return ListView(
-                      ///size of each tile and margin
-                      physics: ((100 + $styles.insets.lg) * shareable.length >
-                              MediaQuery.of(context).size.height - 200)
-                          ? const AlwaysScrollableScrollPhysics()
-                          : const NeverScrollableScrollPhysics(),
-                      children: [
-                        ...List.generate(
-                          shareable.length,
-                          (index) => TransferListTile(item: shareable[index]),
-                        ).reversed,
-                      ],
-                    );
-                  },
-                ),
-                Consumer(
-                  builder: (context, ref, child) {
-                    final receivables = ref.watch(receivableListItems);
-                    return ListView(
-                      physics: ((100 + $styles.insets.lg) * receivables.length >
-                              MediaQuery.of(context).size.height - 200)
-                          ? const AlwaysScrollableScrollPhysics()
-                          : const NeverScrollableScrollPhysics(),
-                      children: [
-                        ...List.generate(
-                          receivables.length,
-                          (index) => TransferListTile(item: receivables[index]),
-                        ).reversed,
-                      ],
-                    );
-                  },
-                ),
-              ],
-            ),
+            child: LayoutBuilder(builder: (context, constraints) {
+              return TabBarView(
+                controller: _tabController,
+                children: [
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final shareable =
+                          ref.watch(shareableItemsProvider).reversed.toList();
+                      return ListView.builder(
+                        ///size of each tile and margin
+                        physics: ((100 + $styles.insets.lg) * shareable.length >
+                                constraints.maxHeight - 200)
+                            ? const AlwaysScrollableScrollPhysics()
+                            : const NeverScrollableScrollPhysics(),
+                        // children: [
+                        //   ...List.generate(
+                        //     shareable.length,
+                        //     (index) => TransferListTile(item: shareable[index]),
+                        //   ).reversed,
+                        // ],
+                        // reverse: true,
+                        itemCount: shareable.length,
+                        itemBuilder: (context, index) {
+                          return TransferListTile(item: shareable[index]);
+                        },
+                      );
+                    },
+                  ),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final receivables =
+                          ref.watch(receivableListItems).reversed.toList();
+                      return ListView.builder(
+                        physics:
+                            ((100 + $styles.insets.lg) * receivables.length >
+                                    constraints.maxHeight - 200)
+                                ? const AlwaysScrollableScrollPhysics()
+                                : const NeverScrollableScrollPhysics(),
+                        itemCount: receivables.length,
+                        itemBuilder: (context, index) {
+                          return TransferListTile(item: receivables[index]);
+                        },
+                      );
+                    },
+                  ),
+                ],
+              );
+            }),
           )
         ],
       ),

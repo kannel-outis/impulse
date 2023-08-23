@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.1.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -46,7 +46,7 @@ dependencies:
   impulse_utils:
     git:
       url: https://github.com/kannel-outis/impulse_utils.git
-      ref: fc7b1d7b41fa26055f240b17656d31beeed09886
+      # ref: fc7b1d7b41fa26055f240b17656d31beeed09886
   lottie: ^2.4.0
   mime: ^1.0.4
   path_drawing: ^1.0.1
@@ -111,6 +111,10 @@ flutter:
       fonts:
         - asset: assets/fonts/icons/transfer_icons.ttf
   #         weight: 700
+  
+    - family: transfer2
+      fonts:
+        - asset: assets/fonts/icons/transfer_2.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

@@ -29,7 +29,7 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
             port: widget.port,
             listReset: true,
           );
-
+      //TODO: find a way to listen to this without using this approach
       ref.read(connectionStateProvider.notifier).addListener(_listener);
     });
   }
@@ -55,6 +55,7 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
         height: 400,
         width: double.infinity,
         color: $styles.colors.accentColor1,
+        constraints: const BoxConstraints(maxWidth: 500),
         child: Consumer(
           builder: (context, ref, child) {
             final receiverController = ref.watch(receiverProvider);
