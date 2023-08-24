@@ -163,17 +163,19 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                         child: widget.collapseChild ??
                             Consumer(
                               builder: (context, ref, child) {
-                                final shareable =
-                                    ref.watch(shareableItemsProvider);
                                 final downloadManager =
                                     ref.watch(downloadManagerProvider);
+                                final uploadManager =
+                                    ref.watch(uploadManagerProvider);
                                 /* 
                                     ! This needs to be here to start listening to the provider
                                     ! it serves as the first listener to the receivableItems after a connection has been established
+                                    ! This makes sure the listener that listens to the receivable stream controller is triggered
                                     ! that way, it can automatically start downloading the items
                                     */
-                                ref.watch(receivableListItems);
-                                if (downloadManager.$2 != null) {
+                                ref.read(receivableListItems);
+                                if (downloadManager.$2 != null &&
+                                    downloadManager.$2!.state.isInProgress) {
                                   log(downloadManager.$1);
                                   return TransferListTile(
                                     item: downloadManager.$2!,
@@ -183,9 +185,16 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                                     height:
                                         widget.miniPlayerController.minHeight,
                                   );
-                                }
-
-                                if (shareable.isEmpty) {
+                                } else if (uploadManager.$2 != null) {
+                                  return TransferListTile(
+                                    item: uploadManager.$2!,
+                                    mini: true,
+                                    mBps: ImpulseFileSize(uploadManager.$1)
+                                        .sizeToString,
+                                    height:
+                                        widget.miniPlayerController.minHeight,
+                                  );
+                                } else {
                                   return Container(
                                     height:
                                         widget.miniPlayerController.minHeight,
@@ -210,27 +219,6 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                                     ),
                                   );
                                 }
-                                final inProgressItemsWidget = shareable
-                                    .where(
-                                        (element) => element.state.isInProgress)
-                                    .toList()
-                                    .map(
-                                      (e) => TransferListTile(
-                                        height: widget
-                                            .miniPlayerController.minHeight,
-                                        mini: true,
-                                        item: e,
-                                      ),
-                                    )
-                                    .toList();
-                                return inProgressItemsWidget.isEmpty
-                                    ? TransferListTile(
-                                        item: shareable.last,
-                                        mini: true,
-                                        height: widget
-                                            .miniPlayerController.minHeight,
-                                      )
-                                    : inProgressItemsWidget.first;
                               },
                             ),
                       )

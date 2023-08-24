@@ -1,4 +1,6 @@
-export 'download_manager.dart';
+export 'manager/download_manager.dart';
+export 'manager/upload_manager.dart';
+export 'manager/mbps.dart';
 export 'file_manager/file_manager.dart';
 export 'file_manager/file_manager_controller.dart';
 export 'file_manager/path_bar_manager_controller.dart';

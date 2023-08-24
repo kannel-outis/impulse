@@ -43,7 +43,7 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
       }
     }
     state = [...items];
-    _updateServerList();
+    // _updateServerList();
   }
 
   void removeSelected({String? path, File? file}) {
@@ -54,12 +54,12 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
     }
     state = [...items];
     log(items.length.toString());
-    _updateServerList();
+    // _updateServerList();
   }
 
-  void _updateServerList() {
-    serverManager.setSelectedItems(state);
-  }
+  // void _updateServerList() {
+  //   serverManager.setSelectedItems(state);
+  // }
 
   void clear() {
     items.clear();
