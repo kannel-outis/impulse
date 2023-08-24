@@ -41,8 +41,8 @@ class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
     updateStateAndProgress();
   }
 
-  // final Debouncer _debouncer =
-  //     Debouncer(duration: const Duration(seconds: 1), function: () {});
+  final Debouncer _debouncer =
+      Debouncer(duration: const Duration(seconds: 1), function: () {});
 
   void updateStateAndProgress(
       {bool refreshListener = false, ItemListenableBuilder? oldWidget}) {
@@ -66,9 +66,9 @@ class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
     _progress = received / totalSize;
     _state = state;
 
-    // _debouncer.debounce(() => setState(() {}));
+    _debouncer.debounce(() => setState(() {}));
 
-    setState(() {});
+    // setState(() {});
 
     // if (state != IState.inProgress) {
     //   _debounceTimer?.cancel();
