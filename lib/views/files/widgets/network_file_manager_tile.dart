@@ -144,7 +144,7 @@ class _NetworkFileManagerTileState
                     height: isAndroid ? 40 : 30,
                     child: Icon(
                       ImpulseIcons.receive,
-                      color: $styles.colors.iconColor1,
+                      color: Theme.of(context).colorScheme.tertiary,
                     ),
                   ),
                 ),

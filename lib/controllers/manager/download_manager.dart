@@ -69,7 +69,6 @@ class DownloadManager extends MBps {
     /////
     item.addListener(_listener);
     ///////
-    log("${item.id} from download");
     try {
       await item.receive().then((value) async {
         if (item.state.isCompleted ||

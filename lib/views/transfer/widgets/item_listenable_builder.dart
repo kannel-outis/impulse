@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
-import 'package:impulse/app/utils/debouncer.dart';
 import 'package:impulse/services/services.dart';
 
 typedef _ItemListenableBuilder = Widget Function(
@@ -30,6 +29,7 @@ class ItemListenableBuilder extends StatefulWidget {
 class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
   double _progress = 0;
   IState _state = IState.pending;
+  IState _prevState = IState.pending;
 
   @override
   void initState() {
@@ -41,12 +41,12 @@ class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
     updateStateAndProgress();
   }
 
-  final Debouncer _debouncer =
-      Debouncer(duration: const Duration(seconds: 1), function: () {});
+  final Debouncer _debouncer = Debouncer(duration: const Duration(seconds: 1));
 
   void updateStateAndProgress(
       {bool refreshListener = false, ItemListenableBuilder? oldWidget}) {
     _state = _listenableAsItem(widget).state;
+    _prevState = _state;
     _progress = _listenableAsItem(widget).proccessedBytes /
         _listenableAsItem(widget).fileSize;
 
@@ -65,10 +65,18 @@ class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
   ) {
     _progress = received / totalSize;
     _state = state;
+    if (_prevState != _state && mounted) setState(() {});
 
-    _debouncer.debounce(() => setState(() {}));
+    _debouncer.debounce(() {
+      if (_prevState != _state) {
+        return;
+      }
+      if (mounted) setState(() {});
+    });
 
     // setState(() {});
+
+    _prevState = state;
 
     // if (state != IState.inProgress) {
     //   _debounceTimer?.cancel();
@@ -85,7 +93,7 @@ class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
   @override
   void dispose() {
     _listenableAsItem(widget).removeListener(_listener);
-    // _debouncer.cancel();
+    _debouncer.cancel();
     super.dispose();
   }
 

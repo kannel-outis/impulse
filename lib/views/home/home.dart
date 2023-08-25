@@ -96,7 +96,10 @@ class _HomePageState extends ConsumerState<HomePage>
                     _sideBar(constraints.maxWidth),
                     VerticalDivider(
                       thickness: .5,
-                      color: $styles.colors.fontColor1.withOpacity(.2),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .tertiary
+                          .withOpacity(.2),
                     ),
                     Expanded(
                       child: Column(
@@ -313,8 +316,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             isScrollable: true,
             controller: _tabController,
             overlayColor: MaterialStateProperty.all(Colors.transparent),
-            indicatorColor: $styles.colors.fontColor1,
-            labelColor: $styles.colors.fontColor1,
+            indicatorColor: Theme.of(context).colorScheme.tertiary,
+            labelColor: Theme.of(context).colorScheme.tertiary,
             indicatorWeight: 1,
             tabs: tabs,
           ),

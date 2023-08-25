@@ -21,7 +21,7 @@ class SpeedChild extends StatelessWidget {
     return Tooltip(
       message: isHost ? "Send" : "Receive",
       textStyle: $styles.text.bodySmall.copyWith(
-        color: $styles.colors.accentColor1,
+        color: Theme.of(context).colorScheme.background,
       ),
       preferBelow: false,
       verticalOffset: 30,

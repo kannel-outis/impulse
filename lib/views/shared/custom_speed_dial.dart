@@ -101,7 +101,7 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
           color: Theme.of(context).scaffoldBackgroundColor,
         ),
         decoration: BoxDecoration(
-          color: $styles.colors.fontColor1,
+          color: Theme.of(context).colorScheme.tertiary,
           borderRadius: BorderRadius.circular($styles.corners.sm),
         ),
         waitDuration: $styles.times.slow,

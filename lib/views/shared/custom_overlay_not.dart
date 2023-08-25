@@ -98,7 +98,7 @@ class _CustomOverlayNotState extends ConsumerState<CustomOverlayNot>
                     child: Container(
                       height: 50,
                       width: double.infinity,
-                      color: $styles.colors.iconColor2,
+                      color: Theme.of(context).colorScheme.onTertiary,
                     ),
                   ),
                 ),

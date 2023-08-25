@@ -122,7 +122,7 @@ class _SideBarState extends ConsumerState<SideBar> {
                           color: Theme.of(context).scaffoldBackgroundColor,
                         ),
                         decoration: BoxDecoration(
-                          color: $styles.colors.fontColor1,
+                          color: Theme.of(context).colorScheme.tertiary,
                           borderRadius:
                               BorderRadius.circular($styles.corners.sm),
                         ),
@@ -155,10 +155,10 @@ class _SideBarState extends ConsumerState<SideBar> {
                                 Container(
                                   width: 1.5,
                                   height: (80 / 100) * 50,
-                                  color:
-                                      i == widget.navigationShell.currentIndex
-                                          ? $styles.colors.secondaryColor
-                                          : null,
+                                  color: i ==
+                                          widget.navigationShell.currentIndex
+                                      ? Theme.of(context).colorScheme.primary
+                                      : null,
                                 ),
                                 SizedBox(width: $styles.insets.sm),
                                 Expanded(
@@ -188,7 +188,10 @@ class _SideBarState extends ConsumerState<SideBar> {
                     padding: $styles.insets.sm.insets,
                     child: Divider(
                       thickness: .5,
-                      color: $styles.colors.fontColor1.withOpacity(.2),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .tertiary
+                          .withOpacity(.2),
                     ),
                   ),
                   Consumer(
@@ -373,7 +376,7 @@ class ConnectDialogChild extends StatelessWidget {
                   Icon(
                     icon,
                     size: (IconTheme.of(context).size ?? 0.0) + additionalSize,
-                    color: $styles.colors.iconColor1,
+                    color: Theme.of(context).colorScheme.tertiary,
                   ),
                   SizedBox(
                     width: $styles.insets.sm,

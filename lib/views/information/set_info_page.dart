@@ -122,7 +122,8 @@ class _SetInfoPageState extends State<SetInfoPage> {
                               //   returnPath: true,
                               //   size: const Size(512, 384),
                               // );
-                              images.add((_ImageType.File, result.paths.first!));
+                              images
+                                  .add((_ImageType.File, result.paths.first!));
                               isLoadingImage = false;
                               setState(() {});
                             }
@@ -181,7 +182,7 @@ class _SetInfoPageState extends State<SetInfoPage> {
                     // ),
                     // focusedBorder: UnderlineInputBorder(
                     //   borderSide: BorderSide(
-                    //     color: $styles.colors.fontColor1,
+                    //     color: Theme.of(context).colorScheme.tertiary,
                     //   ),
                     // ),
                   ),
@@ -214,7 +215,7 @@ class _SetInfoPageState extends State<SetInfoPage> {
                   height: 50,
                   width: 300.scale,
                   decoration: BoxDecoration(
-                    color: $styles.colors.secondaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular($styles.corners.md),
                   ),
                   child: Center(

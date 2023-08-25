@@ -74,8 +74,6 @@ class ClientImpl implements ClientHost {
       Function(int p1, IClient p2)? init}) {
     final url =
         "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.download}?id=$fileId";
-    log("$fileId from cleint");
-    log("$destination from cleint");
     // return Stream.empty();
     return ServicesUtils.getStream(
       url,

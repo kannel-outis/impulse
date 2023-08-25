@@ -96,10 +96,8 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         return;
       } else if (httpRequest.requestedUri.queryParameters
           .containsKey("folder")) {
-        print(httpRequest.requestedUri);
         final entitiesInDir = await serverManager.getEntitiesInDir(
             httpRequest.requestedUri.queryParameters["folder"] as String, () {
-          log(httpRequest.requestedUri.queryParameters["folder"].toString());
           httpRequest.response.statusCode = 404;
           httpRequest.response.write(
             json.encode(
@@ -139,7 +137,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           {"msg": accepted ? "Successful" : "Denied"},
         ),
       );
-      log(accepted.toString());
       httpRequest.response.close();
     } else if (url == _buildUrl("send")) {
       ///Testing....
@@ -151,7 +148,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           File("storage/emulated/0/DCIMM/$fileName.$fileType").openWrite();
       // final result = httpRequest.listen((event) {});
       await for (final data in httpRequest) {
-        log(data.length.toString());
         file.add(data);
       }
       await file.close();

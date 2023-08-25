@@ -73,7 +73,7 @@ class _CustomHostBottomModalSheetState
       child: Container(
         height: $styles.sizes.maxContentHeight1,
         width: double.infinity,
-        color: $styles.colors.accentColor1,
+        color: Theme.of(context).colorScheme.background,
         constraints: $styles.constraints.modalConstraints,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -107,7 +107,7 @@ class _CustomHostBottomModalSheetState
                           $styles.constraints.modalConstraints.maxHeight * .6,
                       width:
                           $styles.constraints.modalConstraints.maxHeight * .6,
-                      backgroundColor: $styles.colors.fontColor1,
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.black
                           : Colors.white,
@@ -127,7 +127,7 @@ class _CustomHostBottomModalSheetState
                 children: [
                   // Icon(
                   //   Icons.wifi_tethering,
-                  //   color: $styles.colors.secondaryColor,
+                  //   color: Theme.of(context).colorScheme.primary,
                   //   size: $styles.sizes.smallIconSize2,
                   // ),
                   // SizedBox(width: $styles.insets.xxs),
@@ -244,7 +244,7 @@ class _CustomClientBottomModalSheetState
     return Container(
       height: $styles.constraints.modalConstraints.maxHeight,
       width: double.infinity,
-      color: $styles.colors.accentColor1,
+      color: Theme.of(context).colorScheme.background,
       child: Stack(
         key: _parentStackKey,
         alignment: Alignment.center,
@@ -257,6 +257,7 @@ class _CustomClientBottomModalSheetState
                 return CustomPaint(
                   painter: ScanCustomPainter(
                     _animationController,
+                    scanColor: Theme.of(context).colorScheme.primary,
 
                     ///
                     setPosition: setPosition,
@@ -285,12 +286,12 @@ class _CustomClientBottomModalSheetState
                 width: containerSize,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular($styles.corners.xxlg),
-                  color: $styles.colors.secondaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 child: Center(
                   child: Icon(
                     Icons.search,
-                    color: $styles.colors.iconColor1,
+                    color: Theme.of(context).colorScheme.tertiary,
                     size: $styles.sizes.smallIconSize2,
                   ),
                 ),

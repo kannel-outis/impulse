@@ -54,7 +54,7 @@ class _ScanPageState extends ConsumerState<ScanPage> {
           onQRViewCreated: _onQRViewCreated,
           formatsAllowed: const [BarcodeFormat.qrcode],
           overlay: QrScannerOverlayShape(
-            borderColor: $styles.colors.secondaryColor,
+            borderColor: Theme.of(context).colorScheme.primary,
             borderRadius: 10,
             borderLength: 30,
             borderWidth: 10,
@@ -71,7 +71,7 @@ class _ScanPageState extends ConsumerState<ScanPage> {
               height: torchBoxSize,
               width: torchBoxSize * 2,
               decoration: BoxDecoration(
-                color: $styles.colors.accentColor1.withOpacity(.8),
+                color: Theme.of(context).colorScheme.background.withOpacity(.8),
                 borderRadius: BorderRadius.circular($styles.corners.md),
               ),
               child: const Center(

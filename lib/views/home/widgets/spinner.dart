@@ -73,7 +73,7 @@ class _SpinnerState extends State<Spinner> with SingleTickerProviderStateMixin {
               child: CustomPaint(
                 size: Size(widget.size ?? 40, widget.size ?? 40),
                 painter: TransferPainter(
-                  color: widget.color ?? $styles.colors.fontColor1,
+                  color: widget.color ?? Theme.of(context).colorScheme.tertiary,
                   weight: 1.5,
                 ),
               ),
@@ -85,7 +85,7 @@ class _SpinnerState extends State<Spinner> with SingleTickerProviderStateMixin {
               height: 45,
               width: 45,
               decoration: BoxDecoration(
-                color: $styles.colors.secondaryColor,
+                color: Theme.of(context).colorScheme.primary,
                 borderRadius: BorderRadius.circular(100),
               ),
               // child: RotatedBox(

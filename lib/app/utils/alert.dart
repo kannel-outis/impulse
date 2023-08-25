@@ -199,7 +199,8 @@ class _OverlayChildState extends ConsumerState<_OverlayChild> {
                                   ),
                                   ButtonChild(
                                     style: style,
-                                    color: style.colors.secondaryColor,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     label: "Accept",
                                     callback: () {
                                       ref

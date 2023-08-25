@@ -168,7 +168,7 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
           (widget.item as ImpulseFileStorage).type == FileStorageType.Internal
               ? Icons.phone_android_sharp
               : Icons.sd_card_outlined,
-          color: $styles.colors.iconColor1,
+          color: Theme.of(context).colorScheme.tertiary,
           size: 40.scale,
         ),
       );

@@ -54,7 +54,7 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
       child: Container(
         height: 400,
         width: double.infinity,
-        color: $styles.colors.accentColor1,
+        color: Theme.of(context).colorScheme.background,
         constraints: const BoxConstraints(maxWidth: 500),
         child: Consumer(
           builder: (context, ref, child) {
@@ -116,7 +116,7 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
                       },
                     ),
                     ScanDialogButton(
-                      color: $styles.colors.secondaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                       label: "Connect",
                       onTap: () async {
                         final provider = ref.read(receiverProvider);

@@ -78,7 +78,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
                     : BottomAppBarIcon(
                         key: ValueKey(index == i),
                         icon: bars.values.toList()[i].$1,
-                        color: $styles.colors.iconColor1,
+                        color: Theme.of(context).colorScheme.tertiary,
                         label: bars.keys.toList()[i],
                       ),
               ),

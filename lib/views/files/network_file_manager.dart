@@ -73,7 +73,7 @@ class _FileManagerScreenState extends ConsumerState<NetworkFileManagerScreen>
               child: Icon(
                 Icons.inventory_2,
                 size: $styles.sizes.prefixIconSize * 4,
-                color: $styles.colors.iconColor1,
+                color: Theme.of(context).colorScheme.tertiary,
               ),
             );
           }

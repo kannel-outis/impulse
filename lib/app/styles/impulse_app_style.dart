@@ -181,7 +181,8 @@ class _Text {
     }
     return style.copyWith(
         fontSize: sizePx,
-        color: color ?? colors.fontColor1,
+        color: color,
+        // color: color ?? colors.fontColor1,
         height: heightPx != null ? (heightPx / sizePx) : style.height,
         letterSpacing:
             spacingPc != null ? sizePx * spacingPc * 0.01 : style.letterSpacing,

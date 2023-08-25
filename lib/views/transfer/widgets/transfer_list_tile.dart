@@ -51,33 +51,38 @@ class TransferListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log(item.name);
     return ItemListenableBuilder(
         listenable: item,
         builder: (context, percentage, state, child) {
-          return Consumer(builder: (context, ref, child) {
-            return GestureDetector(
-              onTap: (mini)
-                  ? null
-                  : () async {
-                      if (item is ReceiveableItem &&
-                          (state.isInProgress || state.isPaused)) {
-                        if (item is ReceiveableItem && !state.isWaiting) {
-                          final downloadManager =
-                              ref.read(downloadManagerProvider.notifier);
-                          if (state.isInProgress) {
-                            downloadManager.pauseCurrentDownload();
-                          } else {
-                            downloadManager.resumeDownload(
-                              item as ReceiveableItem,
-                            );
+          return Consumer(
+            builder: (context, ref, child) {
+              return GestureDetector(
+                onTap: (mini)
+                    ? null
+                    : () async {
+                        if (item is ReceiveableItem &&
+                            (state.isInProgress || state.isPaused)) {
+                          if (item is ReceiveableItem && !state.isWaiting) {
+                            final downloadManager =
+                                ref.read(downloadManagerProvider.notifier);
+                            if (state.isInProgress) {
+                              downloadManager.pauseCurrentDownload();
+                            } else {
+                              downloadManager.resumeDownload(
+                                item as ReceiveableItem,
+                              );
+                            }
                           }
                         }
-                      }
-                    },
-              child: Stack(
-                children: [
-                  LayoutBuilder(builder: (context, constraints) {
+                      },
+                child: child,
+              );
+            },
+            child: Stack(
+              children: [
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    print(state);
                     return Container(
                       height: height,
                       width: constraints.maxWidth * percentage,
@@ -94,161 +99,161 @@ class TransferListTile extends StatelessWidget {
                                 : state.isPaused
                                     ? $styles.colors.folderColor2
                                         .withOpacity(.2)
-                                    : $styles.colors.secondaryColor
+                                    : Theme.of(context)
+                                        .colorScheme
+                                        .primary
                                         .withOpacity(.2),
                         // boxShadow: $styles.shadows.boxShadowSmall,
                       ),
                     );
-                  }),
-                  LayoutBuilder(builder: (context, constraints) {
-                    return Container(
-                      height: height,
-                      width: constraints.maxWidth,
-                      margin: EdgeInsets.only(
-                        bottom: mini ? 0 : $styles.insets.lg,
-                      ),
-                      decoration: const BoxDecoration(
-                        color: Colors.transparent,
-                        // boxShadow: $styles.shadows.boxShadowSmall,
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: tilePadding),
-                        child: Row(
-                          children: [
-                            // Container(
-                            //   height: fileImageSize,
-                            //   width: fileImageSize,
-                            //   decoration: const BoxDecoration(
-                            //     image: DecorationImage(
-                            //       image: AssetImage(
-                            //         AssetsImage.android_icon_placeholder,
-                            //       ),
-                            //       fit: BoxFit.cover,
-                            //     ),
-                            //   ),
-                            // ),
-                            FilePlaceHolder(
-                              ///Some items with [altName] do not contain mime type e.g apps
-                              name: item.filePath,
-                              size: fileImageSize,
-                            ),
-                            SizedBox(width: paddingBtwFileImage),
-                            Expanded(
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      SizedBox(
-                                        width: constraints.maxWidth - _padding,
-                                        child: Text(
-                                          item is ReceiveableItem
-                                              ? (item as ReceiveableItem)
-                                                      .altName ??
-                                                  item.fileName ??
-                                                  item.name
-                                              : item.fileName ?? item.name,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: $styles.text.body,
-                                        ),
+                  },
+                ),
+                LayoutBuilder(builder: (context, constraints) {
+                  return Container(
+                    height: height,
+                    width: constraints.maxWidth,
+                    margin: EdgeInsets.only(
+                      bottom: mini ? 0 : $styles.insets.lg,
+                    ),
+                    decoration: const BoxDecoration(
+                      color: Colors.transparent,
+                      // boxShadow: $styles.shadows.boxShadowSmall,
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: tilePadding),
+                      child: Row(
+                        children: [
+                          // Container(
+                          //   height: fileImageSize,
+                          //   width: fileImageSize,
+                          //   decoration: const BoxDecoration(
+                          //     image: DecorationImage(
+                          //       image: AssetImage(
+                          //         AssetsImage.android_icon_placeholder,
+                          //       ),
+                          //       fit: BoxFit.cover,
+                          //     ),
+                          //   ),
+                          // ),
+                          FilePlaceHolder(
+                            ///Some items with [altName] do not contain mime type e.g apps
+                            name: item.filePath,
+                            size: fileImageSize,
+                          ),
+                          SizedBox(width: paddingBtwFileImage),
+                          Expanded(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: constraints.maxWidth - _padding,
+                                      child: Text(
+                                        item is ReceiveableItem
+                                            ? (item as ReceiveableItem)
+                                                    .altName ??
+                                                item.fileName ??
+                                                item.name
+                                            : item.fileName ?? item.name,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: $styles.text.body,
                                       ),
-                                      SizedBox(
-                                        width: constraints.maxWidth - _padding,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              item.itemSize.sizeToString,
-                                              style: $styles.text.body,
-                                            ),
-                                            if (mBps != null &&
-                                                constraints.maxWidth > 250)
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    right: 10.0),
-                                                child: Text(
-                                                  mBps!,
-                                                  style: $styles.text.body
-                                                      .copyWith(
-                                                    color: Colors.green,
-                                                  ),
-                                                ),
-                                              )
-                                            else
-                                              const SizedBox()
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  if (!state.isCompleted &&
-                                      item is ReceiveableItem &&
-                                      !mini)
-                                    Expanded(
+                                    ),
+                                    SizedBox(
+                                      width: constraints.maxWidth - _padding,
                                       child: Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
-                                          Consumer(
-                                              builder: (context, ref, child) {
-                                            return GestureDetector(
-                                              onTap: () {
-                                                // if (state.isInProgress) {
-                                                //   item.cancel();
-                                                // }
-                                                final receivableProvider =
-                                                    ref.read(receivableListItems
-                                                        .notifier);
-                                                receivableProvider
-                                                    .cancelItemWithId(item
-                                                        as ReceiveableItem);
-                                              },
-                                              child: Container(
-                                                height: 50,
-                                                width: 50,
-                                                decoration: const BoxDecoration(
-                                                  // borderRadius:
-                                                  //     BorderRadius.circular(100),
-                                                  color: Colors.transparent,
-                                                  // border: Border.all(
-                                                  //     color: Colors.red),
-                                                ),
-                                                margin: EdgeInsets.only(
-                                                  right: $styles.insets.sm,
-                                                ),
-                                                child: Center(
-                                                  child: Icon(
-                                                    CupertinoIcons.clear,
-                                                    size: 15.scale,
-                                                    color: $styles
-                                                        .colors.iconColor1,
-                                                  ),
+                                          Text(
+                                            item.itemSize.sizeToString,
+                                            style: $styles.text.body,
+                                          ),
+                                          if (mBps != null &&
+                                              constraints.maxWidth > 250)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  right: 10.0),
+                                              child: Text(
+                                                mBps!,
+                                                style:
+                                                    $styles.text.body.copyWith(
+                                                  color: Colors.green,
                                                 ),
                                               ),
-                                            );
-                                          }),
+                                            )
+                                          else
+                                            const SizedBox()
                                         ],
                                       ),
                                     ),
-                                ],
-                              ),
+                                  ],
+                                ),
+                                if (!state.isCompleted &&
+                                    item is ReceiveableItem &&
+                                    !mini)
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Consumer(
+                                            builder: (context, ref, child) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              // if (state.isInProgress) {
+                                              //   item.cancel();
+                                              // }
+                                              final receivableProvider =
+                                                  ref.read(receivableListItems
+                                                      .notifier);
+                                              receivableProvider
+                                                  .cancelItemWithId(
+                                                      item as ReceiveableItem);
+                                            },
+                                            child: Container(
+                                              height: 50,
+                                              width: 50,
+                                              decoration: const BoxDecoration(
+                                                // borderRadius:
+                                                //     BorderRadius.circular(100),
+                                                color: Colors.transparent,
+                                                // border: Border.all(
+                                                //     color: Colors.red),
+                                              ),
+                                              margin: EdgeInsets.only(
+                                                right: $styles.insets.sm,
+                                              ),
+                                              child: Center(
+                                                child: Icon(
+                                                  CupertinoIcons.clear,
+                                                  size: 15.scale,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .tertiary,
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        }),
+                                      ],
+                                    ),
+                                  ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    );
-                  }),
-                ],
-              ),
-            );
-          });
+                    ),
+                  );
+                }),
+              ],
+            ),
+          );
         });
   }
 }

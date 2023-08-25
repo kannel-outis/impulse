@@ -282,13 +282,13 @@ class TabWidget extends StatelessWidget {
             width: 20,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular($styles.corners.xxlg),
-                color: $styles.colors.fontColor1),
+                color: Theme.of(context).colorScheme.tertiary),
             child: Center(
               child: Text(
                 "${items.where((element) => !element.state.isCompleted).toList().length}",
                 style: $styles.text.bodySmall.copyWith(
                   height: 1.5,
-                  color: $styles.colors.accentColor1,
+                  color: Theme.of(context).colorScheme.background,
                 ),
               ),
             ),

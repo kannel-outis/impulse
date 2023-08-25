@@ -99,8 +99,9 @@ class _TopStackState extends ConsumerState<TopStack>
                 height: 20,
                 width: 20,
                 theme: SvgTheme(
-                  currentColor:
-                      isConnected ? Colors.green : $styles.colors.iconColor3,
+                  currentColor: isConnected
+                      ? Colors.green
+                      : Theme.of(context).colorScheme.tertiary,
                 ),
               ),
             ),
@@ -169,7 +170,7 @@ class _ConnectionInfoState extends ConsumerState<ConnectionInfo>
                     theme: SvgTheme(
                       currentColor: isConnected
                           ? Colors.green
-                          : $styles.colors.iconColor3,
+                          : Theme.of(context).colorScheme.tertiary,
                     ),
                   );
                 }),

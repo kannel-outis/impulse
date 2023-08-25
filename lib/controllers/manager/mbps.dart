@@ -9,8 +9,7 @@ class MBps extends StateNotifier<(int mBps, Item? currentItem)> {
   int _previouseReceivedByte = 0;
   int previousMBps = 0;
 
-  final Debouncer _debouncer =
-      Debouncer(duration: const Duration(seconds: 1), function: () {});
+  final Debouncer _debouncer = Debouncer(duration: const Duration(seconds: 1));
 
   void mbps(now, received, totalSize, file, reason, state) {
     _debouncer.debounce(

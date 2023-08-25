@@ -108,7 +108,7 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
               child: Icon(
                 Icons.inventory_2,
                 size: $styles.sizes.prefixIconSize * 4,
-                color: $styles.colors.iconColor1,
+                color: Theme.of(context).colorScheme.tertiary,
               ),
             );
           }
@@ -160,8 +160,10 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
                                   .insetsTopBottom,
                               child: Divider(
                                 thickness: .5,
-                                color:
-                                    $styles.colors.fontColor1.withOpacity(.2),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .tertiary
+                                    .withOpacity(.2),
                               ),
                             ),
                             Consumer(

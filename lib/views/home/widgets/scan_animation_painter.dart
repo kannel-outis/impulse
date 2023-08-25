@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-import 'package:impulse/app/app.dart';
-
 class ScanCustomPainter extends CustomPainter {
   final int circles;
   final AnimationController _animationController;
+  final Color scanColor;
   //position to place the middle of the circle in the animation
   final double setPosition;
 
@@ -13,6 +12,7 @@ class ScanCustomPainter extends CustomPainter {
     this._animationController, {
     this.circles = 20,
     this.setPosition = 0.0,
+    required this.scanColor,
   });
   @override
   void paint(Canvas canvas, Size size) {
@@ -28,7 +28,7 @@ class ScanCustomPainter extends CustomPainter {
     for (var i = 0; i < circles; i++) {
       final double opacity =
           (1.0 - ((_animationController.value + i) / 4.0)).clamp(0.0, 1.0);
-      paint.color = $styles.colors.secondaryColor.withOpacity(opacity);
+      paint.color = scanColor.withOpacity(opacity);
       canvas.drawCircle(
           offset,
           math.sqrt((dx * dx) / 2 * (_animationController.value + i) / 2),
