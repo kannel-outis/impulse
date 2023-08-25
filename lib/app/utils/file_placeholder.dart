@@ -30,9 +30,7 @@ class FilePlaceHolder extends StatelessWidget {
       }
     }
 
-    ///Apparently, .ISO is also an image
-
-    if (_("image") && !_("application")) {
+    if (_("image")) {
       return _buildPlaceholder(AssetsImage.pic_placeholder);
     } else if (_("video")) {
       return _buildPlaceholder(AssetsImage.mp4_placeholder);

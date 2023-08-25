@@ -16,13 +16,11 @@ final serverControllerProvider =
   final alert = ref.watch(alertStateNotifier.notifier);
   final connectedUser = ref.watch(connectUserStateProvider.notifier);
   final shareableProvider = ref.read(shareableItemsProvider.notifier);
-  final uploadManager = ref.watch(uploadManagerProvider.notifier);
   return ServerController(
     alertState: alert,
     connectedUserState: connectedUser,
     hiveManager: HiveManagerImpl(),
     shareableItemsProvider: shareableProvider,
-    uploadManagerController: uploadManager,
   );
 });
 
@@ -31,21 +29,19 @@ class ServerController extends ServerManager with ChangeNotifier {
   final ConnectedUserState connectedUserState;
   final HiveManager hiveManager;
   final ShareableItemsProvider shareableItemsProvider;
-  final UploadManager uploadManagerController;
 
   ServerController({
     required this.alertState,
     required this.connectedUserState,
     required this.hiveManager,
     required this.shareableItemsProvider,
-    required this.uploadManagerController,
   });
 
   Completer<bool> alertResponder = Completer<bool>();
   final StreamController<Map<String, dynamic>> _receivableStreamController =
       StreamController<Map<String, dynamic>>();
   Timer? _timer;
-  // List<Item> _items = [];
+  List<Item> _items = [];
 
   /////
   /// The Senders/Hosts ip address and port that needs to be set after server creation
@@ -67,14 +63,14 @@ class ServerController extends ServerManager with ChangeNotifier {
 
   ///This is called everytime we select an file or item
   ///cleed from [SelectedItems] provider
-  // @override
-  // void setSelectedItems(List<Item> items) {
-  //   _items = items;
-  // }
+  @override
+  void setSelectedItems(List<Item> items) {
+    _items = items;
+  }
 
   @override
   List<Item> getSelectedItems() {
-    return uploadManagerController.uploads;
+    return _items;
   }
 
   // @override
@@ -153,8 +149,7 @@ class ServerController extends ServerManager with ChangeNotifier {
 
   @override
   void removeCanceledItem(String id) {
-    // _items.removeWhere((element) => element.id == id);
-    uploadManagerController.removeWhere(id);
+    _items.removeWhere((element) => element.id == id);
     shareableItemsProvider.cancelItemWithId(id);
   }
 
@@ -205,10 +200,6 @@ class ServerController extends ServerManager with ChangeNotifier {
   void addSharableToList(Map<String, dynamic> shareableMap) {
     final shareableItem = ShareableItem.fromMap(shareableMap);
     shareableItemsProvider.addAllItems([shareableItem]);
-    ///TODO: move into shareableItemsProvider
-    uploadManagerController.addToQueue([shareableItem]);
+    _items.add(shareableItem);
   }
-
-  @override
-  ServiceUploadManager get uploadManager => uploadManagerController;
 }

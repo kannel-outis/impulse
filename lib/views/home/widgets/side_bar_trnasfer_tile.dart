@@ -23,31 +23,20 @@ class _SideBarProgressTileState extends ConsumerState<SideBarProgressTile> {
         if (connectionState == ConnectionState.connected) {
           return Consumer(
             builder: (context, ref, child) {
+              final shareable = ref.watch(shareableItemsProvider);
               final downloadManager = ref.watch(downloadManagerProvider);
-              final uploadManager = ref.watch(uploadManagerProvider);
-              /* 
-                  ! This needs to be here to start listening to the provider
-                  ! it serves as the first listener to the receivableItems after a connection has been established
-                  ! This makes sure the listener that listens to the receivable stream controller is triggered
-                  ! that way, it can automatically start downloading the items
-              */
-              ref.read(receivableListItems);
-              if (downloadManager.$2 != null &&
-                  downloadManager.$2!.state.isInProgress) {
+
+              ref.watch(receivableListItems);
+              if (downloadManager.$2 != null) {
                 return TransferListTile(
                   item: downloadManager.$2!,
                   mini: true,
                   mBps: ImpulseFileSize(downloadManager.$1).sizeToString,
                   height: 70,
                 );
-              } else if (uploadManager.$2 != null) {
-                return TransferListTile(
-                  item: uploadManager.$2!,
-                  mini: true,
-                  mBps: ImpulseFileSize(uploadManager.$1).sizeToString,
-                  height: 70,
-                );
-              } else {
+              }
+
+              if (shareable.isEmpty) {
                 return Container(
                   height: 70,
                   width: double.infinity,
@@ -71,27 +60,24 @@ class _SideBarProgressTileState extends ConsumerState<SideBarProgressTile> {
                   ),
                 );
               }
-              // final inProgressItemsWidget = shareable
-              //     .where(
-              //         (element) => element.state.isInProgress)
-              //     .toList()
-              //     .map(
-              //       (e) => TransferListTile(
-              //         height: widget
-              //             .miniPlayerController.minHeight,
-              //         mini: true,
-              //         item: e,
-              //       ),
-              //     )
-              //     .toList();
-              // return inProgressItemsWidget.isEmpty
-              //     ? TransferListTile(
-              //         item: shareable.last,
-              //         mini: true,
-              //         height: widget
-              //             .miniPlayerController.minHeight,
-              //       )
-              //     : inProgressItemsWidget.first;
+              final inProgressItemsWidget = shareable
+                  .where((element) => element.state.isInProgress)
+                  .toList()
+                  .map(
+                    (e) => TransferListTile(
+                      height: 70,
+                      mini: true,
+                      item: e,
+                    ),
+                  )
+                  .toList();
+              return inProgressItemsWidget.isEmpty
+                  ? TransferListTile(
+                      item: shareable.last,
+                      mini: true,
+                      height: 70,
+                    )
+                  : inProgressItemsWidget.first;
             },
           );
         } else {
