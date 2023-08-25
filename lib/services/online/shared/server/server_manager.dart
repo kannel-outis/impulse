@@ -5,11 +5,14 @@ import 'package:impulse/models/server_info.dart';
 import 'package:impulse/services/services.dart';
 
 abstract class ServerManager {
+  ///upload manager for
+  ServiceUploadManager get uploadManager;
+
   ///This servers information
   ServerInfo get myServerInfo;
 
   ///set selected shareableitems
-  void setSelectedItems(List<Item> items);
+  // void setSelectedItems(List<Item> items);
 
   ///get selected shareableitems
   List<Item> getSelectedItems();

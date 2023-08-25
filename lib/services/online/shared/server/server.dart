@@ -232,6 +232,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
     ///if fpund retreive the item with the id
     final item = items.single;
+    serverManager.uploadManager.setCurrentUpload(item);
 
     ///Check if the file with that id exists on the device,
     ///if it does proceed to open the file and make it downloadable
@@ -262,15 +263,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       await httpRequest.response.addStream(fileStream.map((event) {
         bytesDownloadedByClient += event.length;
 
-        // final percentage =
-        //     (bytesDownloadedByClient / item.file.lengthSync()) * 100;
-        // log("${item.fileName}: $percentage");
-        // item.onProgressCallback?.call(
-        // bytesDownloadedByClient,
-        // item.file.lengthSync(),
-        // IState.inProgress,
-        // );
-
+        ///Calling notyfyListeners() and notifying every listener
         (item as ShareableItem).updateProgress(
           bytesDownloadedByClient,
           fileSize,
@@ -278,28 +271,19 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         );
         return event;
       }));
-      // await httpRequest.response.addStream(item.file.openRead());
-
-      // item.onProgressCallback?.call(
-      //   bytesDownloadedByClient,
-      //   item.file.lengthSync(),
-      //   IState.completed,
-      // );
 
       (item as ShareableItem).updateProgress(
         bytesDownloadedByClient,
         item.file.lengthSync(),
         bytesDownloadedByClient != fileSize ? IState.paused : IState.completed,
       );
-      // await response.flush();
+      serverManager.uploadManager.onCurrentUploadComplete();
       httpRequest.response.close();
 
       ///remove listener
       item.removeListener(listener);
       item.startTime = null;
       item.dispose();
-      // fileStream = null;
-      // print("Done");
     } else {
       httpRequest.response.write(
         json.encode(

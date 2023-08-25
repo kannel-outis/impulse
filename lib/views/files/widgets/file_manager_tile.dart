@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart' hide Path;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -50,7 +48,7 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
         height: 70,
         width: double.infinity,
         color: Colors.transparent,
-        margin: $styles.insets.sm.insetsBottom,
+        // margin: $styles.insets.sm.insetsBottom,
         child: Row(
           children: [
             _getPreffix(widget.item),
@@ -98,14 +96,17 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      // width: _itemTileWidth(padding: leftItemPadding * 4),
-                      child: Text(
-                        widget.item.name,
-                        overflow: TextOverflow.ellipsis,
-                        style: $styles.text.body,
-                      ),
-                    ),
+                    LayoutBuilder(builder: (context, constraints) {
+                      return SizedBox(
+                        // width: _itemTileWidth(padding: leftItemPadding * 4),
+                        width: constraints.maxWidth - 40,
+                        child: Text(
+                          widget.item.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: $styles.text.body,
+                        ),
+                      );
+                    }),
                     Text(
                       widget.item.isFolder
                           ? widget.item.fileSystemEntity
