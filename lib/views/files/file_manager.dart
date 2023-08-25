@@ -96,25 +96,24 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
         return true;
       },
       child: FutureBuilder<List<ImpulseFileEntity>>(
-        future: _init_(dir),
-        builder: (context, snapshot) {
-          if (snapshot.hasData == false) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (snapshot.data!.isEmpty) {
-            return Center(
-              child: Icon(
-                Icons.inventory_2,
-                size: $styles.sizes.prefixIconSize * 4,
-                color: $styles.colors.iconColor1,
-              ),
-            );
-          }
-          return PaddedBody(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
+          future: _init_(dir),
+          builder: (context, snapshot) {
+            if (snapshot.hasData == false) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (snapshot.data!.isEmpty) {
+              return Center(
+                child: Icon(
+                  Icons.inventory_2,
+                  size: $styles.sizes.prefixIconSize * 4,
+                  color: $styles.colors.iconColor1,
+                ),
+              );
+            }
+            return PaddedBody(
+              child: LayoutBuilder(builder: (context, constraints) {
                 return Column(
                   children: [
                     AnimatedSwitcher(
@@ -128,14 +127,11 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
                             child: child,
                           );
                         },
-                        child: ListView.separated(
+                        child: ListView.builder(
                           itemCount: files.length,
                           physics: isAndroid && widget.path == null
                               ? const NeverScrollableScrollPhysics()
                               : null,
-                          separatorBuilder: (context, index) {
-                            return SizedBox(height: $styles.insets.sm);
-                          },
                           itemBuilder: (context, index) {
                             final item = files[index];
                             return SelectableItemWidget(
@@ -218,11 +214,9 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
                       ),
                   ],
                 );
-              },
-            ),
-          );
-        },
-      ),
+              }),
+            );
+          }),
     );
   }
 

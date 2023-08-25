@@ -14,7 +14,6 @@ export 'online/shared/server/gateway.dart';
 export 'online/shared/server/server.dart';
 export 'online/shared/server/server_manager.dart';
 export 'online/shared/transfer/item.dart';
-export 'online/shared/transfer/upload_manager.dart';
 export 'online/shared/transfer/receiveable_item.dart';
 export 'online/shared/transfer/shareable_item.dart';
 export 'online/shared/transfer/state_listenable.dart';

@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart' hide Path;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -5,7 +6,6 @@ import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/models.dart';
 import 'package:impulse/services/services.dart';
-import 'package:impulse/views/shared/hover.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 import 'package:uuid/uuid.dart';
 
@@ -30,9 +30,13 @@ class _NetworkFileManagerTileState
   double get leftItemPadding => 15;
   @override
   Widget build(BuildContext context) {
-    return Hover(
-      onHover: (hover) {
-        _onHover = hover;
+    return MouseRegion(
+      onEnter: (event) {
+        _onHover = true;
+        setState(() {});
+      },
+      onExit: (event) {
+        _onHover = false;
         setState(() {});
       },
       cursor: !widget.item.isFolder

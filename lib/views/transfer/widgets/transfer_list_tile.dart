@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -51,7 +49,6 @@ class TransferListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log(item.name);
     return ItemListenableBuilder(
         listenable: item,
         builder: (context, percentage, state, child) {
@@ -128,8 +125,7 @@ class TransferListTile extends StatelessWidget {
                             //   ),
                             // ),
                             FilePlaceHolder(
-                              ///Some items with [altName] do not contain mime type e.g apps
-                              name: item.filePath,
+                              name: item.name,
                               size: fileImageSize,
                             ),
                             SizedBox(width: paddingBtwFileImage),
