@@ -51,7 +51,6 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
   ///This is mostly to remove duplicates from the list of shared items
   ///These items are them converted to a map and sent to the receiver to initiate download.
   ref.read(shareableItemsProvider.notifier).addAllItems(files);
-  ref.read(uploadManagerProvider.notifier).addToQueue(files);
   final shareableFiles = ref
       .read(shareableItemsProvider.notifier)
       .filteredList
@@ -77,8 +76,6 @@ Future<void> disconnect(GenericProviderRef ref) async {
   //clear all lists
   ref.read(shareableItemsProvider.notifier).clear();
   ref.read(selectedItemsProvider.notifier).clear();
-  ref.read(uploadManagerProvider.notifier).clear();
-
 
   //is user was a client, close server
   if (ref.read(userTypeProvider) != UserType.host) {
@@ -96,5 +93,5 @@ Future<void> disconnect(GenericProviderRef ref) async {
     ref.read(serverControllerProvider).ipAddress = null;
   }
   //remove all server list for shareable items
-  // ref.read(serverControllerProvider).setSelectedItems([]);
+  ref.read(serverControllerProvider).setSelectedItems([]);
 }

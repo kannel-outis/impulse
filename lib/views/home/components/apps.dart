@@ -51,7 +51,6 @@ class _AppsPageState extends ConsumerState<AppsPage>
             return SelectableItemWidget(
               app: list[index],
               isSelectable: true,
-              alignment: Alignment.topRight,
               child: AppItem(
                 app: list[index],
               ),
