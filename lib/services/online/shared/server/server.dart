@@ -283,7 +283,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       ///remove listener
       item.removeListener(listener);
       item.startTime = null;
-      item.dispose();
     } else {
       httpRequest.response.write(
         json.encode(
