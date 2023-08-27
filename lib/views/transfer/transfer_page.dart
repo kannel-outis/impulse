@@ -199,10 +199,13 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                                     height:
                                         widget.miniPlayerController.minHeight,
                                     width: double.infinity,
-                                    decoration: const BoxDecoration(
+                                    decoration: BoxDecoration(
                                       border: Border(
                                         top: BorderSide(
-                                          color: Colors.white,
+                                          color: Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
                                           width: .5,
                                         ),
                                         // bottom: BorderSide(
@@ -282,13 +285,13 @@ class TabWidget extends StatelessWidget {
             width: 20,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular($styles.corners.xxlg),
-                color: Theme.of(context).colorScheme.tertiary),
+                color: Theme.of(context).colorScheme.surface),
             child: Center(
               child: Text(
                 "${items.where((element) => !element.state.isCompleted).toList().length}",
                 style: $styles.text.bodySmall.copyWith(
                   height: 1.5,
-                  color: Theme.of(context).colorScheme.background,
+                  color: Theme.of(context).colorScheme.tertiary,
                 ),
               ),
             ),

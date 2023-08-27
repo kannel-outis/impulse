@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
+import 'package:impulse/main.dart';
 import 'package:impulse/models/models.dart';
-import 'package:impulse/services/offline/hive/hive_init.dart';
 import 'package:impulse/services/services.dart';
 import 'package:impulse_utils/impulse_utils.dart';
-import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Configurations {
@@ -69,4 +69,7 @@ class Configurations {
     loadUser();
     // composition = await AssetLottie("assets/lottie/waiting.json").load();
   }
+
+  static Impulse of(BuildContext context) =>
+      context.findAncestorWidgetOfExactType<Impulse>()!;
 }

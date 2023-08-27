@@ -15,14 +15,25 @@ void main() async {
   runApp(
     UncontrolledProviderScope(
       container: container,
-      child: const Impulse(),
+      child: Impulse(),
     ),
   );
 }
 
-class Impulse extends StatelessWidget {
-  const Impulse({super.key});
+class Impulse extends StatefulWidget {
+  // ignore: prefer_const_constructors_in_immutables
+  Impulse({super.key});
 
+  // ignore: library_private_types_in_public_api
+  late final _ImpulseState state;
+
+  @override
+  // ignore: no_logic_in_create_state
+  State<Impulse> createState() => state = _ImpulseState();
+}
+
+class _ImpulseState extends State<Impulse> {
+  ThemeMode _themeMode = ThemeMode.dark;
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
@@ -30,12 +41,24 @@ class Impulse extends StatelessWidget {
       routeInformationParser: ImpulseRouter.router.routeInformationParser,
       debugShowCheckedModeBanner: false,
       routerDelegate: ImpulseRouter.router.routerDelegate,
-      theme: ThemeData(
-        fontFamily: $styles.text.body.fontFamily,
-        useMaterial3: true,
-        brightness: Brightness.dark,
-      ),
+      theme: $styles.colors.themeLight,
+      darkTheme: $styles.colors.theme,
+      themeMode: _themeMode,
       // builder: (context, child) => child!,
     );
+  }
+
+  void toggleThemeMode([ThemeMode? themeMode]) {
+    if (themeMode != null) {
+      _themeMode = themeMode;
+      setState(() {});
+      return;
+    }
+    if (_themeMode == ThemeMode.light) {
+      _themeMode = ThemeMode.dark;
+    } else {
+      _themeMode = ThemeMode.light;
+    }
+    setState(() {});
   }
 }

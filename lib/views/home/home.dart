@@ -73,7 +73,6 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        print("object");
         final miniPlayerControllerP = ref.read(miniPlayerController);
         if (miniPlayerControllerP.isClosed == false) {
           miniPlayerControllerP.closeMiniPlayer();
@@ -190,9 +189,12 @@ class _HomePageState extends ConsumerState<HomePage>
                                     /// This particular icon is not aligned properly
                                     /// it had to be manually done
                                     alignment: const Alignment(0.0, .2),
-                                    child: const Icon(
+                                    child: Icon(
                                       ImpulseIcons.transfer5,
                                       size: 30,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary,
                                     ),
                                   ),
                                   if (hostController.host.isServerRunning ||
@@ -204,7 +206,10 @@ class _HomePageState extends ConsumerState<HomePage>
                                       decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(100),
-                                        color: Colors.black.withOpacity(.5),
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .surface
+                                            .withOpacity(.5),
                                       ),
                                     ),
                                 ],
@@ -267,6 +272,8 @@ class _HomePageState extends ConsumerState<HomePage>
   }
 
   void onChanged(int index) {
+    if (index == widget.navigationShell.currentIndex) return;
+
     widget.navigationShell.goBranch(
       index,
       initialLocation: index == widget.navigationShell.currentIndex,

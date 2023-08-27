@@ -107,7 +107,10 @@ class _CustomHostBottomModalSheetState
                           $styles.constraints.modalConstraints.maxHeight * .6,
                       width:
                           $styles.constraints.modalConstraints.maxHeight * .6,
-                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                      backgroundColor:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
                       color: Theme.of(context).brightness == Brightness.dark
                           ? Colors.black
                           : Colors.white,

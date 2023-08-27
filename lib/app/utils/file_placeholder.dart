@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
 import 'package:mime/mime.dart';

@@ -54,8 +54,8 @@ class _FullTransferPageState extends ConsumerState<FullTransferPage>
                     ),
                     splashFactory: NoSplash.splashFactory,
                     overlayColor: MaterialStateProperty.all(Colors.transparent),
-                    indicatorColor: Theme.of(context).colorScheme.tertiary,
-                    labelColor: Theme.of(context).colorScheme.tertiary,
+                    indicatorColor: Theme.of(context).colorScheme.secondary,
+                    labelColor: Theme.of(context).colorScheme.secondary,
                     indicatorWeight: 2,
                     padding: EdgeInsets.zero,
                     tabs: [

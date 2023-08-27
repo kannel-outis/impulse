@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:impulse/app/app.dart';
 
 import 'transfer_painter.dart';
 

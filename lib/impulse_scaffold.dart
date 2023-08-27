@@ -23,12 +23,9 @@ class ImpulseScaffold extends StatelessWidget {
       showOverlay: showOverlay,
       child: KeyedSubtree(
         key: ValueKey($styles.scale),
-        child: Theme(
-          data: $styles.colors.theme,
-          child: DefaultTextStyle(
-            style: $styles.text.body,
-            child: child,
-          ),
+        child: DefaultTextStyle(
+          style: $styles.text.body,
+          child: child,
         ),
       ),
     );

@@ -45,7 +45,7 @@ class _SideBarState extends ConsumerState<SideBar> {
     ///connected to each other.
     ///
     ///
-    while (GoRouter.of(context).location.contains("files") &&
+    while (GoRouter.of(context).location.contains(ImpulseRouter.routes.folder) &&
         GoRouter.of(context).location != ImpulseRouter.routes.folder) {
       ref
           .read(pathController.notifier)
@@ -101,10 +101,9 @@ class _SideBarState extends ConsumerState<SideBar> {
                         width: double.infinity,
                         color: Theme.of(context).hoverColor,
                         child: Center(
-                          child: Icon(
-                            CupertinoIcons.add,
-                            size: 20.scale,
-                          ),
+                          child: Icon(CupertinoIcons.add,
+                              size: 20.scale,
+                              color: Theme.of(context).colorScheme.tertiary),
                         ),
                       ),
                     ),
@@ -168,6 +167,9 @@ class _SideBarState extends ConsumerState<SideBar> {
                                         i == widget.navigationShell.currentIndex
                                             ? bars.values.toList()[i].$2
                                             : bars.values.toList()[i].$1,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .tertiary,
                                       ),
                                       SizedBox(width: $styles.insets.sm),
                                       Text(

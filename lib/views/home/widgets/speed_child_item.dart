@@ -55,6 +55,7 @@ class SpeedChild extends StatelessWidget {
             child: Icon(
               icon,
               size: 20 + additionalIconSize,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
         ),

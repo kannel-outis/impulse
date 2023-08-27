@@ -172,7 +172,7 @@ class _SetInfoPageState extends State<SetInfoPage> {
                   decoration: InputDecoration(
                     hintText: "Enter Alias",
                     hintStyle: $styles.text.h3.copyWith(
-                      color: $styles.colors.fontColor2,
+                      color: Theme.of(context).colorScheme.surfaceTint,
                     ),
                     border: InputBorder.none,
                     // enabledBorder: UnderlineInputBorder(

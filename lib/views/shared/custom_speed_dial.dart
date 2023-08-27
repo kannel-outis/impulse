@@ -86,6 +86,7 @@ class _CustomSpeedDialState extends State<CustomSpeedDial>
 
   @override
   void dispose() {
+    _overlayEntry?.remove();
     _animationController.dispose();
     super.dispose();
   }

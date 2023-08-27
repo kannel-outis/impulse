@@ -117,7 +117,7 @@ class ImpulseRouter {
                         },
                       ),
                       ImpulseRoute(
-                        path: "files/:username/:path",
+                        path: "${routes.namedFolder}/:username/:path",
                         name: "NetworkfilesPath",
                         builder: (s) {
                           return NetworkFileManagerScreen(
@@ -161,6 +161,7 @@ class _Routes {
 
   ////
   final String folder = "/folder";
+  final String namedFolder = "files";
   final String settings = "/settings";
   final String setInfo = "/setInfo";
   final String scanPage = "/scanPage";

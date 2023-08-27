@@ -54,6 +54,10 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                       SizedBox(width: $styles.insets.md),
                       GestureDetector(
                         onTap: () async {
+                          Configurations.of(context)
+                              .state
+                              .toggleThemeMode();
+                          return;
                           final genericRef = GenericProviderRef<WidgetRef>(ref);
 
                           await share(genericRef);
@@ -63,7 +67,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                             height: 40.scale,
                             width: 40.scale,
                             decoration: BoxDecoration(
-                              color: $styles.colors.fontColor2,
+                              color: Theme.of(context).colorScheme.surfaceTint,
                               borderRadius:
                                   BorderRadius.circular($styles.corners.xxlg),
                               image: DecorationImage(
