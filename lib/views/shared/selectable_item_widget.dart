@@ -49,50 +49,22 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
     });
   }
 
-  void _onLongPress(WidgetRef ref) {
-    final selectingItemPRovider = ref.read(selectingItemStateProvider);
-    final selectedItems = ref.read(selectedItemsProvider.notifier);
-
-    ///if Already in selecting mode, cancel
-    if (widget.isSelectable == false) return;
-    if (selectingItemPRovider.isSelectingApp) return;
-
-    /// enter selecting mode
-    /// and add the first item
-    selectingItemPRovider.isSelectingApp = true;
-    selectedItems.addSelected(
-      path: widget.app?.appPath,
-      file: widget.file,
-      altName: widget.app?.appName,
-    );
-    _isSelected = true;
-    setState(() {});
-  }
-
-  void _onTap(WidgetRef ref, bool value) {
-    final selectingItemPRovider = ref.read(selectingItemStateProvider);
-    final selectedItems = ref.read(selectedItemsProvider.notifier);
-    if (widget.isSelectable == false) return;
-    if (selectingItemPRovider.isSelectingApp) {
-      ///Adds to selected apps or remove app if already added
-      if (value) {
-        selectedItems.addSelected(
-          path: widget.app?.appPath,
-          file: widget.file,
-          altName: widget.app?.appName,
-        );
-      } else {
-        selectedItems.removeSelected(
-          path: widget.app?.appPath,
-          file: widget.file,
-        );
-      }
-      _isSelected = value;
-      setState(() {});
-    }
-  }
-
   double _height = 0;
+
+  @override
+  void didUpdateWidget(covariant SelectableItemWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (ref
+          .read(selectedItemsProvider.notifier)
+          .items
+          .map((e) => e.filePath)
+          .contains(widget.file!.path)) {
+        _isSelected = true;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +120,8 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
                               alignment: widget.alignment,
                               child: Checkbox(
                                 value: _isSelected,
-                                checkColor: Colors.black,
+                                checkColor:
+                                    Theme.of(context).colorScheme.surface,
                                 side: BorderSide(
                                   color: Theme.of(context)
                                       .textTheme
@@ -189,5 +162,48 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
         ),
       ),
     );
+  }
+
+  void _onLongPress(WidgetRef ref) {
+    final selectingItemPRovider = ref.read(selectingItemStateProvider);
+    final selectedItems = ref.read(selectedItemsProvider.notifier);
+
+    ///if Already in selecting mode, cancel
+    if (widget.isSelectable == false) return;
+    if (selectingItemPRovider.isSelectingApp) return;
+
+    /// enter selecting mode
+    /// and add the first item
+    selectingItemPRovider.isSelectingApp = true;
+    selectedItems.addSelected(
+      path: widget.app?.appPath,
+      file: widget.file,
+      altName: widget.app?.appName,
+    );
+    _isSelected = true;
+    setState(() {});
+  }
+
+  void _onTap(WidgetRef ref, bool value) {
+    final selectingItemPRovider = ref.read(selectingItemStateProvider);
+    final selectedItems = ref.read(selectedItemsProvider.notifier);
+    if (widget.isSelectable == false) return;
+    if (selectingItemPRovider.isSelectingApp) {
+      ///Adds to selected apps or remove app if already added
+      if (value) {
+        selectedItems.addSelected(
+          path: widget.app?.appPath,
+          file: widget.file,
+          altName: widget.app?.appName,
+        );
+      } else {
+        selectedItems.removeSelected(
+          path: widget.app?.appPath,
+          file: widget.file,
+        );
+      }
+      _isSelected = value;
+      setState(() {});
+    }
   }
 }

@@ -82,6 +82,8 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
     }
   }
 
+  List<bool> get selectedItems => List.generate(files.length, (index) => false);
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -108,7 +110,7 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
               child: Icon(
                 Icons.inventory_2,
                 size: $styles.sizes.prefixIconSize * 4,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: Theme.of(context).colorScheme.onTertiary,
               ),
             );
           }
@@ -117,13 +119,35 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
               builder: (context, constraints) {
                 return Column(
                   children: [
+                    GestureDetector(
+                      onTap: () {
+                        final selectedItems =
+                            ref.read(selectedItemsProvider.notifier);
+                        for (var file in files) {
+                          if (file.isFolder) {
+                          } else {
+                            selectedItems.addSelected(
+                              // path: file?.appPath,
+                              file: file.fileSystemEntity as File,
+                              // altName: widget.app?.appName,
+                            );
+                          }
+                        }
+                        setState(() {});
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        color: Colors.white,
+                      ),
+                    ),
                     AnimatedSwitcher(
                       duration: $styles.times.med,
                       child: Consumer(
                         builder: (context, ref, child) {
                           return SizedBox(
                             ///if path is null, that means we are at the root
-                            height: _getHeight(ref, constraints),
+                            height: _getHeight(ref, constraints) - 50,
                             width: constraints.maxWidth,
                             child: child,
                           );
