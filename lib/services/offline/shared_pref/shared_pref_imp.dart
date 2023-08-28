@@ -7,6 +7,7 @@ class ImpulseSharedPrefImpl implements ImpulseSharedPref {
   ImpulseSharedPrefImpl._();
 
   static const String _userShared = "user";
+  static const String _themeMode = "theme";
 
   static late final SharedPreferences _preferences;
 
@@ -34,5 +35,19 @@ class ImpulseSharedPrefImpl implements ImpulseSharedPref {
     final result = await _preferences.setString(_userShared, value);
     _preferences.reload();
     return result;
+  }
+
+  @override
+  String? getThemeMode() {
+    final value = _preferences.getString(_themeMode);
+    if (value != null) return json.decode(value);
+    return null;
+  }
+
+  @override
+  Future<void> setThemeMode(String theme) async {
+    final value = json.encode(theme);
+    await _preferences.setString(_themeMode, value);
+    _preferences.reload();
   }
 }

@@ -33,7 +33,6 @@ dependencies:
   dartz: ^0.10.1
   dio: ^5.2.1+1
   equatable: ^2.0.5
-  feather_icons: ^1.2.0
   file_picker: ^5.3.3
   flutter:
     sdk: flutter
@@ -46,11 +45,10 @@ dependencies:
   impulse_utils:
     git:
       url: https://github.com/kannel-outis/impulse_utils.git
-      # ref: fc7b1d7b41fa26055f240b17656d31beeed09886
-  lottie: ^2.4.0
   mime: ^1.0.4
   path_drawing: ^1.0.1
   path_provider: ^2.0.15
+  permission_handler: ^10.4.3
   qr_code_scanner: ^1.0.1
   riverpod: ^2.3.6
   shared_preferences: ^2.2.0
@@ -110,11 +108,9 @@ flutter:
     - family: transfer
       fonts:
         - asset: assets/fonts/icons/transfer_icons.ttf
-  #         weight: 700
-  
+    #         weight: 700
     - family: transfer2
       fonts:
         - asset: assets/fonts/icons/transfer_2.ttf
-  #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

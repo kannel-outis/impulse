@@ -33,7 +33,18 @@ class Impulse extends StatefulWidget {
 }
 
 class _ImpulseState extends State<Impulse> {
-  ThemeMode _themeMode = ThemeMode.dark;
+  ThemeMode _themeMode = ThemeMode.light;
+
+  ThemeMode get themeMode => _themeMode;
+
+  @override
+  void initState() {
+    super.initState();
+    if (mounted) {
+      _themeMode = Configurations.instance.themeMode ?? _themeMode;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(

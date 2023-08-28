@@ -13,6 +13,7 @@ class SelectableItemWidget extends ConsumerStatefulWidget {
   final Widget child;
   final bool isSelectable;
   final Alignment alignment;
+  final Function(bool)? onChanged;
   const SelectableItemWidget({
     super.key,
     this.app,
@@ -20,6 +21,7 @@ class SelectableItemWidget extends ConsumerStatefulWidget {
     this.alignment = const Alignment(.95, 0.0),
     this.isSelectable = false,
     required this.child,
+    this.onChanged,
   });
 
   @override
@@ -44,6 +46,7 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
             .map((e) => e.filePath)
             .contains(widget.file!.path)) {
           _isSelected = true;
+          setState(() {});
         }
       }
     });
@@ -56,6 +59,7 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
     super.didUpdateWidget(oldWidget);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (widget.file == null) return;
       if (ref
           .read(selectedItemsProvider.notifier)
           .items
@@ -181,6 +185,7 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
       altName: widget.app?.appName,
     );
     _isSelected = true;
+    widget.onChanged?.call(_isSelected);
     setState(() {});
   }
 
@@ -203,6 +208,8 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
         );
       }
       _isSelected = value;
+      widget.onChanged?.call(_isSelected);
+
       setState(() {});
     }
   }

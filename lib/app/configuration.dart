@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:impulse/app/app.dart';
 import 'package:impulse/main.dart';
 import 'package:impulse/models/models.dart';
 import 'package:impulse/services/services.dart';
@@ -62,11 +63,19 @@ class Configurations {
         : User.fromMap(ImpulseSharedPrefImpl.instance.getUserInfo()!);
   }
 
+  ThemeMode? _themeMode;
+  ThemeMode? get themeMode => _themeMode;
+
+  void loadTheme() {
+    _themeMode = localPref.getThemeMode()?.toThemeMode;
+  }
+
   Future<void> loadAllInit() async {
     await ImpulseSharedPrefImpl.instance.loadInstance();
     await _loadHiveInit();
     await _loadPaths();
     loadUser();
+    loadTheme();
     // composition = await AssetLottie("assets/lottie/waiting.json").load();
   }
 

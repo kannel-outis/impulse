@@ -30,6 +30,7 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
       return;
     }
     if (path != null) {
+      if (_checkIfExist(path)) return;
       final file = File(path);
       if (file.existsSync()) {
         final item = itemFromFile(file, altName);
@@ -37,6 +38,8 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
       }
     } else {
       if (file != null) {
+        if (_checkIfExist(file.path)) return;
+
         final item = itemFromFile(file, altName);
         items.add(item);
         // items.add(file);
@@ -44,6 +47,13 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
     }
     state = [...items];
     // _updateServerList();
+  }
+
+  bool _checkIfExist(String path) {
+    if (state.map((e) => e.filePath).contains(path)) {
+      return true;
+    }
+    return false;
   }
 
   void removeSelected({String? path, File? file}) {

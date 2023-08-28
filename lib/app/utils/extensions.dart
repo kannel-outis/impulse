@@ -82,6 +82,21 @@ extension Cut on String {
   File get toFile {
     return File(this);
   }
+
+  String get capitalize {
+    return this[0].toUpperCase() + substring(1);
+  }
+
+  ThemeMode get toThemeMode {
+    switch (this) {
+      case "light":
+        return ThemeMode.light;
+      case "dark":
+        return ThemeMode.dark;
+      default:
+        return ThemeMode.system;
+    }
+  }
 }
 
 extension Contains on Offset {

@@ -54,9 +54,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                       SizedBox(width: $styles.insets.md),
                       GestureDetector(
                         onTap: () async {
-                          Configurations.of(context)
-                              .state
-                              .toggleThemeMode();
+                          Configurations.of(context).state.toggleThemeMode();
                           return;
                           final genericRef = GenericProviderRef<WidgetRef>(ref);
 
