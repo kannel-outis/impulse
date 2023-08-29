@@ -12,4 +12,6 @@ abstract class ImpulseSharedPref {
   bool? get getAlwaysAcceptConnection;
   Future<void> setAllowBrowseFile(bool allowBrowseFile);
   bool? get getAllowBrowseFile;
+  Future<void> setReceiverPortNumber(int receiverPortNumber);
+  int? get getReceiverPortNumber;
 }

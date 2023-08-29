@@ -30,10 +30,14 @@ class ImpulseRouter {
       ImpulseRoute(
         parentNavKey: mainNavKey,
         path: routes.setInfo,
+        name: routes.setInfo.split("/").last,
         builder: (s) {
-          return const ImpulseScaffold(
+          return ImpulseScaffold(
             showOverlay: false,
-            child: SetInfoPage(),
+            child: SetInfoPage(
+              profileImage: s.queryParameters["profileImage"],
+              userName: s.queryParameters["username"],
+            ),
           );
         },
       ),

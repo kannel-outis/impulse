@@ -4,18 +4,25 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart' as picker;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
+import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/user.dart';
 import 'package:impulse/views/shared/padded_body.dart';
 import 'package:uuid/uuid.dart';
 
-class SetInfoPage extends StatefulWidget {
-  const SetInfoPage({super.key});
+class SetInfoPage extends ConsumerStatefulWidget {
+  final String? profileImage;
+  final String? userName;
+  const SetInfoPage({
+    super.key,
+    this.profileImage,
+    this.userName,
+  });
 
   @override
-  State<SetInfoPage> createState() => _SetInfoPageState();
+  ConsumerState<SetInfoPage> createState() => _SetInfoPageState();
 }
 
 enum _ImageType {
@@ -28,7 +35,7 @@ enum _ImageType {
   bool get isAsset => this == _ImageType.Assets;
 }
 
-class _SetInfoPageState extends State<SetInfoPage> {
+class _SetInfoPageState extends ConsumerState<SetInfoPage> {
   late final PageController pageController;
   late final TextEditingController _controller;
   int currentIndex = 0;
@@ -40,11 +47,34 @@ class _SetInfoPageState extends State<SetInfoPage> {
     (_ImageType.Assets, AssetsImage.DEFAULT_DISPLAY_IMAGE_2),
   ];
 
+  bool get _isFirstTime =>
+      widget.profileImage == null && widget.userName == null;
+
   @override
   initState() {
     super.initState();
-    pageController = PageController(viewportFraction: .2);
-    _controller = TextEditingController();
+    _controller = TextEditingController(text: widget.userName);
+    // widget.profileImage!.contains("assets")
+    if (widget.profileImage != null &&
+        !images.contains((_ImageType.Assets, widget.profileImage))) {
+      images.add(
+        (_ImageType.File, widget.profileImage!),
+      );
+    }
+    pageController = PageController(
+      viewportFraction: .2,
+
+      ///if profile image is null that means user is a first timer, start at 0
+      ///if not, check if profile image is an asset image then start at the index position,
+      ///if profile is not asset, start at the end of the image list, means profile file image is a file image
+      initialPage: widget.profileImage == null
+          ? 0
+          : images.contains((_ImageType.Assets, widget.profileImage))
+              ? images
+                  .indexWhere((element) => element.$2 == widget.profileImage)
+              : images.length - 1,
+    );
+    currentIndex = pageController.initialPage;
   }
 
   List<String> get imageExtensions => [
@@ -57,6 +87,17 @@ class _SetInfoPageState extends State<SetInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            context.pop();
+          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.tertiary,
+          ),
+        ),
+      ),
       body: PaddedBody(
         child: SizedBox(
           width: double.infinity,
@@ -72,6 +113,7 @@ class _SetInfoPageState extends State<SetInfoPage> {
                   // reverse: true,
                   // itemCount: assetImages.length,
                   physics: const BouncingScrollPhysics(),
+
                   onPageChanged: (currentIndex) {
                     this.currentIndex = currentIndex;
                     setState(() {});
@@ -169,10 +211,11 @@ class _SetInfoPageState extends State<SetInfoPage> {
                 child: TextFormField(
                   controller: _controller,
                   textAlign: TextAlign.center,
+                  cursorColor: Theme.of(context).colorScheme.tertiary,
                   decoration: InputDecoration(
                     hintText: "Enter Alias",
                     hintStyle: $styles.text.h3.copyWith(
-                      color: Theme.of(context).colorScheme.surfaceTint,
+                      color: Theme.of(context).colorScheme.tertiary,
                     ),
                     border: InputBorder.none,
                     // enabledBorder: UnderlineInputBorder(
@@ -204,12 +247,19 @@ class _SetInfoPageState extends State<SetInfoPage> {
                     displayImage: selectedImage.$2,
                   );
                   Configurations.instance.saveUserInfo(user.toMap());
+                  ref
+                      .read(profileImageProvider.notifier)
+                      .onChanged(selectedImage.$2);
                   // ignore: use_build_context_synchronously
-                  context.go(
-                    isAndroid
-                        ? ImpulseRouter.routes.home
-                        : ImpulseRouter.routes.folder,
-                  );
+                  if (_isFirstTime) {
+                    context.go(
+                      isAndroid
+                          ? ImpulseRouter.routes.home
+                          : ImpulseRouter.routes.folder,
+                    );
+                  } else {
+                    context.pop();
+                  }
                 },
                 child: Container(
                   height: 50,

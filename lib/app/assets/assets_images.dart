@@ -27,4 +27,5 @@ class AssetsImage {
   static const String send = "assets/svgs/send.svg";
   static const String info = "assets/svgs/info.svg";
   static const String wifi = "assets/svgs/wifi.svg";
+  static const String tiny_chevron_right = "assets/svgs/tiny_chevron_right.svg";
 }

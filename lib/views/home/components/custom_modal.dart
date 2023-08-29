@@ -450,8 +450,9 @@ class _CustomClientBottomModalSheetState
       provider.selectHost(serverInfo);
     }
     final result = await provider.createServerAndNotifyHost(
-      ipAddress: ipAddress,
-      port: port,
+      hostIpAddress: ipAddress,
+      hostPort: port,
+      myPort: Configurations.instance.receiverPortNumber
     );
     if (result == null) {
       ref.read(userTypeProvider.notifier).setUserState(UserType.client);

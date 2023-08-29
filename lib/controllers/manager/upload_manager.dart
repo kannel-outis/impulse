@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:riverpod/riverpod.dart';
 
 import 'mbps.dart';
@@ -23,6 +25,7 @@ class UploadManager extends MBps with ServiceUploadManager {
       final contains = _uploads.map((e) => e.id).toList().contains(item.id);
       if (!contains) {
         _uploads.add(item);
+        log("Added one");
       }
     }
   }
@@ -39,9 +42,11 @@ class UploadManager extends MBps with ServiceUploadManager {
   }
 
   @override
-  void onCurrentUploadComplete() {
+  void onCurrentUploadComplete(int downloadedSize) {
     currentUpload?.removeListener(_listener);
-    removeWhere(currentUpload!.id);
+    if (downloadedSize == currentUpload!.fileSize) {
+      removeWhere(currentUpload!.id);
+    }
     if (_uploads.isEmpty) {
       Future.delayed(const Duration(seconds: 1), () {
         state = (0, state.$2);

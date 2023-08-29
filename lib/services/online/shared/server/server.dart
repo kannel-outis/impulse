@@ -282,7 +282,8 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         item.file.lengthSync(),
         bytesDownloadedByClient != fileSize ? IState.paused : IState.completed,
       );
-      serverManager.uploadManager.onCurrentUploadComplete();
+      serverManager.uploadManager
+          .onCurrentUploadComplete(bytesDownloadedByClient);
       httpRequest.response.close();
 
       ///remove listener

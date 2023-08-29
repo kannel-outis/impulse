@@ -39,7 +39,7 @@ class SettingsDialogState<T> extends State<SettingsDialog<T>> {
     return Dialog(
       child: Container(
         width: 300,
-        height: 200,
+        height: 50.0 + (50 * (widget.values.length)),
         padding: ($styles.insets.md, 0.0).insets,
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,

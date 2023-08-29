@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:impulse/services/offline/shared_pref/shared_pref.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+//TODO: replace singleto with DI
 class ImpulseSharedPrefImpl implements ImpulseSharedPref {
   ImpulseSharedPrefImpl._();
 
@@ -12,6 +13,7 @@ class ImpulseSharedPrefImpl implements ImpulseSharedPref {
   static const String _rootFolderLocation = "root_folder_location";
   static const String _alwaysAcceptConnection = "always_accept_connection";
   static const String _allowBrowseFile = "allow_browse_file";
+  static const String _receiverPortNumber = "receiver_port_number";
 
   static late final SharedPreferences _preferences;
 
@@ -83,6 +85,14 @@ class ImpulseSharedPrefImpl implements ImpulseSharedPref {
     await _setBool(key: _allowBrowseFile, value: allowBrowseFile);
   }
 
+  @override
+  int? get getReceiverPortNumber => _getInt(_receiverPortNumber);
+
+  @override
+  Future<void> setReceiverPortNumber(int receiverPortNumber) async {
+    await _setInt(key: _receiverPortNumber, value: receiverPortNumber);
+  }
+
   Future<void> _setString({required String key, required String value}) async {
     // ignore: no_leading_underscores_for_local_identifiers
     final _value = json.encode(value);
@@ -103,6 +113,17 @@ class ImpulseSharedPrefImpl implements ImpulseSharedPref {
 
   bool? _getBool(String key) {
     final value = _preferences.getBool(key);
+    if (value != null) return value;
+    return null;
+  }
+
+  Future<void> _setInt({required String key, required int value}) async {
+    await _preferences.setInt(key, value);
+    _preferences.reload();
+  }
+
+  int? _getInt(String key) {
+    final value = _preferences.getInt(key);
     if (value != null) return value;
     return null;
   }

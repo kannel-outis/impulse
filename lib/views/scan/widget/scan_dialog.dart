@@ -123,8 +123,9 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
 
                         provider.selectHost(serverInfo);
 
-                        final result =
-                            await provider.createServerAndNotifyHost();
+                        final result = await provider.createServerAndNotifyHost(
+                          myPort: Configurations.instance.receiverPortNumber,
+                        );
                         if (result == null) {
                           ref
                               .read(userTypeProvider.notifier)
