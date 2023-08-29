@@ -18,13 +18,21 @@ class Configurations {
     return _instance!;
   }
 
-  late final Directory impulseDir;
+  Directory? impulseDir;
 
   FileManager get fileManager => FileManager.instance;
 
   ImpulseUtils get impulseUtils => ImpulseUtils();
+  final _impulsePath =
+      "${Platform.pathSeparator}impulse files${Platform.pathSeparator}";
 
   Future<void> _loadPaths() async {
+    if (_destinationLocation != null) {
+      impulseDir = await Directory(
+              "$_destinationLocation${Platform.pathSeparator}impulse files${Platform.pathSeparator}")
+          .create();
+      return;
+    }
     final applicationDocumentDir = await getApplicationDocumentsDirectory();
     if (Platform.isAndroid) {
       await fileManager.getRootPaths(true);
@@ -33,49 +41,117 @@ class Configurations {
           .create();
       return;
     }
-    impulseDir = await Directory(
-            "${applicationDocumentDir.path}${Platform.pathSeparator}impulse files${Platform.pathSeparator}")
-        .create();
+    impulseDir =
+        await Directory("${applicationDocumentDir.path}$_impulsePath").create();
   }
 
   Future<void> _loadHiveInit() async {
     await HiveInit.init();
   }
 
-  // late final LottieComposition composition;
-
   ImpulseSharedPref get localPref => ImpulseSharedPrefImpl.instance;
 
   User? _user;
 
   //for first start
-  User? get user =>
-      _user ??
-      (ImpulseSharedPrefImpl.instance.getUserInfo() == null
-          ? null
-          : User.fromMap(
-              ImpulseSharedPrefImpl.instance.getUserInfo()!,
-            ));
+  User? get user => loadUser();
 
-  void loadUser() {
-    _user = ImpulseSharedPrefImpl.instance.getUserInfo() == null
-        ? null
-        : User.fromMap(ImpulseSharedPrefImpl.instance.getUserInfo()!);
+  User? loadUser() {
+    if (_user != null) return _user;
+    if (localPref.getUserInfo != null) {
+      return _user = User.fromMap(localPref.getUserInfo!);
+    } else {
+      return null;
+    }
   }
+
+  Future<void> saveUserInfo(Map<String, dynamic> user) async {
+    await localPref.saveUserInfo(user);
+    _user = User.fromMap(user);
+  }
+
+  //Theme
 
   ThemeMode? _themeMode;
   ThemeMode? get themeMode => _themeMode;
 
   void loadTheme() {
-    _themeMode = localPref.getThemeMode()?.toThemeMode;
+    _themeMode = localPref.getThemeMode?.toThemeMode;
   }
+
+  Future<void> setThemeMode(ThemeMode themeMode) async {
+    await localPref.setThemeMode(themeMode.name);
+    _themeMode = themeMode;
+  }
+
+  //Root Folder Location for desktop
+
+  String? _rootFolderLocation;
+  String? get rootFolderLocation => _rootFolderLocation;
+
+  void loadRootFolderLocation() {
+    _rootFolderLocation = localPref.getRootFolderLocation;
+  }
+
+  Future<void> setRootFolderLocation(String location) async {
+    await localPref.setRootFolderLocation(location);
+    _rootFolderLocation = location;
+  }
+
+  //Destination Location
+
+  String? _destinationLocation;
+  String? get destinationLocation => _destinationLocation;
+
+  void loadDestinationLocation() {
+    _destinationLocation = localPref.getDestinationLocation;
+  }
+
+  Future<void> setDestinationLocation(String location) async {
+    await localPref.setDestinationLocation(location);
+    impulseDir = await Directory("$location$_impulsePath").create();
+
+    _destinationLocation = location;
+  }
+
+  //Always Accept Connection
+  bool? _alwaysAcceptConnection;
+  bool get alwaysAcceptConnection => _alwaysAcceptConnection ?? false;
+
+  void loadAlwaysAcceptConnection() {
+    _alwaysAcceptConnection = localPref.getAlwaysAcceptConnection;
+  }
+
+  Future<void> setAlwaysAcceptConnection(bool alwaysAccept) async {
+    await localPref.setAlwaysAcceptConnection(alwaysAccept);
+    _alwaysAcceptConnection = alwaysAccept;
+  }
+
+  //Allow to browse file
+  bool? _allowToBrowseFile;
+  bool get allowToBrowseFile => _allowToBrowseFile ?? false;
+
+  void loadAllowToBrowseFile() {
+    _allowToBrowseFile = localPref.getAllowBrowseFile;
+  }
+
+  Future<void> setAllowToBrowseFile(bool allowToBrowseFile) async {
+    await localPref.setAllowBrowseFile(allowToBrowseFile);
+    _allowToBrowseFile = allowToBrowseFile;
+  }
+
+  //Load all
 
   Future<void> loadAllInit() async {
     await ImpulseSharedPrefImpl.instance.loadInstance();
     await _loadHiveInit();
-    await _loadPaths();
     loadUser();
     loadTheme();
+    loadRootFolderLocation();
+    loadDestinationLocation();
+    loadAlwaysAcceptConnection();
+    loadAllowToBrowseFile();
+    await _loadPaths();
     // composition = await AssetLottie("assets/lottie/waiting.json").load();
   }
 

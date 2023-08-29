@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:impulse/app/app.dart';
-
-import '../../../services.dart';
+import 'package:impulse/services/services.dart';
 
 class MyGateWay extends GateWay<ServerSocket, Socket> {
   MyGateWay();
@@ -95,22 +94,33 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         return;
       } else if (httpRequest.requestedUri.queryParameters
           .containsKey("folder")) {
-        final entitiesInDir = await serverManager.getEntitiesInDir(
-            httpRequest.requestedUri.queryParameters["folder"] as String, () {
-          httpRequest.response.statusCode = 404;
+        try {
+          final entitiesInDir = await serverManager.getEntitiesInDir(
+              httpRequest.requestedUri.queryParameters["folder"] as String);
+          if (entitiesInDir.$1 != null) {
+            httpRequest.response.statusCode = 404;
+            httpRequest.response.write(
+              json.encode(
+                {
+                  "msg": entitiesInDir.$1,
+                },
+              ),
+            );
+            httpRequest.response.close();
+
+            return;
+          }
+          httpRequest.response.write(json.encode(entitiesInDir.$2));
+          httpRequest.response.close();
+          return;
+        } catch (e) {
+          httpRequest.response.statusCode = HttpStatus.internalServerError;
           httpRequest.response.write(
-            json.encode(
-              {
-                "msg": "Directory Not Found",
-              },
-            ),
+            json.encode({"msg": "Something Went Wrong"}),
           );
           httpRequest.response.close();
           return;
-        });
-        httpRequest.response.write(json.encode(entitiesInDir));
-        httpRequest.response.close();
-        return;
+        }
       }
 
       ///get the id of the file from the url query parameter
@@ -278,7 +288,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       ///remove listener
       item.removeListener(listener);
       item.startTime = null;
-      item.dispose();
+      // item.dispose();
     } else {
       httpRequest.response.write(
         json.encode(

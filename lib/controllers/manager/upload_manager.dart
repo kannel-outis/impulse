@@ -41,10 +41,13 @@ class UploadManager extends MBps with ServiceUploadManager {
   @override
   void onCurrentUploadComplete() {
     currentUpload?.removeListener(_listener);
-    Future.delayed(const Duration(seconds: 1), () {
-      state = (0, state.$2);
-      cancelMbps();
-    });
+    removeWhere(currentUpload!.id);
+    if (_uploads.isEmpty) {
+      Future.delayed(const Duration(seconds: 1), () {
+        state = (0, state.$2);
+        cancelMbps();
+      });
+    }
   }
 
   void _listener(received, totalSize, file, reason, state) {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart' hide ConnectionState, Path;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +26,7 @@ class FileManagerScreen extends ConsumerStatefulWidget {
 class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
     with AutomaticKeepAliveClientMixin {
   List<ImpulseFileEntity> files = [];
-  late final ImpulseDirectory? dir;
+  ImpulseDirectory? dir;
   bool selectAll = false;
 
   @override
@@ -39,10 +40,20 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
               directory: Directory(widget.path!.path),
             );
     } else {
-      dir = ImpulseDirectory(
-        directory: Directory(widget.path?.path ??
-            "C:${Platform.pathSeparator}Users${Platform.pathSeparator}emirb${Platform.pathSeparator}Downloads${Platform.pathSeparator}"),
-      );
+      // "C:${Platform.pathSeparator}Users${Platform.pathSeparator}emirb${Platform.pathSeparator}Downloads${Platform.pathSeparator}"
+      if (widget.path != null) {
+        dir = ImpulseDirectory(
+          directory: Directory(widget.path!.path),
+        );
+      } else {
+        if (Configurations.instance.rootFolderLocation == null) {
+          dir = null;
+        } else {
+          dir = ImpulseDirectory(
+            directory: Directory(Configurations.instance.rootFolderLocation!),
+          );
+        }
+      }
     }
   }
 
@@ -81,246 +92,298 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
         }
         return true;
       },
-      child: FutureBuilder<List<ImpulseFileEntity>>(
-        future: _init_(dir),
-        builder: (context, snapshot) {
-          if (snapshot.hasData == false) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          if (snapshot.data!.isEmpty) {
-            return Center(
-              child: Icon(
-                Icons.inventory_2,
-                size: $styles.sizes.prefixIconSize * 4,
-                color: Theme.of(context).colorScheme.onTertiary,
-              ),
-            );
-          }
-          return PaddedBody(
-            child: Stack(
+      child: dir == null && !isAndroid
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Column(
-                      children: [
-                        if ((widget.path != null || !isAndroid) &&
-                            ref
-                                .watch(selectingItemStateProvider)
-                                .isSelectingApp)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              SizedBox(
-                                height: 30,
-                                child: Consumer(
-                                  builder: (context, ref, child) {
-                                    return child!;
-                                  },
-                                  child: MouseRegion(
-                                    cursor: SystemMouseCursors.click,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        selectAll = !selectAll;
-                                        final selectedItems = ref.read(
-                                            selectedItemsProvider.notifier);
-                                        setState(() {});
-                                        if (selectAll) {
-                                          for (var file in files) {
-                                            if (!file.isFolder) {
-                                              selectedItems.addSelected(
-                                                // path: file?.appPath,
-                                                file: file.fileSystemEntity
-                                                    as File,
-                                                // altName: widget.app?.appName,
-                                              );
-                                            }
-                                          }
-                                        } else {
-                                          for (var file in files) {
-                                            if (!file.isFolder) {
-                                              selectedItems.removeSelected(
-                                                // path: file?.appPath,
-                                                file: file.fileSystemEntity
-                                                    as File,
-                                                // altName: widget.app?.appName,
-                                              );
-                                            }
-                                          }
-                                        }
-                                      },
-                                      child: Container(
-                                        padding: (
-                                          $styles.insets.xxs,
-                                          $styles.insets.xs
-                                        ).insetsLeftRight,
-                                        // color: Theme.of(context).colorScheme.tertiary,
-                                        child: Row(
-                                          children: [
-                                            Checkbox(
-                                              value: selectAll,
-                                              checkColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .surface,
-                                              fillColor: !selectAll
-                                                  ? const MaterialStatePropertyAll(
-                                                      Colors.transparent)
-                                                  : MaterialStatePropertyAll(
-                                                      Theme.of(context)
-                                                          .colorScheme
-                                                          .primary),
-                                              onChanged: null,
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Text(
-                                              "Select all",
-                                              style: $styles.text.bodySmall
-                                                  .copyWith(
-                                                      // color: Theme.of(context).colorScheme.surface,
-                                                      ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        AnimatedSwitcher(
-                          duration: $styles.times.med,
-                          child: Consumer(
-                            builder: (context, ref, child) {
-                              return SizedBox(
-                                ///if path is null, that means we are at the root
-                                height: _getHeight(ref, constraints) -
-                                    ((widget.path != null || !isAndroid) &&
-                                            ref
-                                                .watch(
-                                                    selectingItemStateProvider)
-                                                .isSelectingApp
-                                        ? 30
-                                        : 0),
-                                width: constraints.maxWidth,
-                                child: child,
-                              );
-                            },
-                            child: ListView.separated(
-                              itemCount: files.length,
-                              physics: isAndroid && widget.path == null
-                                  ? const NeverScrollableScrollPhysics()
-                                  : null,
-                              separatorBuilder: (context, index) {
-                                return SizedBox(height: $styles.insets.sm);
-                              },
-                              itemBuilder: (context, index) {
-                                final item = files[index];
-                                return SelectableItemWidget(
-                                  file: (item.fileSystemEntity is File)
-                                      ? item.fileSystemEntity as File
-                                      : null,
-                                  isSelectable: item is! ImpulseDirectory,
-                                  onChanged: (onSelect) {
-                                    if (onSelect == false) {
-                                      selectAll = false;
-                                      setState(() {});
-                                    }
-                                  },
-                                  child: FileManagerTile(
-                                    item: item,
-                                  ),
-                                );
-                              },
-                            ),
-                          ),
+                Center(
+                  child: Icon(
+                    Icons.inventory_2,
+                    size: $styles.sizes.prefixIconSize * 4,
+                    color: Theme.of(context).colorScheme.onTertiary,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    final path = await FilePicker.platform.getDirectoryPath();
+                    if (path != null) {
+                      dir = ImpulseDirectory(directory: Directory(path));
+                      setState(() {});
+                      Configurations.instance.setRootFolderLocation(path);
+                    }
+                  },
+                  child: Container(
+                    height: 40,
+                    width: 120,
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.tertiary,
+                        borderRadius: BorderRadius.circular(
+                          $styles.corners.sm,
+                        )),
+                    child: Center(
+                      child: Text(
+                        "Choose Folder",
+                        style: $styles.text.bodySmall.copyWith(
+                          color: Theme.of(context).colorScheme.surface,
                         ),
-                        if (isAndroid && widget.path == null)
-                          SizedBox(
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: (
-                                    $styles.insets.xxl,
-                                    $styles.insets.sm
-                                  ).insetsTopBottom,
-                                  child: Divider(
-                                    thickness: .5,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .tertiary
-                                        .withOpacity(.2),
-                                  ),
-                                ),
-                                Consumer(
-                                  builder: (context, ref, child) {
-                                    if (ref
-                                        .watch(connectionStateProvider)
-                                        .isConnected) {
-                                      return InkWell(
-                                        onTap: () {
-                                          context.pushNamed(
-                                            "NetworkfilesPath",
-                                            pathParameters: {
-                                              "path": "root",
-                                              "username": ref
-                                                  .read(
-                                                      connectUserStateProvider)!
-                                                  .user
-                                                  .name,
-                                            },
-                                          );
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : FutureBuilder<List<ImpulseFileEntity>>(
+              future: _init_(dir),
+              builder: (context, snapshot) {
+                if (snapshot.hasData == false) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+                if (snapshot.data!.isEmpty) {
+                  return Center(
+                    child: Icon(
+                      Icons.inventory_2,
+                      size: $styles.sizes.prefixIconSize * 4,
+                      color: Theme.of(context).colorScheme.onTertiary,
+                    ),
+                  );
+                }
+                return PaddedBody(
+                  child: Stack(
+                    children: [
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          return Column(
+                            children: [
+                              if ((widget.path != null || !isAndroid) &&
+                                  ref
+                                      .watch(selectingItemStateProvider)
+                                      .isSelectingApp)
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    SizedBox(
+                                      height: 30,
+                                      child: Consumer(
+                                        builder: (context, ref, child) {
+                                          return child!;
                                         },
-                                        child: Container(
-                                          height: 50,
-                                          width: double.infinity,
-                                          color: Colors.transparent,
-                                          child: Center(
-                                            child: Row(
-                                              children: [
-                                                SizedBox(
-                                                    width: $styles.insets.sm),
-                                                const FilePlaceHolder(
-                                                  name: "",
-                                                  isFolder: true,
-                                                ),
-                                                SizedBox(
-                                                    width: $styles.insets.sm),
-                                                Text(
-                                                  ref
-                                                      .read(
-                                                          connectUserStateProvider)!
-                                                      .user
-                                                      .name,
-                                                  style: $styles.text.body,
-                                                ),
-                                              ],
+                                        child: MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              selectAll = !selectAll;
+                                              final selectedItems = ref.read(
+                                                  selectedItemsProvider
+                                                      .notifier);
+                                              setState(() {});
+                                              if (selectAll) {
+                                                for (var file in files) {
+                                                  if (!file.isFolder) {
+                                                    selectedItems.addSelected(
+                                                      // path: file?.appPath,
+                                                      file:
+                                                          file.fileSystemEntity
+                                                              as File,
+                                                      // altName: widget.app?.appName,
+                                                    );
+                                                  }
+                                                }
+                                              } else {
+                                                for (var file in files) {
+                                                  if (!file.isFolder) {
+                                                    selectedItems
+                                                        .removeSelected(
+                                                      // path: file?.appPath,
+                                                      file:
+                                                          file.fileSystemEntity
+                                                              as File,
+                                                      // altName: widget.app?.appName,
+                                                    );
+                                                  }
+                                                }
+                                              }
+                                            },
+                                            child: Container(
+                                              padding: (
+                                                $styles.insets.xxs,
+                                                $styles.insets.xs
+                                              ).insetsLeftRight,
+                                              // color: Theme.of(context).colorScheme.tertiary,
+                                              child: Row(
+                                                children: [
+                                                  Checkbox(
+                                                    value: selectAll,
+                                                    checkColor:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .surface,
+                                                    fillColor: !selectAll
+                                                        ? const MaterialStatePropertyAll(
+                                                            Colors.transparent)
+                                                        : MaterialStatePropertyAll(
+                                                            Theme.of(context)
+                                                                .colorScheme
+                                                                .primary),
+                                                    onChanged: null,
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  Text(
+                                                    "Select all",
+                                                    style: $styles
+                                                        .text.bodySmall
+                                                        .copyWith(
+                                                            // color: Theme.of(context).colorScheme.surface,
+                                                            ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      );
-                                    }
-
-                                    return const SizedBox();
-                                  },
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    );
-                  },
-                ),
-                Positioned(
-                  right: 0,
-                  child: Container(),
-                ),
-              ],
+                              AnimatedSwitcher(
+                                duration: $styles.times.med,
+                                child: Consumer(
+                                  builder: (context, ref, child) {
+                                    return SizedBox(
+                                      ///if path is null, that means we are at the root
+                                      height: _getHeight(ref, constraints) -
+                                          ((widget.path != null ||
+                                                      !isAndroid) &&
+                                                  ref
+                                                      .watch(
+                                                          selectingItemStateProvider)
+                                                      .isSelectingApp
+                                              ? 30
+                                              : 0),
+                                      width: constraints.maxWidth,
+                                      child: child,
+                                    );
+                                  },
+                                  child: ListView.separated(
+                                    itemCount: files.length,
+                                    physics: isAndroid && widget.path == null
+                                        ? const NeverScrollableScrollPhysics()
+                                        : null,
+                                    separatorBuilder: (context, index) {
+                                      return SizedBox(
+                                          height: $styles.insets.sm);
+                                    },
+                                    itemBuilder: (context, index) {
+                                      final item = files[index];
+                                      return SelectableItemWidget(
+                                        file: (item.fileSystemEntity is File)
+                                            ? item.fileSystemEntity as File
+                                            : null,
+                                        isSelectable: item is! ImpulseDirectory,
+                                        onChanged: (onSelect) {
+                                          if (onSelect == false) {
+                                            selectAll = false;
+                                            setState(() {});
+                                          }
+                                        },
+                                        child: FileManagerTile(
+                                          item: item,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              if (isAndroid && widget.path == null)
+                                SizedBox(
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: (
+                                          $styles.insets.xxl,
+                                          $styles.insets.sm
+                                        ).insetsTopBottom,
+                                        child: Divider(
+                                          thickness: .5,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .tertiary
+                                              .withOpacity(.2),
+                                        ),
+                                      ),
+                                      Consumer(
+                                        builder: (context, ref, child) {
+                                          if (ref
+                                              .watch(connectionStateProvider)
+                                              .isConnected) {
+                                            return InkWell(
+                                              onTap: () {
+                                                context.pushNamed(
+                                                  "NetworkfilesPath",
+                                                  pathParameters: {
+                                                    "path": "root",
+                                                    "username": ref
+                                                        .read(
+                                                            connectUserStateProvider)!
+                                                        .user
+                                                        .name,
+                                                  },
+                                                );
+                                              },
+                                              child: Container(
+                                                height: 50,
+                                                width: double.infinity,
+                                                color: Colors.transparent,
+                                                child: Center(
+                                                  child: Row(
+                                                    children: [
+                                                      SizedBox(
+                                                          width: $styles
+                                                              .insets.sm),
+                                                      const FilePlaceHolder(
+                                                        name: "",
+                                                        isFolder: true,
+                                                      ),
+                                                      SizedBox(
+                                                          width: $styles
+                                                              .insets.sm),
+                                                      Text(
+                                                        ref
+                                                            .read(
+                                                                connectUserStateProvider)!
+                                                            .user
+                                                            .name,
+                                                        style:
+                                                            $styles.text.body,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          }
+
+                                          return const SizedBox();
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          );
+                        },
+                      ),
+                      Positioned(
+                        right: 0,
+                        child: Container(),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 

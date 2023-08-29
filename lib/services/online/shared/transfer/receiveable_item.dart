@@ -36,13 +36,13 @@ class ReceiveableItem extends Item {
         );
 
   factory ReceiveableItem.fromShareableMap(Map<String, dynamic> map) {
+    // .${map["fileType"] as String}
     final fileName = map["altName"] != null
         ? _joinNameWithId(
-            "${map["altName"] as String}.${map["fileType"] as String}",
-            map["fileId"] as String)
+            "${map["altName"] as String}", map["fileId"] as String)
         : _joinNameWithId(map["fileName"] as String, map["fileId"] as String);
     return ReceiveableItem(
-      file: File("${Configurations.instance.impulseDir.path}$fileName"),
+      file: File("${Configurations.instance.impulseDir!.path}$fileName"),
       fileType: map["fileType"] as String,
       fileSize: map["fileSize"] as int,
       id: map["fileId"] as String,

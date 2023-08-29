@@ -33,7 +33,7 @@ class Impulse extends StatefulWidget {
 }
 
 class _ImpulseState extends State<Impulse> {
-  ThemeMode _themeMode = ThemeMode.light;
+  ThemeMode _themeMode = ThemeMode.system;
 
   ThemeMode get themeMode => _themeMode;
 

@@ -80,7 +80,6 @@ class TransferListTile extends StatelessWidget {
               children: [
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    print(state);
                     return Container(
                       height: height,
                       width: constraints.maxWidth * percentage,

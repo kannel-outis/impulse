@@ -55,11 +55,22 @@ class _FileManagerScreenState extends ConsumerState<NetworkFileManagerScreen>
         future: _init_(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(
-              child: Icon(
-                Icons.inventory_2,
-                size: $styles.sizes.prefixIconSize * 4,
-                color: Colors.red,
+            return SizedBox(
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Icon(
+                  //   Icons.inventory_2,
+                  //   size: $styles.sizes.prefixIconSize * 4,
+                  //   color: Colors.red,
+                  // ),
+                  Text(
+                    (snapshot.error as AppException).message!,
+                    style: $styles.text.bodyBold,
+                  ),
+                ],
               ),
             );
           }

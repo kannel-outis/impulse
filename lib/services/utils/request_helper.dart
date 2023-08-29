@@ -41,9 +41,11 @@ class RequestHelper {
 
         return Right(results);
       }
-      throw const AppException("something went wrong");
-    } on AppException catch (e) {
-      return Left(AppException(e.toString()));
+      throw AppException(json.decode(response.body)["msg"]);
+    } on AppException {
+      rethrow;
+    } on Exception catch (e) {
+      throw AppException(e.toString().split(":").last);
     }
   }
 

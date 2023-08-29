@@ -203,7 +203,7 @@ class _SetInfoPageState extends State<SetInfoPage> {
                     deviceOsVersion: Platform.operatingSystemVersion,
                     displayImage: selectedImage.$2,
                   );
-                  Configurations.instance.localPref.saveUserInfo(user.toMap());
+                  Configurations.instance.saveUserInfo(user.toMap());
                   // ignore: use_build_context_synchronously
                   context.go(
                     isAndroid

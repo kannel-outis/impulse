@@ -38,8 +38,8 @@ abstract class ServerManager {
   }
 
   ///This returns the hosts files as map, which eventually becomes a network file on the client side
-  Future<List<Map<String, dynamic>>> getEntitiesInDir(String path,
-      [Function()? _]);
+  Future<(String?, List<Map<String, dynamic>>)> getEntitiesInDir(String path,
+      [Function(String?)? _]);
 
   Future<List<FileSystemEntity>> getEntities(Directory dir) async {
     final listSync = <FileSystemEntity>[];

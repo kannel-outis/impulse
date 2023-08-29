@@ -101,14 +101,21 @@ class ServerController extends ServerManager with ChangeNotifier {
     // ignore: todo
     //TODO: remove alertstate entirely and use connectedUserState.setUserState(serverInfo, fling: true)
     // to show alert instead
-    alertState.updateState(true);
-    final serverInfo = ServerInfo.fromMap(serverMap);
-    connectedUserState.setUserState(serverInfo, fling: true);
+    final shouldAcceptConnection =
+        Configurations.instance.alwaysAcceptConnection;
 
-    //// so that users wont take too long
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      handleAlertResponse(false);
-    });
+    final serverInfo = ServerInfo.fromMap(serverMap);
+    if (shouldAcceptConnection == false) {
+      alertState.updateState(true);
+      connectedUserState.setUserState(serverInfo, fling: true);
+
+      /// so that users wont take too long
+      _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+        handleAlertResponse(false);
+      });
+    } else {
+      alertResponder.complete(true);
+    }
 
     ////
     final result = await alertResponder.future;
@@ -159,15 +166,21 @@ class ServerController extends ServerManager with ChangeNotifier {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getEntitiesInDir(String path,
-      [Function()? _]) async {
+  Future<(String?, List<Map<String, dynamic>>)> getEntitiesInDir(String path,
+      [Function(String?)? _]) async {
     final directoryToMap = <Map<String, dynamic>>[];
     final fileToMap = <Map<String, dynamic>>[];
 
     final dir = path == "root" ? _getRootDir : Directory(path);
-    if (!await dir.exists() || Platform.isIOS) {
-      _?.call();
-      return [];
+    if (!await dir.exists() ||
+        Platform.isIOS ||
+        !Configurations.instance.allowToBrowseFile) {
+      return (
+        !Configurations.instance.allowToBrowseFile
+            ? "Permission denied"
+            : "Directory Not Found",
+        <Map<String, dynamic>>[]
+      );
     }
 
     final listAsync = await getEntities(dir);
@@ -190,14 +203,14 @@ class ServerController extends ServerManager with ChangeNotifier {
           : fileToMap.add(file.toMap());
     }
 
-    return [...directoryToMap, ...fileToMap];
+    return (null, [...directoryToMap, ...fileToMap]);
   }
 
   Directory get _getRootDir {
     if (Platform.isAndroid) {
       return Directory(Configurations.instance.fileManager.rootPath.first);
     } else {
-      return Configurations.instance.impulseDir;
+      return Configurations.instance.impulseDir!;
     }
   }
 
@@ -205,6 +218,7 @@ class ServerController extends ServerManager with ChangeNotifier {
   void addSharableToList(Map<String, dynamic> shareableMap) {
     final shareableItem = ShareableItem.fromMap(shareableMap);
     shareableItemsProvider.addAllItems([shareableItem]);
+
     ///TODO: move into shareableItemsProvider
     uploadManagerController.addToQueue([shareableItem]);
   }

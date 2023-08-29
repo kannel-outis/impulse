@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
 
-class ModeChild extends StatefulWidget {
-  final ThemeMode selected;
-  final ThemeMode value;
+class ModeChild<T> extends StatefulWidget {
+  final T selected;
+  final T value;
   final String label;
-  final Function(ThemeMode)? onSelected;
+  final Function(T)? onSelected;
   const ModeChild({
     super.key,
     required this.selected,
@@ -15,11 +15,11 @@ class ModeChild extends StatefulWidget {
   });
 
   @override
-  State<ModeChild> createState() => _ModeChildState();
+  State<ModeChild<T>> createState() => _ModeChildState<T>();
 }
 
-class _ModeChildState extends State<ModeChild> {
-  ThemeMode _selected = ThemeMode.system;
+class _ModeChildState<T> extends State<ModeChild<T>> {
+  T? _selected;
 
   @override
   void initState() {
@@ -28,7 +28,7 @@ class _ModeChildState extends State<ModeChild> {
   }
 
   @override
-  void didUpdateWidget(covariant ModeChild oldWidget) {
+  void didUpdateWidget(covariant ModeChild<T> oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.selected != oldWidget.selected) {
       _selected = widget.selected;
@@ -49,7 +49,7 @@ class _ModeChildState extends State<ModeChild> {
           height: 40,
           child: Row(
             children: [
-              Radio<ThemeMode>(
+              Radio<T>(
                 value: widget.value,
                 groupValue: _selected,
                 onChanged: (value) {

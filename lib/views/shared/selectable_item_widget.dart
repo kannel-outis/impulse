@@ -60,6 +60,7 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (widget.file == null) return;
+      if (!mounted) return;
       if (ref
           .read(selectedItemsProvider.notifier)
           .items
@@ -182,7 +183,7 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
     selectedItems.addSelected(
       path: widget.app?.appPath,
       file: widget.file,
-      altName: widget.app?.appName,
+      altName: "${widget.app?.appName}.apk",
     );
     _isSelected = true;
     widget.onChanged?.call(_isSelected);
@@ -199,7 +200,7 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
         selectedItems.addSelected(
           path: widget.app?.appPath,
           file: widget.file,
-          altName: widget.app?.appName,
+          altName: "${widget.app?.appName}.apk",
         );
       } else {
         selectedItems.removeSelected(
