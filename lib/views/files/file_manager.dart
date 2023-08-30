@@ -157,111 +157,115 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
                         builder: (context, constraints) {
                           return Column(
                             children: [
-                              if ((widget.path != null || !isAndroid) &&
-                                  ref
-                                      .watch(selectingItemStateProvider)
-                                      .isSelectingApp)
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    SizedBox(
-                                      height: 30,
-                                      child: Consumer(
-                                        builder: (context, ref, child) {
-                                          return child!;
-                                        },
-                                        child: MouseRegion(
-                                          cursor: SystemMouseCursors.click,
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              selectAll = !selectAll;
-                                              final selectedItems = ref.read(
-                                                  selectedItemsProvider
-                                                      .notifier);
-                                              setState(() {});
-                                              if (selectAll) {
-                                                for (var file in files) {
-                                                  if (!file.isFolder) {
-                                                    selectedItems.addSelected(
-                                                      // path: file?.appPath,
-                                                      file:
-                                                          file.fileSystemEntity
-                                                              as File,
-                                                      // altName: widget.app?.appName,
-                                                    );
-                                                  }
-                                                }
-                                              } else {
-                                                for (var file in files) {
-                                                  if (!file.isFolder) {
-                                                    selectedItems
-                                                        .removeSelected(
-                                                      // path: file?.appPath,
-                                                      file:
-                                                          file.fileSystemEntity
-                                                              as File,
-                                                      // altName: widget.app?.appName,
-                                                    );
-                                                  }
-                                                }
-                                              }
-                                            },
-                                            child: Container(
-                                              padding: (
-                                                $styles.insets.xxs,
-                                                $styles.insets.xs
-                                              ).insetsLeftRight,
-                                              // color: Theme.of(context).colorScheme.tertiary,
-                                              child: Row(
-                                                children: [
-                                                  Checkbox(
-                                                    value: selectAll,
-                                                    checkColor:
-                                                        Theme.of(context)
-                                                            .colorScheme
-                                                            .surface,
-                                                    fillColor: !selectAll
-                                                        ? const MaterialStatePropertyAll(
-                                                            Colors.transparent)
-                                                        : MaterialStatePropertyAll(
-                                                            Theme.of(context)
-                                                                .colorScheme
-                                                                .primary),
-                                                    onChanged: null,
-                                                  ),
-                                                  const SizedBox(width: 10),
-                                                  Text(
-                                                    "Select all",
-                                                    style: $styles
-                                                        .text.bodySmall
-                                                        .copyWith(
-                                                            // color: Theme.of(context).colorScheme.surface,
-                                                            ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              //TODO: Select all code
+                              // if ((widget.path != null || !isAndroid) &&
+                              //     ref
+                              //         .watch(selectingItemStateProvider)
+                              //         .isSelectingApp)
+                              //   Row(
+                              //     mainAxisAlignment: MainAxisAlignment.end,
+                              //     children: [
+                              //       SizedBox(
+                              //         height: 30,
+                              //         child: Consumer(
+                              //           builder: (context, ref, child) {
+                              //             return child!;
+                              //           },
+                              //           child: MouseRegion(
+                              //             cursor: SystemMouseCursors.click,
+                              //             child: GestureDetector(
+                              //               onTap: () {
+                              //                 selectAll = !selectAll;
+                              //                 final selectedItems = ref.read(
+                              //                     selectedItemsProvider
+                              //                         .notifier);
+                              //                 setState(() {});
+                              //                 if (selectAll) {
+                              //                   for (var file in files) {
+                              //                     if (!file.isFolder) {
+                              //                       selectedItems.addSelected(
+                              //                         // path: file?.appPath,
+                              //                         file:
+                              //                             file.fileSystemEntity
+                              //                                 as File,
+                              //                         // altName: widget.app?.appName,
+                              //                       );
+                              //                     }
+                              //                   }
+                              //                 } else {
+                              //                   for (var file in files) {
+                              //                     if (!file.isFolder) {
+                              //                       selectedItems
+                              //                           .removeSelected(
+                              //                         // path: file?.appPath,
+                              //                         file:
+                              //                             file.fileSystemEntity
+                              //                                 as File,
+                              //                         // altName: widget.app?.appName,
+                              //                       );
+                              //                     }
+                              //                   }
+                              //                 }
+                              //               },
+                              //               child: Container(
+                              //                 padding: (
+                              //                   $styles.insets.xxs,
+                              //                   $styles.insets.xs
+                              //                 ).insetsLeftRight,
+                              //                 // color: Theme.of(context).colorScheme.tertiary,
+                              //                 child: Row(
+                              //                   children: [
+                              //                     Checkbox(
+                              //                       value: selectAll,
+                              //                       checkColor:
+                              //                           Theme.of(context)
+                              //                               .colorScheme
+                              //                               .surface,
+                              //                       fillColor: !selectAll
+                              //                           ? const MaterialStatePropertyAll(
+                              //                               Colors.transparent)
+                              //                           : MaterialStatePropertyAll(
+                              //                               Theme.of(context)
+                              //                                   .colorScheme
+                              //                                   .primary),
+                              //                       onChanged: null,
+                              //                     ),
+                              //                     const SizedBox(width: 10),
+                              //                     Text(
+                              //                       "Select all",
+                              //                       style: $styles
+                              //                           .text.bodySmall
+                              //                           .copyWith(
+                              //                               // color: Theme.of(context).colorScheme.surface,
+                              //                               ),
+                              //                     ),
+                              //                   ],
+                              //                 ),
+                              //               ),
+                              //             ),
+                              //           ),
+                              //         ),
+                              //       ),
+                              //     ],
+                              //   ),
                               AnimatedSwitcher(
                                 duration: $styles.times.med,
                                 child: Consumer(
                                   builder: (context, ref, child) {
                                     return SizedBox(
                                       ///if path is null, that means we are at the root
-                                      height: _getHeight(ref, constraints) -
-                                          ((widget.path != null ||
-                                                      !isAndroid) &&
-                                                  ref
-                                                      .watch(
-                                                          selectingItemStateProvider)
-                                                      .isSelectingApp
-                                              ? 30
-                                              : 0),
+                                      height: _getHeight(ref, constraints),
+
+                                      //TOdO: Select all code
+                                      // height: _getHeight(ref, constraints) -
+                                      //     ((widget.path != null ||
+                                      //                 !isAndroid) &&
+                                      //             ref
+                                      //                 .watch(
+                                      //                     selectingItemStateProvider)
+                                      //                 .isSelectingApp
+                                      //         ? 30
+                                      //         : 0),
                                       width: constraints.maxWidth,
                                       child: child,
                                     );

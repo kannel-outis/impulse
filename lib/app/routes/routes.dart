@@ -4,6 +4,7 @@ import 'package:impulse/models/models.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/impulse_scaffold.dart';
 import 'package:impulse/views/files/network_file_manager.dart';
+import 'package:impulse/views/history/history_screen.dart';
 import 'package:impulse/views/information/set_info_page.dart';
 import 'package:impulse/views/scan/scan_page.dart';
 import 'package:impulse/views/scan/widget/scan_dialog.dart';
@@ -26,14 +27,29 @@ class ImpulseRouter {
             : routes.folder,
     // initialLocation: routes.setInfo,
     navigatorKey: mainNavKey,
+
     routes: [
       ImpulseRoute(
         parentNavKey: mainNavKey,
         path: routes.setInfo,
+        name: routes.setInfo.split("/").last,
+        builder: (s) {
+          return ImpulseScaffold(
+            showOverlay: false,
+            child: SetInfoPage(
+              profileImage: s.queryParameters["profileImage"],
+              userName: s.queryParameters["username"],
+            ),
+          );
+        },
+      ),
+      ImpulseRoute(
+        parentNavKey: mainNavKey,
+        path: routes.history,
         builder: (s) {
           return const ImpulseScaffold(
             showOverlay: false,
-            child: SetInfoPage(),
+            child: HistoryScreen(),
           );
         },
       ),
@@ -166,6 +182,7 @@ class _Routes {
   final String setInfo = "/setInfo";
   final String scanPage = "/scanPage";
   final String scanDialog = "/qrDialog";
+  final String history = "/history";
 }
 
 class ImpulseRoute extends GoRoute {

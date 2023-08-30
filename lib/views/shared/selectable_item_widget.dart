@@ -183,7 +183,7 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
     selectedItems.addSelected(
       path: widget.app?.appPath,
       file: widget.file,
-      altName: "${widget.app?.appName}.apk",
+      altName: widget.app == null ? null : "${widget.app?.appName}.apk",
     );
     _isSelected = true;
     widget.onChanged?.call(_isSelected);
@@ -200,7 +200,7 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
         selectedItems.addSelected(
           path: widget.app?.appPath,
           file: widget.file,
-          altName: "${widget.app?.appName}.apk",
+          altName: widget.app == null ? null : "${widget.app?.appName}.apk",
         );
       } else {
         selectedItems.removeSelected(

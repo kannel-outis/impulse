@@ -19,6 +19,7 @@ class _HoverState extends State<Hover> {
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
+      cursor: widget.cursor,
       onEnter: (event) {
         widget.onHover?.call(true);
       },

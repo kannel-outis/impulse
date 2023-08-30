@@ -5,10 +5,12 @@ import '../widgets/bottom_app_bar_icon.dart';
 
 class MyBottomNavBar extends StatefulWidget {
   final int index;
+  final Map<String, (IconData, IconData)> bars;
   final Function(int)? onChanged;
   const MyBottomNavBar({
     super.key,
     this.index = 0,
+    required this.bars,
     this.onChanged,
   });
 
@@ -24,13 +26,6 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
     super.initState();
     index = widget.index;
   }
-
-  Map<String, (IconData, IconData)> get bars => {
-        if (isAndroid)
-          "Home": (ImpulseIcons.bx_home_alt_2, ImpulseIcons.bxs_home_alt_2),
-        "Files": (ImpulseIcons.bx_folder, ImpulseIcons.bxs_folder),
-        "Settings": (ImpulseIcons.bx_cog, ImpulseIcons.bxs_cog),
-      };
 
   @override
   void didUpdateWidget(covariant MyBottomNavBar oldWidget) {
@@ -52,7 +47,7 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          for (var i = 0; i < bars.length; i++)
+          for (var i = 0; i < widget.bars.length; i++)
             InkWell(
               highlightColor: Colors.transparent,
               splashFactory: NoSplash.splashFactory,
@@ -71,15 +66,15 @@ class _MyBottomNavBarState extends State<MyBottomNavBar> {
                 child: index == i
                     ? BottomAppBarIcon(
                         key: ValueKey(index == i),
-                        icon: bars.values.toList()[i].$2,
+                        icon: widget.bars.values.toList()[i].$2,
                         color: Theme.of(context).colorScheme.primary,
-                        label: bars.keys.toList()[i],
+                        label: widget.bars.keys.toList()[i],
                       )
                     : BottomAppBarIcon(
                         key: ValueKey(index == i),
-                        icon: bars.values.toList()[i].$1,
+                        icon: widget.bars.values.toList()[i].$1,
                         color: Theme.of(context).colorScheme.tertiary,
-                        label: bars.keys.toList()[i],
+                        label: widget.bars.keys.toList()[i],
                       ),
               ),
             )

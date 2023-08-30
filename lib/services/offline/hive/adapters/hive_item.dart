@@ -89,7 +89,7 @@ class HiveItemAdapter extends TypeAdapter<HiveItem> {
   @override
   void write(BinaryWriter writer, HiveItem obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.fileId)
       ..writeByte(1)
@@ -109,7 +109,10 @@ class HiveItemAdapter extends TypeAdapter<HiveItem> {
       ..writeByte(8)
       ..write(obj.processedBytes)
       ..writeByte(9)
-      ..write(obj.iState);
+      ..write(obj.iState)
+      ..writeByte(10)
+      ///////
+      ..write(obj.endTime);
   }
 
   @override

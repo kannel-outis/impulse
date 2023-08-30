@@ -82,7 +82,8 @@ class TransferListTile extends StatelessWidget {
                   builder: (context, constraints) {
                     return Container(
                       height: height,
-                      width: constraints.maxWidth * percentage,
+                      width: constraints.maxWidth *
+                          (state.isFailed ? 1 : percentage),
                       constraints:
                           mini ? null : const BoxConstraints(maxWidth: 700),
                       margin: EdgeInsets.only(

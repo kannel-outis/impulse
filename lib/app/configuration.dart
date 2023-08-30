@@ -104,7 +104,7 @@ class Configurations {
   String? get destinationLocation => _destinationLocation;
 
   void loadDestinationLocation() {
-    _destinationLocation = localPref.getDestinationLocation;
+    _destinationLocation ??= localPref.getDestinationLocation;
   }
 
   Future<void> setDestinationLocation(String location) async {
@@ -119,7 +119,7 @@ class Configurations {
   bool get alwaysAcceptConnection => _alwaysAcceptConnection ?? false;
 
   void loadAlwaysAcceptConnection() {
-    _alwaysAcceptConnection = localPref.getAlwaysAcceptConnection;
+    _alwaysAcceptConnection ??= localPref.getAlwaysAcceptConnection;
   }
 
   Future<void> setAlwaysAcceptConnection(bool alwaysAccept) async {
@@ -140,18 +140,32 @@ class Configurations {
     _allowToBrowseFile = allowToBrowseFile;
   }
 
+  //Receiver Port Number
+  int? _receiverPortNumber;
+  int get receiverPortNumber => _receiverPortNumber ?? Constants.DEFAULT_PORT_2;
+
+  void loadReceiverPortNumber() {
+    _receiverPortNumber = localPref.getReceiverPortNumber;
+  }
+
+  Future<void> setReceiverPortNumber(int receiverPortNumber) async {
+    await localPref.setReceiverPortNumber(receiverPortNumber);
+    _receiverPortNumber = receiverPortNumber;
+  }
+
   //Load all
 
   Future<void> loadAllInit() async {
     await ImpulseSharedPrefImpl.instance.loadInstance();
     await _loadHiveInit();
+    await _loadPaths();
     loadUser();
     loadTheme();
     loadRootFolderLocation();
     loadDestinationLocation();
     loadAlwaysAcceptConnection();
     loadAllowToBrowseFile();
-    await _loadPaths();
+    loadReceiverPortNumber();
     // composition = await AssetLottie("assets/lottie/waiting.json").load();
   }
 

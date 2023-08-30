@@ -13,17 +13,25 @@ import 'package:impulse/services/services.dart';
 
 final serverControllerProvider =
     ChangeNotifierProvider<ServerController>((ref) {
-  final alert = ref.watch(alertStateNotifier.notifier);
-  final connectedUser = ref.watch(connectUserStateProvider.notifier);
+  final alert = ref.read(alertStateNotifier.notifier);
+  final connectedUser = ref.read(connectUserStateProvider.notifier);
   final shareableProvider = ref.read(shareableItemsProvider.notifier);
-  final uploadManager = ref.watch(uploadManagerProvider.notifier);
-  return ServerController(
+  final uploadManager = ref.read(uploadManagerProvider.notifier);
+
+  final serverController = ServerController(
     alertState: alert,
     connectedUserState: connectedUser,
     hiveManager: HiveManagerImpl(),
     shareableItemsProvider: shareableProvider,
     uploadManagerController: uploadManager,
   );
+  ref.listen(
+    connectionStateProvider,
+    (previousState, newState) {
+      serverController.connectionState = newState;
+    },
+  );
+  return serverController;
 });
 
 class ServerController extends ServerManager with ChangeNotifier {
@@ -42,8 +50,9 @@ class ServerController extends ServerManager with ChangeNotifier {
   });
 
   Completer<bool> alertResponder = Completer<bool>();
-  final StreamController<Map<String, dynamic>> _receivableStreamController =
+  StreamController<Map<String, dynamic>> _receivableStreamController =
       StreamController<Map<String, dynamic>>();
+  ConnectionState _connectionState = ConnectionState.notConnected;
   Timer? _timer;
   // List<Item> _items = [];
 
@@ -63,6 +72,10 @@ class ServerController extends ServerManager with ChangeNotifier {
   @override
   set port(int? port) {
     _port = port;
+  }
+
+  set connectionState(ConnectionState state) {
+    _connectionState = state;
   }
 
   ///This is called everytime we select an file or item
@@ -98,34 +111,42 @@ class ServerController extends ServerManager with ChangeNotifier {
   @override
   Future<bool> handleClientServerNotification(
       Map<String, dynamic> serverMap) async {
-    // ignore: todo
-    //TODO: remove alertstate entirely and use connectedUserState.setUserState(serverInfo, fling: true)
-    // to show alert instead
-    final shouldAcceptConnection =
-        Configurations.instance.alwaysAcceptConnection;
+    try {
+      // ignore: todo
+      //TODO: remove alertstate entirely and use connectedUserState.setUserState(serverInfo, fling: true)
+      // to show alert instead
 
-    final serverInfo = ServerInfo.fromMap(serverMap);
-    if (shouldAcceptConnection == false) {
-      alertState.updateState(true);
-      connectedUserState.setUserState(serverInfo, fling: true);
+      if (_connectionState.isDisConnected) {
+        alertResponder = Completer<bool>();
+      }
+      final shouldAcceptConnection =
+          Configurations.instance.alwaysAcceptConnection;
 
-      /// so that users wont take too long
-      _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-        handleAlertResponse(false);
-      });
-    } else {
-      alertResponder.complete(true);
+      final serverInfo = ServerInfo.fromMap(serverMap);
+      if (shouldAcceptConnection == false) {
+        alertState.updateState(true);
+        connectedUserState.setUserState(serverInfo, fling: true);
+
+        /// so that users wont take too long
+        _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+          handleAlertResponse(false);
+        });
+      } else {
+        alertResponder.complete(true);
+      }
+
+      ////
+      final result = await alertResponder.future;
+      if (result == false) {
+        connectedUserState.setUserState(null);
+      } else {
+        connectedUserState.setUserState(serverInfo);
+      }
+      // _showAcceptDeclineAlert = false;
+      return result;
+    } catch (e) {
+      return false;
     }
-
-    ////
-    final result = await alertResponder.future;
-    if (result == false) {
-      connectedUserState.setUserState(null);
-    } else {
-      connectedUserState.setUserState(serverInfo);
-    }
-    // _showAcceptDeclineAlert = false;
-    return result;
   }
 
   void handleAlertResponse(bool response) async {

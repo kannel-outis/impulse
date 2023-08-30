@@ -30,7 +30,7 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
             listReset: true,
           );
       //TODO: find a way to listen to this without using this approach
-      ref.read(connectionStateProvider.notifier).addListener(_listener);
+      // ref.read(connectionStateProvider.notifier).addListener(_listener);
     });
   }
 
@@ -50,6 +50,9 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(connectionStateProvider, (prev, next) {
+      _listener(next);
+    });
     return Dialog(
       child: Container(
         height: 400,
@@ -123,8 +126,9 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
 
                         provider.selectHost(serverInfo);
 
-                        final result =
-                            await provider.createServerAndNotifyHost();
+                        final result = await provider.createServerAndNotifyHost(
+                          myPort: Configurations.instance.receiverPortNumber,
+                        );
                         if (result == null) {
                           ref
                               .read(userTypeProvider.notifier)

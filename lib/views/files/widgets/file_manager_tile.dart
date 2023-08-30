@@ -130,32 +130,32 @@ class _FileManagerTileState extends ConsumerState<FileManagerTile> {
     if (file.isFolder) {
       return _buildFolderPreffix();
     }
-    // if (file.fileType == null) {
-    //   return const FilePlaceHolder(name: "unknown");
-    // }
-    // if (file.fileType!.isImage) {
-    //   if (!Platform.isAndroid) {
-    //     return FilePlaceHolder(name: file.name);
-    //   }
-    //   return MediaThumbnail(
-    //     file: (file as ImpulseFile).file.path,
-    //     isVideo: false,
-    //     size: const Size(150, 150),
-    //     placeHolder: FilePlaceHolder(name: file.name),
-    //   );
-    // }
-    // if (file.fileType!.isVideo) {
-    //   if (!Platform.isAndroid) {
-    //     return FilePlaceHolder(name: file.name);
-    //   }
-    //   return MediaThumbnail(
-    //     file: (file as ImpulseFile).file.path,
-    //     isVideo: true,
-    //     placeHolder: FilePlaceHolder(name: file.name),
-    //   );
-    // } else {
-    return FilePlaceHolder(name: file.name);
-    // }
+    if (file.fileType == null) {
+      return const FilePlaceHolder(name: "unknown");
+    }
+    if (file.fileType!.isImage) {
+      if (!isAndroid) {
+        return FilePlaceHolder(name: file.name);
+      }
+      return MediaThumbnail(
+        file: (file as ImpulseFile).file.path,
+        isVideo: false,
+        size: const Size(150, 150),
+        placeHolder: FilePlaceHolder(name: file.name),
+      );
+    }
+    if (file.fileType!.isVideo) {
+      if (!isAndroid) {
+        return FilePlaceHolder(name: file.name);
+      }
+      return MediaThumbnail(
+        file: (file as ImpulseFile).file.path,
+        isVideo: true,
+        placeHolder: FilePlaceHolder(name: file.name),
+      );
+    } else {
+      return FilePlaceHolder(name: file.name);
+    }
   }
 
   Container _buildFolderPreffix() {

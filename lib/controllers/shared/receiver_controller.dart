@@ -5,7 +5,6 @@ import 'package:impulse/app/app.dart';
 import 'package:impulse/app/impulse_exception.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/models.dart';
-import 'package:impulse/models/server_info.dart';
 import 'package:impulse/services/services.dart';
 
 final receiverProvider = ChangeNotifierProvider<ReceiverProvider>(
@@ -57,7 +56,7 @@ class ReceiverProvider extends ChangeNotifier {
       return exception;
     }
     final result =
-        await (client as Host).createServer(address: address, port: port);
+        await (client as ClientHost).createServer(address: address, port: port);
     if (result is Left) {
       final exception = (result as Left).value as AppException;
       onErrorCallback?.call(exception);
@@ -125,12 +124,12 @@ class ReceiverProvider extends ChangeNotifier {
   ///This method is called from the ui immediately after selecting a host preferably.
   ///It creates the client server and notifies the host by making a post request to the host server
   Future<AppException?> createServerAndNotifyHost(
-      {String? ipAddress, int? port}) async {
-    if (selectedHost == null && (ipAddress == null || port == null)) {
+      {String? hostIpAddress, int? hostPort, required int myPort}) async {
+    if (selectedHost == null && (hostIpAddress == null || hostPort == null)) {
       return const AppException("No Host has been Selected or found");
     }
     // ignore: unnecessary_this
-    final exception = await this.createServer(port: Constants.DEFAULT_PORT_2);
+    final exception = await this.createServer(port: myPort);
     if (exception != null) {
       return exception;
     } else {
@@ -140,8 +139,8 @@ class ReceiverProvider extends ChangeNotifier {
       /// and in case a qr code is used, ipAddress and port parameters should not be empty
       final myInfo = _myServer.myServerInfo;
       final notifyHost = await client.createServerAndNotifyHost(
-        address: ipAddress ?? selectedHost!.ipAddress!,
-        port: port ?? selectedHost?.port,
+        address: hostIpAddress ?? selectedHost!.ipAddress!,
+        port: hostPort ?? selectedHost?.port,
         body: myInfo.toMap(),
       );
       if (notifyHost is Left) {

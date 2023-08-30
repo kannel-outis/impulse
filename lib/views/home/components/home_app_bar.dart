@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
@@ -6,15 +7,14 @@ import 'package:impulse/controllers/controllers.dart';
 import '../widgets/top_stack.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const HomeAppBar({
-    super.key,
-  });
+  final String title;
+  const HomeAppBar({super.key, required this.title});
 
-  ImageProvider get _imageProvider {
-    if (Configurations.instance.user!.displayImage.isAsset) {
-      return AssetImage(Configurations.instance.user!.displayImage);
+  ImageProvider _imageProvider(String image) {
+    if (image.isAsset) {
+      return AssetImage(image);
     } else {
-      return FileImage(Configurations.instance.user!.displayImage.toFile);
+      return FileImage(image.toFile);
     }
   }
 
@@ -39,7 +39,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                 //   width: 30 * $styles.scale,
                 // ),
                 Text(
-                  "Home",
+                  title,
                   style: $styles.text.h3.copyWith(
                     fontWeight: FontWeight.w400,
                   ),
@@ -52,16 +52,11 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                       // SizedBox(width: $styles.insets.md * .5),
 
                       SizedBox(width: $styles.insets.md),
-                      GestureDetector(
-                        onTap: () async {
-                          // Configurations.of(context).state.toggleThemeMode();
-                          // return;
-                          final genericRef = GenericProviderRef<WidgetRef>(ref);
 
-                          await share(genericRef);
-                        },
-                        child: GestureDetector(
-                          child: Container(
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final image = ref.watch(profileImageProvider);
+                          return Container(
                             height: 40.scale,
                             width: 40.scale,
                             decoration: BoxDecoration(
@@ -69,12 +64,16 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                               borderRadius:
                                   BorderRadius.circular($styles.corners.xxlg),
                               image: DecorationImage(
-                                image: _imageProvider,
+                                image: _imageProvider(
+                                  image ??
+                                      Configurations
+                                          .instance.user!.displayImage,
+                                ),
                                 fit: BoxFit.cover,
                               ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     ],
                   ),

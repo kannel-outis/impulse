@@ -6,6 +6,7 @@ export 'file_manager/file_manager_controller.dart';
 export 'file_manager/path_bar_manager_controller.dart';
 export 'home/home.dart';
 export 'home/home_provider.dart';
+export 'home/profile_image.dart';
 export 'shared/alert_state_controller.dart';
 export 'shared/connected_user.dart';
 export 'shared/connection_state_provider.dart';

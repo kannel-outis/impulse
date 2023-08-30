@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
+import 'package:impulse/views/shared/impulse_ink_well.dart';
 
 class ModeChild<T> extends StatefulWidget {
   final T selected;
@@ -38,34 +39,32 @@ class _ModeChildState<T> extends State<ModeChild<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: () {
-          if (widget.value == widget.selected) return;
-          widget.onSelected?.call(widget.value);
-        },
-        child: SizedBox(
-          height: 40,
-          child: Row(
-            children: [
-              Radio<T>(
-                value: widget.value,
-                groupValue: _selected,
-                onChanged: (value) {
-                  // print("object");
-                  // if (value == null) return;
-                  // _selected = value;
-                  // setState(() {});
-                },
-              ),
-              const SizedBox(width: 5),
-              Text(
-                widget.label,
-                style: $styles.text.body,
-              ),
-            ],
-          ),
+    return ImpulseInkWell(
+      onTap: () {
+        if (widget.value == widget.selected) return;
+        widget.onSelected?.call(widget.value);
+      },
+      child: Container(
+        color: Colors.transparent,
+        height: 40,
+        child: Row(
+          children: [
+            Radio<T>(
+              value: widget.value,
+              groupValue: _selected,
+              onChanged: (value) {
+                // print("object");
+                // if (value == null) return;
+                // _selected = value;
+                // setState(() {});
+              },
+            ),
+            const SizedBox(width: 5),
+            Text(
+              widget.label,
+              style: $styles.text.body,
+            ),
+          ],
         ),
       ),
     );
