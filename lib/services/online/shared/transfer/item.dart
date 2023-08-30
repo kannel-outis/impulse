@@ -32,6 +32,12 @@ abstract class Item extends StateListenable with EquatableMixin {
   });
   DateTime? startTime;
 
+  DateTime _endTime = DateTime.now();
+  DateTime get endTime => _endTime;
+  set setEndTime(DateTime endtime) {
+    _endTime = endtime;
+  }
+
   Future<void> receive() async {
     throw UnimplementedError();
   }

@@ -175,6 +175,14 @@ class _SettingScreenState extends State<SettingScreen> {
             ),
             const _Spacer(),
             SettingsTile(
+              title: "History",
+              subTitle: "View all shared and received items",
+              onTap: () {
+                context.push(ImpulseRouter.routes.history);
+              },
+            ),
+            const _Spacer(),
+            SettingsTile(
               title: "Licenses",
               subTitle: "View licenses for all open source packages used",
               onTap: () {},

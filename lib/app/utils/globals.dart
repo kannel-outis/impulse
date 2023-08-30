@@ -40,6 +40,7 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
   /// specifically for items that were selected before connection
   /// This may be replaced by own id in the future instead of ip and port
   final files = ref.read(selectedItemsProvider);
+  if (files.isEmpty) return;
   for (final item in files) {
     item.homeDestination ??= (
       ref.read(serverControllerProvider).ipAddress!,
@@ -70,6 +71,10 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
 }
 
 Future<void> disconnect(GenericProviderRef ref) async {
+  //is user was a client, close server
+  if (ref.read(userTypeProvider) != UserType.host) {
+    ref.read(receiverProvider).disconnect();
+  }
   //set connecteduser to null
   ref
       .read(connectUserStateProvider.notifier)
@@ -77,13 +82,8 @@ Future<void> disconnect(GenericProviderRef ref) async {
   //clear all lists
   ref.read(shareableItemsProvider.notifier).clear();
   ref.read(selectedItemsProvider.notifier).clear();
+  ref.read(receivableListItems.notifier).clear();
   ref.read(uploadManagerProvider.notifier).clear();
-
-
-  //is user was a client, close server
-  if (ref.read(userTypeProvider) != UserType.host) {
-    ref.read(receiverProvider).disconnect();
-  }
 
   // set connection state to disconneted
   ref
@@ -92,8 +92,9 @@ Future<void> disconnect(GenericProviderRef ref) async {
 
   //set port and ip to null
   if (ref.read(userTypeProvider) == UserType.client) {
-    ref.read(serverControllerProvider).port = null;
-    ref.read(serverControllerProvider).ipAddress = null;
+    ref.read(serverControllerProvider)
+      ..port = null
+      ..ipAddress = null;
   }
   //remove all server list for shareable items
   // ref.read(serverControllerProvider).setSelectedItems([]);

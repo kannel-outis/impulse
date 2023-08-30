@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
@@ -51,37 +52,28 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                       // SizedBox(width: $styles.insets.md * .5),
 
                       SizedBox(width: $styles.insets.md),
-                      GestureDetector(
-                        onTap: () async {
-                          // Configurations.of(context).state.toggleThemeMode();
-                          // return;
-                          // final genericRef = GenericProviderRef<WidgetRef>(ref);
 
-                          // await share(genericRef);
-                        },
-                        child: Consumer(
-                          builder: (context, ref, child) {
-                            final image = ref.watch(profileImageProvider);
-                            return Container(
-                              height: 40.scale,
-                              width: 40.scale,
-                              decoration: BoxDecoration(
-                                color:
-                                    Theme.of(context).colorScheme.surfaceTint,
-                                borderRadius:
-                                    BorderRadius.circular($styles.corners.xxlg),
-                                image: DecorationImage(
-                                  image: _imageProvider(
-                                    image ??
-                                        Configurations
-                                            .instance.user!.displayImage,
-                                  ),
-                                  fit: BoxFit.cover,
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final image = ref.watch(profileImageProvider);
+                          return Container(
+                            height: 40.scale,
+                            width: 40.scale,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surfaceTint,
+                              borderRadius:
+                                  BorderRadius.circular($styles.corners.xxlg),
+                              image: DecorationImage(
+                                image: _imageProvider(
+                                  image ??
+                                      Configurations
+                                          .instance.user!.displayImage,
                                 ),
+                                fit: BoxFit.cover,
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),

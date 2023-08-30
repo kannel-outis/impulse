@@ -23,11 +23,11 @@ class AppColors {
         background: _accentColor1,
         onBackground: _accentColor2,
         surface: _accentColor1,
-        onSurface: _accentColor2,
         //icon color
+        onSurface: _iconColor1,
         tertiary: _iconColor1,
         onTertiary: _iconColor3,
-        // tertiaryContainer: _iconColor3,
+        tertiaryContainer: _iconColor3,
       );
 
   ///light mode
@@ -47,8 +47,8 @@ class AppColors {
         background: _accentColorLight,
         onBackground: _accentColorLight,
         surface: _accentColorLight,
-        onSurface: _accentColorLight,
         //icon color
+        onSurface: _iconColorLight,
         tertiary: _iconColorLight,
         onTertiary: _iconColorLight,
         surfaceTint: _fontColorLight2,
@@ -57,6 +57,7 @@ class AppColors {
   ThemeData get theme {
     return ThemeData.from(
       colorScheme: _scheme, useMaterial3: true,
+
       textTheme: ThemeData.dark().textTheme.apply(
             bodyColor: _fontColor1,
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' hide ConnectionState;
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
@@ -37,6 +38,7 @@ class _HomePageState extends ConsumerState<HomePage>
   bool tabBarTapped = false;
   bool isOverlayOpen = false;
   bool waitForOverlayReverseAnimation = true;
+  bool _holdKeyboardPress = false;
   @override
   void initState() {
     super.initState();
@@ -88,69 +90,101 @@ class _HomePageState extends ConsumerState<HomePage>
           return true;
         }
       },
-      child: SafeArea(
-        child: LayoutBuilder(builder: (context, constraints) {
-          return Stack(
-            children: [
-              Scaffold(
-                appBar: const HomeAppBar(
-                  // title:
-                  //     bars.keys.toList()[widget.navigationShell.currentIndex],
-                  title: "Impulse",
-                ),
-                body: Flex(
-                  direction: _isNotPhoneSize(constraints.maxWidth)
-                      ? Axis.horizontal
-                      : Axis.vertical,
-                  children: [
-                    _sideBar(constraints.maxWidth),
-                    VerticalDivider(
-                      thickness: .5,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .tertiary
-                          .withOpacity(.2),
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          if (widget.navigationShell.currentIndex ==
-                              (isAndroid ? 1 : 0))
-                            const PathBuilder(),
-                          Expanded(child: widget.navigationShell),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                floatingActionButtonLocation:
-                    ref.watch(connectionStateProvider).isConnected
-                        ? const ConnectedFABLocation()
-                        : null,
-                floatingActionButton:
-                    _isNotPhoneSize(constraints.maxWidth) ? null : _fab(),
-                bottomNavigationBar: _isNotPhoneSize(constraints.maxWidth)
-                    ? null
-                    : MyBottomNavBar(
-                        index: widget.navigationShell.currentIndex,
-                        onChanged: onChanged,
-                        bars: bars,
-                      ),
-              ),
-              if (!_isNotPhoneSize(constraints.maxWidth))
-                Consumer(
-                  builder: (context, ref, child) {
-                    final connectionState = ref.watch(connectionStateProvider);
-                    if (connectionState == ConnectionState.connected) {
-                      return const TransferPage();
-                    } else {
-                      return const SizedBox();
-                    }
+      child: KeyboardListener(
+        focusNode: FocusNode(),
+        onKeyEvent: (event) async {
+          if (event.physicalKey == PhysicalKeyboardKey.enter) {
+            //prevent firing twice on one press
+            if (_holdKeyboardPress == false) {
+              _holdKeyboardPress = true;
+
+              if (ref.read(connectionStateProvider).isConnected) {
+                final genericRef = GenericProviderRef<WidgetRef>(ref);
+
+                await share(genericRef);
+                Future.delayed(
+                  const Duration(milliseconds: 100),
+                  () {
+                    _holdKeyboardPress = false;
                   },
+                );
+                return;
+              }
+              showModel(true, context);
+              Future.delayed(
+                const Duration(milliseconds: 100),
+                () {
+                  _holdKeyboardPress = false;
+                },
+              );
+            }
+          }
+        },
+        child: SafeArea(
+          child: LayoutBuilder(builder: (context, constraints) {
+            return Stack(
+              children: [
+                Scaffold(
+                  appBar: const HomeAppBar(
+                    // title:
+                    //     bars.keys.toList()[widget.navigationShell.currentIndex],
+                    title: "Impulse",
+                  ),
+                  body: Flex(
+                    direction: _isNotPhoneSize(constraints.maxWidth)
+                        ? Axis.horizontal
+                        : Axis.vertical,
+                    children: [
+                      _sideBar(constraints.maxWidth),
+                      VerticalDivider(
+                        thickness: .5,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .tertiary
+                            .withOpacity(.2),
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            if (widget.navigationShell.currentIndex ==
+                                (isAndroid ? 1 : 0))
+                              const PathBuilder(),
+                            Expanded(child: widget.navigationShell),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  floatingActionButtonLocation:
+                      ref.watch(connectionStateProvider).isConnected
+                          ? const ConnectedFABLocation()
+                          : null,
+                  floatingActionButton:
+                      _isNotPhoneSize(constraints.maxWidth) ? null : _fab(),
+                  bottomNavigationBar: _isNotPhoneSize(constraints.maxWidth)
+                      ? null
+                      : MyBottomNavBar(
+                          index: widget.navigationShell.currentIndex,
+                          onChanged: onChanged,
+                          bars: bars,
+                        ),
                 ),
-            ],
-          );
-        }),
+                if (!_isNotPhoneSize(constraints.maxWidth))
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final connectionState =
+                          ref.watch(connectionStateProvider);
+                      if (connectionState == ConnectionState.connected) {
+                        return const TransferPage();
+                      } else {
+                        return const SizedBox();
+                      }
+                    },
+                  ),
+              ],
+            );
+          }),
+        ),
       ),
     );
   }

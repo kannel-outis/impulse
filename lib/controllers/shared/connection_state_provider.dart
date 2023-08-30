@@ -23,4 +23,6 @@ class ConnectionStateProvider extends StateNotifier<ConnectionState> {
       onConnectionCallback?.call();
     }
   }
+
+  
 }

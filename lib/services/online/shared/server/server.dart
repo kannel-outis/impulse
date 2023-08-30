@@ -254,6 +254,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           IState state) {
         hiveItem.iState = state;
         hiveItem.processedBytes = received;
+        hiveItem.setEndTime = DateTime.now();
         hiveItem.save();
         // print("${state} ::::::::::::::::::");
       }

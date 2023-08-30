@@ -15,7 +15,7 @@ final receivableListItems =
     StateNotifierProvider<ReceiveableItemsProvider, List<ReceiveableItem>>(
         (ref) {
   final stream =
-      ref.watch(serverControllerProvider).receivablesStreamController.stream;
+      ref.read(serverControllerProvider).receivablesStreamController.stream;
   final downloadManager = ref.read(downloadManagerProvider.notifier);
 
   return ReceiveableItemsProvider(
@@ -59,6 +59,7 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
       void listener(int received, int totalSize, file, String? reason, state) {
         hiveItem?.iState = state;
         hiveItem?.processedBytes = received;
+        hiveItem?.setEndTime = DateTime.now();
         hiveItem?.save();
         if (state.isCompleted) {
           item.removeListener(listener);
@@ -73,6 +74,10 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         downloadManager.download();
       }
     });
+  }
+
+  void clear() {
+    state = [];
   }
 
   void cancelItemWithId(ReceiveableItem item) async {

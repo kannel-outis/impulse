@@ -92,16 +92,16 @@ class _SetInfoPageState extends ConsumerState<SetInfoPage> {
       appBar: widget.userName == null && widget.profileImage == null
           ? null
           : AppBar(
-              leading: IconButton(
-                onPressed: () {
-                  context.pop();
-                },
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Theme.of(context).colorScheme.tertiary,
-                ),
+              // leading: IconButton(
+              //   onPressed: () {
+              //     context.pop();
+              //   },
+              //   icon: Icon(
+              //     Icons.arrow_back,
+              //     color: Theme.of(context).colorScheme.tertiary,
+              //   ),
+              // ),
               ),
-            ),
       body: PaddedBody(
         child: SizedBox(
           width: double.infinity,
