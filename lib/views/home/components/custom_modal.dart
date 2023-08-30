@@ -173,7 +173,7 @@ class _CustomClientBottomModalSheetState
   ];
   final GlobalKey _parentStackKey = GlobalKey();
   final GlobalKey _searchKey = GlobalKey();
-  Timer? _scanTick = null;
+  Timer? _scanTick;
 
   double get _modalInnerPadding => 50.0;
 
@@ -317,6 +317,9 @@ class _CustomClientBottomModalSheetState
                           $styles.sizes.modalBoxSize, context),
                       child: GestureDetector(
                         onTap: () async {
+                          if (ref.read(connectionStateProvider).isConnected) {
+                            return;
+                          }
                           await _createServerAndConnect(
                             serverInfo:
                                 receiverController.availableHostServers[i],
@@ -336,7 +339,7 @@ class _CustomClientBottomModalSheetState
                                   borderRadius:
                                       BorderRadius.circular($styles.corners.lg),
                                   image: DecorationImage(
-                                    image: NetworkImage(
+                                    image: _imageProvider(
                                       receiverController.availableHostServers[i]
                                           .user.displayImage,
                                     ),
@@ -363,6 +366,14 @@ class _CustomClientBottomModalSheetState
         ],
       ),
     );
+  }
+
+  ImageProvider _imageProvider(String imageUrl) {
+    if (imageUrl.contains("assets")) {
+      return AssetImage(imageUrl.split("=").last);
+    } else {
+      return NetworkImage(imageUrl);
+    }
   }
 
   Offset _getSearchIconOffset() {
@@ -450,10 +461,9 @@ class _CustomClientBottomModalSheetState
       provider.selectHost(serverInfo);
     }
     final result = await provider.createServerAndNotifyHost(
-      hostIpAddress: ipAddress,
-      hostPort: port,
-      myPort: Configurations.instance.receiverPortNumber
-    );
+        hostIpAddress: ipAddress,
+        hostPort: port,
+        myPort: Configurations.instance.receiverPortNumber);
     if (result == null) {
       ref.read(userTypeProvider.notifier).setUserState(UserType.client);
       ref.read(homeProvider).shouldShowTopStack = true;

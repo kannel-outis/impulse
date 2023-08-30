@@ -22,6 +22,7 @@ enum ConnectionState {
   }
 
   bool get isConnected => this == ConnectionState.connected;
+  bool get isDisConnected => this == ConnectionState.disconnected;
 }
 
 enum UserType {

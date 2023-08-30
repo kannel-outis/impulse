@@ -1,4 +1,4 @@
-// ignore_for_file: constant_identifier_names, unused_field
+// ignore_for_file: constant_identifier_names, unused_field, use_build_context_synchronously
 
 import 'dart:io';
 
@@ -39,8 +39,10 @@ class _SetInfoPageState extends ConsumerState<SetInfoPage> {
   late final PageController pageController;
   late final TextEditingController _controller;
   int currentIndex = 0;
+  bool _hasAcceptedStoragePermission = true;
 
-  bool isLoadingImage = false;
+  bool _isLoadingImage = false;
+  bool _isLoading = false;
 
   List<(_ImageType imageTyper, String path)> images = [
     (_ImageType.Assets, AssetsImage.DEFAULT_DISPLAY_IMAGE),
@@ -87,17 +89,19 @@ class _SetInfoPageState extends ConsumerState<SetInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            context.pop();
-          },
-          icon: Icon(
-            Icons.arrow_back,
-            color: Theme.of(context).colorScheme.tertiary,
-          ),
-        ),
-      ),
+      appBar: widget.userName == null && widget.profileImage == null
+          ? null
+          : AppBar(
+              leading: IconButton(
+                onPressed: () {
+                  context.pop();
+                },
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Theme.of(context).colorScheme.tertiary,
+                ),
+              ),
+            ),
       body: PaddedBody(
         child: SizedBox(
           width: double.infinity,
@@ -142,7 +146,7 @@ class _SetInfoPageState extends ConsumerState<SetInfoPage> {
                           : MouseCursor.defer,
                       child: GestureDetector(
                         onTap: () async {
-                          if (isLoadingImage) return;
+                          if (_isLoadingImage) return;
                           if (currentIndex == images.length) {
                             final result =
                                 await picker.FilePicker.platform.pickFiles(
@@ -153,8 +157,7 @@ class _SetInfoPageState extends ConsumerState<SetInfoPage> {
                             );
 
                             if (result != null) {
-                              print(result.files.first.size);
-                              isLoadingImage = true;
+                              _isLoadingImage = true;
                               setState(() {});
                               // final thumbNail = await Configurations
                               //     .instance.impulseUtils
@@ -166,7 +169,7 @@ class _SetInfoPageState extends ConsumerState<SetInfoPage> {
                               // );
                               images
                                   .add((_ImageType.File, result.paths.first!));
-                              isLoadingImage = false;
+                              _isLoadingImage = false;
                               setState(() {});
                             }
 
@@ -183,7 +186,7 @@ class _SetInfoPageState extends ConsumerState<SetInfoPage> {
                           assetImages: images,
                           index: images.length,
                           child: Center(
-                            child: isLoadingImage
+                            child: _isLoadingImage
                                 ? const CircularProgressIndicator(
                                     strokeWidth: 1,
                                   )
@@ -238,27 +241,41 @@ class _SetInfoPageState extends ConsumerState<SetInfoPage> {
               SizedBox(height: $styles.insets.offset),
               GestureDetector(
                 onTap: () async {
-                  final selectedImage = images[currentIndex];
-                  final user = User(
-                    name: _controller.value.text.trim(),
-                    id: const Uuid().v4(),
-                    deviceName: Platform.operatingSystem,
-                    deviceOsVersion: Platform.operatingSystemVersion,
-                    displayImage: selectedImage.$2,
-                  );
-                  Configurations.instance.saveUserInfo(user.toMap());
-                  ref
-                      .read(profileImageProvider.notifier)
-                      .onChanged(selectedImage.$2);
-                  // ignore: use_build_context_synchronously
-                  if (_isFirstTime) {
-                    context.go(
-                      isAndroid
-                          ? ImpulseRouter.routes.home
-                          : ImpulseRouter.routes.folder,
-                    );
+                  _isLoading = true;
+                  setState(() {});
+                  final request =
+                      await ImpulsePermissionHandler.checkStoragePermission();
+                  if (!request) {
+                    _hasAcceptedStoragePermission = false;
+                    _isLoading = false;
+                    setState(() {});
+                    return;
                   } else {
-                    context.pop();
+                    _hasAcceptedStoragePermission = false;
+                    setState(() {});
+                    final selectedImage = images[currentIndex];
+                    final user = User(
+                      name: _controller.value.text.trim(),
+                      id: const Uuid().v4(),
+                      deviceName: Platform.operatingSystem,
+                      deviceOsVersion: Platform.operatingSystemVersion,
+                      displayImage: selectedImage.$2,
+                    );
+                    Configurations.instance.saveUserInfo(user.toMap());
+                    ref
+                        .read(profileImageProvider.notifier)
+                        .onChanged(selectedImage.$2);
+                    _isLoading = false;
+                    setState(() {});
+                    if (_isFirstTime) {
+                      context.go(
+                        isAndroid
+                            ? ImpulseRouter.routes.home
+                            : ImpulseRouter.routes.folder,
+                      );
+                    } else {
+                      context.pop();
+                    }
                   }
                 },
                 child: Container(
@@ -269,15 +286,31 @@ class _SetInfoPageState extends ConsumerState<SetInfoPage> {
                     borderRadius: BorderRadius.circular($styles.corners.md),
                   ),
                   child: Center(
-                    child: Text(
-                      "Save",
-                      style: $styles.text.h3.copyWith(
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            "Save",
+                            style: $styles.text.h3.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
               ),
+              SizedBox(height: $styles.insets.offset),
+              if (!_hasAcceptedStoragePermission)
+                Text(
+                  "Permission is needed",
+                  style: $styles.text.body
+                      .copyWith(color: Theme.of(context).colorScheme.error),
+                ),
             ],
           ),
         ),

@@ -98,34 +98,42 @@ class ServerController extends ServerManager with ChangeNotifier {
   @override
   Future<bool> handleClientServerNotification(
       Map<String, dynamic> serverMap) async {
-    // ignore: todo
-    //TODO: remove alertstate entirely and use connectedUserState.setUserState(serverInfo, fling: true)
-    // to show alert instead
-    final shouldAcceptConnection =
-        Configurations.instance.alwaysAcceptConnection;
+    try {
+      // ignore: todo
+      //TODO: remove alertstate entirely and use connectedUserState.setUserState(serverInfo, fling: true)
+      // to show alert instead
+      // if (connectionState.isDisConnected) {
+      //   alertResponder = Completer<bool>();
+      // }
 
-    final serverInfo = ServerInfo.fromMap(serverMap);
-    if (shouldAcceptConnection == false) {
-      alertState.updateState(true);
-      connectedUserState.setUserState(serverInfo, fling: true);
+      final shouldAcceptConnection =
+          Configurations.instance.alwaysAcceptConnection;
 
-      /// so that users wont take too long
-      _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-        handleAlertResponse(false);
-      });
-    } else {
-      alertResponder.complete(true);
+      final serverInfo = ServerInfo.fromMap(serverMap);
+      if (shouldAcceptConnection == false) {
+        alertState.updateState(true);
+        connectedUserState.setUserState(serverInfo, fling: true);
+
+        /// so that users wont take too long
+        _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+          handleAlertResponse(false);
+        });
+      } else {
+        alertResponder.complete(true);
+      }
+
+      ////
+      final result = await alertResponder.future;
+      if (result == false) {
+        connectedUserState.setUserState(null);
+      } else {
+        connectedUserState.setUserState(serverInfo);
+      }
+      // _showAcceptDeclineAlert = false;
+      return result;
+    } catch (e) {
+      return false;
     }
-
-    ////
-    final result = await alertResponder.future;
-    if (result == false) {
-      connectedUserState.setUserState(null);
-    } else {
-      connectedUserState.setUserState(serverInfo);
-    }
-    // _showAcceptDeclineAlert = false;
-    return result;
   }
 
   void handleAlertResponse(bool response) async {

@@ -18,3 +18,4 @@ export 'utils/my_icons.dart';
 export 'utils/file_placeholder.dart';
 
 export 'dart:convert';
+export "permission_handler.dart";
