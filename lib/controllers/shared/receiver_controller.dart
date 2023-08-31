@@ -13,6 +13,8 @@ final receiverProvider = ChangeNotifierProvider<ReceiverProvider>(
     final servermanager = ref.read(serverControllerProvider);
     final connectedUserState = ref.read(connectUserStateProvider.notifier);
     final sessionState = ref.read(sessionStateProvider.notifier);
+    final connectedUserPreviousSessionState =
+        ref.read(connectedUserPreviousSessionStateProvider.notifier);
     return ReceiverProvider(
       servermanager,
       connectedUserState: connectedUserState,
@@ -20,6 +22,8 @@ final receiverProvider = ChangeNotifierProvider<ReceiverProvider>(
       client: ClientImpl(
         gateWay: MyHttpServer(serverManager: servermanager),
       ),
+      hiveManager: HiveManagerImpl(),
+      connectedUserPreviousSessionState: connectedUserPreviousSessionState,
     );
   },
 );
@@ -29,12 +33,16 @@ class ReceiverProvider extends ChangeNotifier {
   final ServerManager _myServer;
   final ConnectedUserState connectedUserState;
   final SessionState sessionStateProvider;
+  final HiveManager hiveManager;
+  final ConnectedUserPreviousSessionState connectedUserPreviousSessionState;
 
   ReceiverProvider(
     this._myServer, {
     required this.client,
     required this.connectedUserState,
     required this.sessionStateProvider,
+    required this.hiveManager,
+    required this.connectedUserPreviousSessionState,
   });
 
   String? _address;
@@ -169,6 +177,20 @@ class ReceiverProvider extends ChangeNotifier {
           /// we have successfully connected to the select host/sender
           sessionStateProvider.setSession(session);
           connectedUserState.setUserState(_selectedHost);
+
+          ///////////////
+          ///The [Host] implementation of this is in "server_controller.dart"
+          final hiveUser =
+              await hiveManager.saveSession(_selectedHost!.user.id, session.id);
+          final previousSession = Session(
+            id: hiveUser.previousSessionId ?? session.id,
+            usersOnSession: [_myServer.myServerInfo.user, _selectedHost!.user],
+          );
+
+          ///We create a [connectedUserPreviousSessionState] based on the info we get
+          ///from the above op
+          connectedUserPreviousSessionState.setUserPrevSession(
+              previousSession, hiveUser);
           return null;
         }
       }

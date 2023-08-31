@@ -19,3 +19,4 @@ export 'shared/server_controller.dart';
 export 'shared/shared.dart';
 export 'shared/user_type_state_notifier.dart';
 export 'shared/session_state_provider.dart';
+export 'shared/connected_user_previous_session.dart';

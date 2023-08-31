@@ -79,11 +79,6 @@ Future<void> disconnect(GenericProviderRef ref) async {
   ref
       .read(connectUserStateProvider.notifier)
       .setUserState(null, disconnected: true);
-  //clear all lists
-  ref.read(shareableItemsProvider.notifier).clear();
-  ref.read(selectedItemsProvider.notifier).clear();
-  ref.read(receivableListItems.notifier).clear();
-  ref.read(uploadManagerProvider.notifier).clear();
 
   // set connection state to disconneted
   ref
@@ -96,6 +91,16 @@ Future<void> disconnect(GenericProviderRef ref) async {
       ..port = null
       ..ipAddress = null;
   }
+  //Set prev session and save to hive box
+  ref.read(connectedUserPreviousSessionStateProvider)?.$2
+    ?..previousSessionId = ref.read(sessionStateProvider)?.id
+    ..save();
+  //clear all lists
+  ref.read(shareableItemsProvider.notifier).clear();
+  ref.read(selectedItemsProvider.notifier).clear();
+  ref.read(receivableListItems.notifier).clear();
+  ref.read(uploadManagerProvider.notifier).clear();
+  ref.read(connectedUserPreviousSessionStateProvider.notifier).clear();
   //remove all server list for shareable items
   // ref.read(serverControllerProvider).setSelectedItems([]);
 }

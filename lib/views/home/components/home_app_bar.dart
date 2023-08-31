@@ -63,7 +63,9 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                           // final genericRef = GenericProviderRef<WidgetRef>(ref);
 
                           // await share(genericRef);
-                          log("${ref.read(sessionStateProvider)?.id}");
+                          log("PresentSessio: ${ref.read(sessionStateProvider)?.id}");
+                          log("LastSession: ${ref.read(connectedUserPreviousSessionStateProvider)?.$1.id}");
+                          log("HiveUserLastSession: ${ref.read(connectedUserPreviousSessionStateProvider)?.$2.previousSessionId}");
                         },
                         child: GestureDetector(
                           child: Container(

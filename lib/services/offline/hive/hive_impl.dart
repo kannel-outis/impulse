@@ -58,4 +58,19 @@ class HiveManagerImpl extends HiveManager {
       return box.get(key);
     }
   }
+
+  @override
+  Future<HiveUser> saveSession(String userId, String sessionId) async {
+    final userBox = Hive.box<HiveUser>(HiveInit.user);
+    if (userBox.containsKey(userId)) {
+      return userBox.get(userId)!;
+    }
+    final hiveUser = HiveUser(
+      id: userId,
+      previousSessionId: sessionId,
+      lastSessionDateTime: DateTime.now().toString(),
+    );
+    final _ = await userBox.put(userId, hiveUser);
+    return hiveUser;
+  }
 }

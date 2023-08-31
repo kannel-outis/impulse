@@ -18,14 +18,18 @@ final serverControllerProvider =
   final shareableProvider = ref.read(shareableItemsProvider.notifier);
   final uploadManager = ref.read(uploadManagerProvider.notifier);
   final sessionState = ref.read(sessionStateProvider.notifier);
+  final connectedUserPreviousSessionState =
+      ref.read(connectedUserPreviousSessionStateProvider.notifier);
 
   final serverController = ServerController(
-      alertState: alert,
-      connectedUserState: connectedUser,
-      hiveManager: HiveManagerImpl(),
-      shareableItemsProvider: shareableProvider,
-      uploadManagerController: uploadManager,
-      sessionStateN: sessionState);
+    alertState: alert,
+    connectedUserState: connectedUser,
+    hiveManager: HiveManagerImpl(),
+    shareableItemsProvider: shareableProvider,
+    uploadManagerController: uploadManager,
+    sessionStateN: sessionState,
+    connectedUserPreviousSessionState: connectedUserPreviousSessionState,
+  );
   ref.listen(
     connectionStateProvider,
     (previousState, newState) {
@@ -45,6 +49,7 @@ class ServerController extends ServerManager with ChangeNotifier {
   final HiveManager hiveManager;
   final ShareableItemsProvider shareableItemsProvider;
   final UploadManager uploadManagerController;
+  final ConnectedUserPreviousSessionState connectedUserPreviousSessionState;
 
   ServerController({
     required this.alertState,
@@ -53,6 +58,7 @@ class ServerController extends ServerManager with ChangeNotifier {
     required this.shareableItemsProvider,
     required this.uploadManagerController,
     required this.sessionStateN,
+    required this.connectedUserPreviousSessionState,
   });
 
   Completer<bool> alertResponder = Completer<bool>();
@@ -91,22 +97,10 @@ class ServerController extends ServerManager with ChangeNotifier {
     log("${_session?.id}");
   }
 
-  ///This is called everytime we select an file or item
-  ///cleed from [SelectedItems] provider
-  // @override
-  // void setSelectedItems(List<Item> items) {
-  //   _items = items;
-  // }
-
   @override
   List<Item> getSelectedItems() {
     return uploadManagerController.uploads;
   }
-
-  // @override
-  // List<String> getPaths() {
-  //   return <String>[];
-  // }
 
   @override
   ServerInfo get myServerInfo {
@@ -125,20 +119,16 @@ class ServerController extends ServerManager with ChangeNotifier {
   Future<bool> handleClientServerNotification(
       Map<String, dynamic> serverMap, Map<String, dynamic> sessionmap) async {
     try {
-      // ignore: todo
-      //TODO: remove alertstate entirely and use connectedUserState.setUserState(serverInfo, fling: true)
-      // to show alert instead
-
       if (_connectionState.isDisConnected) {
         alertResponder = Completer<bool>();
       }
       final shouldAcceptConnection =
           Configurations.instance.alwaysAcceptConnection;
 
-      final serverInfo = ServerInfo.fromMap(serverMap);
+      final requestUserServerInfo = ServerInfo.fromMap(serverMap);
       if (shouldAcceptConnection == false) {
         alertState.updateState(true);
-        connectedUserState.setUserState(serverInfo, fling: true);
+        connectedUserState.setUserState(requestUserServerInfo, fling: true);
         sessionStateN.setSession(Session.fromMap(sessionmap));
 
         /// so that users wont take too long
@@ -155,12 +145,32 @@ class ServerController extends ServerManager with ChangeNotifier {
         connectedUserState.setUserState(null);
         sessionStateN.cancelSession();
       } else {
-        connectedUserState.setUserState(serverInfo);
+        connectedUserState.setUserState(requestUserServerInfo);
+
+        ///The [Host] implementation. The [Client] implementation is in "receiver_controller.dart"
+        ///At this point [requestUserServerInfo] is already connected
+        ///we save a new session. not only do we save a new session but we check if
+        ///we have connected to this user before. if we have it returns an existing [HiveUser]
+        ///with an existing [Session] id and if we have not it saves a new [HiveUser] with a new [Session] id
+        ///and returns it
+        ///The [HiveUser] contains the info of the last [Session] id. the session when we
+        ///last connect to this user.
+        final hiveUser = await hiveManager.saveSession(
+            requestUserServerInfo.user.id, _session!.id);
+        final session = Session(
+          id: hiveUser.previousSessionId ?? _session!.id,
+          usersOnSession: [myServerInfo.user, requestUserServerInfo.user],
+        );
+
+        ///We create a [connectedUserPreviousSessionState] based on the info we got
+        ///from the above operation
+        connectedUserPreviousSessionState.setUserPrevSession(session, hiveUser);
       }
       // _showAcceptDeclineAlert = false;
       return result;
-    } catch (e) {
+    } catch (e, s) {
       sessionStateN.cancelSession();
+      log(e.toString(), stackTrace: s);
       return false;
     }
   }
@@ -171,10 +181,6 @@ class ServerController extends ServerManager with ChangeNotifier {
     _timer?.cancel();
     alertResponder = Completer<bool>();
   }
-
-  // void reset() {
-  //   _receivableStreamController = StreamController<Map<String, dynamic>>();
-  // }
 
   @override
   StreamController<Map<String, dynamic>> get receivablesStreamController =>
@@ -197,7 +203,6 @@ class ServerController extends ServerManager with ChangeNotifier {
 
   @override
   void removeCanceledItem(String id) {
-    // _items.removeWhere((element) => element.id == id);
     uploadManagerController.removeWhere(id);
     shareableItemsProvider.cancelItemWithId(id);
   }
