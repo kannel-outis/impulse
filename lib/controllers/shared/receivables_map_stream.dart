@@ -1,12 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/models/models.dart';
 import 'package:impulse/services/services.dart';
 
 // final _receivablesMapStream = StreamProvider<Map<String, dynamic>>((ref) {
 //   final controller =
 //       ref.watch(serverControllerProvider).receivablesStreamController;
 
-//   ///TODO: Remember to dispose Stream when disconnected
 //   // ref.onDispose(controller.close);
 //   return controller.stream;
 // });
@@ -14,21 +14,25 @@ import 'package:impulse/services/services.dart';
 final receivableListItems =
     StateNotifierProvider<ReceiveableItemsProvider, List<ReceiveableItem>>(
         (ref) {
-  final stream =
-      ref.read(serverControllerProvider).receivablesStreamController.stream;
+  // final stream =
+  //     ref.read(serverControllerProvider).receivablesStreamController.stream;
   final downloadManager = ref.read(downloadManagerProvider.notifier);
 
   return ReceiveableItemsProvider(
-      stream, downloadManager, HiveManagerImpl(), ClientImpl());
+    ref,
+    downloadManager,
+    HiveManagerImpl(),
+    ClientImpl(),
+  );
 });
 
 class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
-  final Stream<Map<String, dynamic>> itemsStream;
+  final Ref ref;
   final DownloadManager downloadManager;
   final HiveManager hiveManager;
   final Client client;
   ReceiveableItemsProvider(
-    this.itemsStream,
+    this.ref,
     this.downloadManager,
     this.hiveManager,
     this.client,
@@ -37,11 +41,15 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
   }
 
   void _listen() {
-    itemsStream.listen((event) async {
+    ref
+        .read(serverControllerProvider)
+        .receivablesStreamController
+        .stream
+        .listen((event) async {
       final item = ReceiveableItem.fromShareableMap(event);
 
       ///save each receivable to hive offline db
-      await hiveManager.saveItem(item);
+      await hiveManager.saveItem(item, session!.id);
 
       ///get the saved instance of that receiveable using the id
       ///(which we used to save it to make each item uniques and also for easy access)
@@ -74,6 +82,14 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         downloadManager.download();
       }
     });
+  }
+
+  Session? get session => ref.read(sessionStateProvider);
+
+  @override
+  void dispose() {
+    super.dispose();
+    ref.read(serverControllerProvider).receivablesStreamController.close();
   }
 
   void clear() {

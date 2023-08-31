@@ -13,7 +13,10 @@ abstract class Client {
   }
 
   Future<Either<AppException, bool>> createServerAndNotifyHost(
-      {required String address, int? port, required Map<String, dynamic> body});
+      {required String address,
+      int? port,
+      required Map<String, dynamic> serverInfo,
+      required Map<String, dynamic> sessionInfo});
 
   Stream<List<int>> getFileStreamFromHostServer(
     (String, int) destination,

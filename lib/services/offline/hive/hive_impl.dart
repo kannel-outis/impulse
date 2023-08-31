@@ -15,7 +15,7 @@ class HiveManagerImpl extends HiveManager {
   }
 
   @override
-  Future<void> saveItem(Item item) async {
+  Future<void> saveItem(Item item, String sessionId) async {
     late final Box<HiveItem> box;
     if (item is ReceiveableItem) {
       box = Hive.box<HiveItem>(HiveInit.receiveableItemsBox);
@@ -24,17 +24,17 @@ class HiveManagerImpl extends HiveManager {
     } else {}
 
     final newItem = HiveItem(
-      fileId: item.id,
-      path: item.filePath,
-      filename: item.fileName,
-      type: item.fileType,
-      totalSize: item.fileSize,
-      homeUserId: item.authorId,
-      homeDestinationAddress: item.homeDestination!.$1,
-      homeDestinationPort: item.homeDestination!.$2,
-      iState: item.state,
-      processedBytes: item.proccessedBytes,
-    );
+        fileId: item.id,
+        path: item.filePath,
+        filename: item.fileName,
+        type: item.fileType,
+        totalSize: item.fileSize,
+        homeUserId: item.authorId,
+        homeDestinationAddress: item.homeDestination!.$1,
+        homeDestinationPort: item.homeDestination!.$2,
+        iState: item.state,
+        processedBytes: item.proccessedBytes,
+        sessionId: sessionId);
 
     await box.put(newItem.id, newItem);
   }

@@ -33,7 +33,8 @@ abstract class ServerManager {
   ///When a connection is first attempted, A notification is sent to the host,
   ///The host can decide whetther to accept or decline
   ///This just returns the result of that.
-  Future<bool> handleClientServerNotification(Map<String, dynamic> serverMap) {
+  Future<bool> handleClientServerNotification(
+      Map<String, dynamic> serverMap, Map<String, dynamic> sessionmap) {
     throw UnimplementedError();
   }
 

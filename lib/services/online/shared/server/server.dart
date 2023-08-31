@@ -131,13 +131,14 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
   Future<void> _handlePostRequest(HttpRequest httpRequest) async {
     final url = httpRequest.requestedUri.toString();
     if (url == _buildUrl(ServicesUtils.serverRoutes.client_server_info)) {
-      ///need to wait for the result to load to memory before closing and decoding
-      ///else it may just enter in chunks. the image may make it too large
       final result = await httpRequest.fold<List<int>>(
           [], (previous, element) => previous..addAll(element));
       final bodyEncoded = String.fromCharCodes(result);
-      final accepted = await serverManager
-          .handleClientServerNotification(json.decode(bodyEncoded));
+      final body = json.decode(bodyEncoded);
+      final accepted = await serverManager.handleClientServerNotification(
+        body["serverInfo"] as Map<String, dynamic>,
+        body["sessionInfo"] as Map<String, dynamic>,
+      );
 
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;

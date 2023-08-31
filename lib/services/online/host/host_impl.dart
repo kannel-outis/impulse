@@ -26,8 +26,12 @@ class HostImpl extends Client implements Host {
   // }
 
   @override
-  Future<Either<AppException, bool>> createServerAndNotifyHost(
-      {String? address, int? port, required Map<String, dynamic> body}) {
+  Future<Either<AppException, bool>> createServerAndNotifyHost({
+    String? address,
+    int? port,
+    required Map<String, dynamic> serverInfo,
+    required Map<String, dynamic> sessionInfo,
+  }) {
     throw UnimplementedError();
   }
 

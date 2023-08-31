@@ -8,7 +8,7 @@ import 'server_controller.dart';
 
 final senderProvider = ChangeNotifierProvider<SenderProvider>(
   (ref) {
-    final servermanager = ref.watch(serverControllerProvider);
+    final servermanager = ref.read(serverControllerProvider);
     return SenderProvider(
       servermanager,
       host: HostImpl(

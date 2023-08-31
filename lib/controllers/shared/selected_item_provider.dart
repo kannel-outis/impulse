@@ -10,7 +10,7 @@ import 'package:uuid/uuid.dart';
 
 final selectedItemsProvider =
     StateNotifierProvider<SelectedItems, List<ShareableItem>>((ref) {
-  final serverController = ref.watch(serverControllerProvider);
+  final serverController = ref.read(serverControllerProvider);
   return SelectedItems(
     serverManager: serverController,
   );

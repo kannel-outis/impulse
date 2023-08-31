@@ -1,14 +1,14 @@
 // ignore_for_file: unnecessary_getters_setters
 
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
-import 'package:impulse/models/network_impulse_file.dart';
-import 'package:impulse/models/server_info.dart';
+import 'package:impulse/models/models.dart';
 import 'package:impulse/services/services.dart';
 
 final serverControllerProvider =
@@ -17,26 +17,31 @@ final serverControllerProvider =
   final connectedUser = ref.read(connectUserStateProvider.notifier);
   final shareableProvider = ref.read(shareableItemsProvider.notifier);
   final uploadManager = ref.read(uploadManagerProvider.notifier);
+  final sessionState = ref.read(sessionStateProvider.notifier);
 
   final serverController = ServerController(
-    alertState: alert,
-    connectedUserState: connectedUser,
-    hiveManager: HiveManagerImpl(),
-    shareableItemsProvider: shareableProvider,
-    uploadManagerController: uploadManager,
-  );
+      alertState: alert,
+      connectedUserState: connectedUser,
+      hiveManager: HiveManagerImpl(),
+      shareableItemsProvider: shareableProvider,
+      uploadManagerController: uploadManager,
+      sessionStateN: sessionState);
   ref.listen(
     connectionStateProvider,
     (previousState, newState) {
       serverController.connectionState = newState;
     },
   );
+  ref.listen(sessionStateProvider, (previous, next) {
+    serverController.sessionState = next;
+  });
   return serverController;
 });
 
 class ServerController extends ServerManager with ChangeNotifier {
   final AlertState alertState;
   final ConnectedUserState connectedUserState;
+  final SessionState sessionStateN;
   final HiveManager hiveManager;
   final ShareableItemsProvider shareableItemsProvider;
   final UploadManager uploadManagerController;
@@ -47,12 +52,15 @@ class ServerController extends ServerManager with ChangeNotifier {
     required this.hiveManager,
     required this.shareableItemsProvider,
     required this.uploadManagerController,
+    required this.sessionStateN,
   });
 
   Completer<bool> alertResponder = Completer<bool>();
+  // ignore: prefer_final_fields
   StreamController<Map<String, dynamic>> _receivableStreamController =
       StreamController<Map<String, dynamic>>();
   ConnectionState _connectionState = ConnectionState.notConnected;
+  Session? _session;
   Timer? _timer;
   // List<Item> _items = [];
 
@@ -76,6 +84,11 @@ class ServerController extends ServerManager with ChangeNotifier {
 
   set connectionState(ConnectionState state) {
     _connectionState = state;
+  }
+
+  set sessionState(Session? session) {
+    _session = session;
+    log("${_session?.id}");
   }
 
   ///This is called everytime we select an file or item
@@ -110,7 +123,7 @@ class ServerController extends ServerManager with ChangeNotifier {
 
   @override
   Future<bool> handleClientServerNotification(
-      Map<String, dynamic> serverMap) async {
+      Map<String, dynamic> serverMap, Map<String, dynamic> sessionmap) async {
     try {
       // ignore: todo
       //TODO: remove alertstate entirely and use connectedUserState.setUserState(serverInfo, fling: true)
@@ -126,6 +139,7 @@ class ServerController extends ServerManager with ChangeNotifier {
       if (shouldAcceptConnection == false) {
         alertState.updateState(true);
         connectedUserState.setUserState(serverInfo, fling: true);
+        sessionStateN.setSession(Session.fromMap(sessionmap));
 
         /// so that users wont take too long
         _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
@@ -139,12 +153,14 @@ class ServerController extends ServerManager with ChangeNotifier {
       final result = await alertResponder.future;
       if (result == false) {
         connectedUserState.setUserState(null);
+        sessionStateN.cancelSession();
       } else {
         connectedUserState.setUserState(serverInfo);
       }
       // _showAcceptDeclineAlert = false;
       return result;
     } catch (e) {
+      sessionStateN.cancelSession();
       return false;
     }
   }
@@ -174,7 +190,7 @@ class ServerController extends ServerManager with ChangeNotifier {
     if (hiveItem != null) {
       return hiveItem;
     } else {
-      await hiveManager.saveItem(item);
+      await hiveManager.saveItem(item, _session!.id);
       return hiveManager.getShareableItemWithKey(item.id)!;
     }
   }

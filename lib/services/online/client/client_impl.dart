@@ -44,11 +44,16 @@ class ClientImpl implements ClientHost {
   Future<dartz.Either<AppException, bool>> createServerAndNotifyHost({
     required String address,
     int? port,
-    required Map<String, dynamic> body,
+    required Map<String, dynamic> serverInfo,
+    required Map<String, dynamic> sessionInfo,
   }) async {
     ///seperate uri builder
     final uri = Uri.parse(
         "http://$address:${port ?? _port}/${ServicesUtils.serverRoutes.client_server_info}");
+    final body = {
+      "serverInfo": serverInfo,
+      "sessionInfo": sessionInfo,
+    };
     final s = await RequestHelper.post(uri, body);
     final result =
         s.map((r) => (r["msg"] as String) == "Denied" ? false : true);

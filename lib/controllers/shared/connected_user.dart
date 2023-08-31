@@ -23,7 +23,7 @@ import 'package:impulse/models/server_info.dart';
 ///
 final connectUserStateProvider =
     StateNotifierProvider<ConnectedUserState, ServerInfo?>((ref) {
-  final connectionStateController = ref.watch(connectionStateProvider.notifier);
+  final connectionStateController = ref.read(connectionStateProvider.notifier);
   return ConnectedUserState(null, connectionStateController);
 });
 

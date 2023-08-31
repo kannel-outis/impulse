@@ -173,7 +173,7 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                                     ! This makes sure the listener that listens to the receivable stream controller is triggered
                                     ! that way, it can automatically start downloading the items
                                     */
-                                ref.read(receivableListItems);
+                                ref.watch(receivableListItems);
                                 if (downloadManager.$2 != null &&
                                     downloadManager.$2!.state.isInProgress) {
                                   log(downloadManager.$1);
