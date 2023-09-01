@@ -1,13 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart' hide ConnectionState;
-import 'package:impulse/app/utils/enums.dart';
+import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/views/home/components/custom_modal.dart';
 
 import '../../impulse_scaffold.dart';
-import '../styles/impulse_app_style.dart';
-import 'generic_provider_ref.dart';
 
 AppStyle get $styles => ImpulseScaffold.style;
 TextStyle get bodyStyle => $styles.text.body;
@@ -94,6 +92,14 @@ Future<void> disconnect(GenericProviderRef ref) async {
   //Set prev session and save to hive box
   ref.read(connectedUserPreviousSessionStateProvider)?.$2
     ?..previousSessionId = ref.read(sessionStateProvider)?.id
+    ..previousSessionReceivable = ref
+        .read(receivableListItems)
+        .map((e) => e.toHiveItem(ref.read(sessionStateProvider)!.id))
+        .toList()
+    ..previousSessionShareable = ref
+        .read(shareableItemsProvider)
+        .map((e) => e.toHiveItem(ref.read(sessionStateProvider)!.id))
+        .toList()
     ..save();
   //clear all lists
   ref.read(shareableItemsProvider.notifier).clear();

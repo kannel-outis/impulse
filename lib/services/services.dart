@@ -1,7 +1,7 @@
 export 'offline/hive/adapters/hive_item.dart';
 export 'offline/hive/adapters/istate_hive.dart';
 export 'offline/hive/adapters/item_adapter.dart';
-export 'offline/hive/adapters/hive_user.dart';
+export 'offline/hive/adapters/hive_session.dart';
 export 'offline/hive/hive_impl.dart';
 export 'offline/hive/hive_init.dart';
 export 'offline/hive/hive_manager.dart';

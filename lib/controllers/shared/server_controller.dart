@@ -145,26 +145,28 @@ class ServerController extends ServerManager with ChangeNotifier {
         connectedUserState.setUserState(null);
         sessionStateN.cancelSession();
       } else {
-        connectedUserState.setUserState(requestUserServerInfo);
+        // connectedUserState.setUserState(requestUserServerInfo);
 
         ///The [Host] implementation. The [Client] implementation is in "receiver_controller.dart"
         ///At this point [requestUserServerInfo] is already connected
         ///we save a new session. not only do we save a new session but we check if
-        ///we have connected to this user before. if we have it returns an existing [HiveUser]
-        ///with an existing [Session] id and if we have not it saves a new [HiveUser] with a new [Session] id
+        ///we have connected to this user before. if we have it returns an existing [HiveSession]
+        ///with an existing [Session] id and if we have not it saves a new [HiveSession] with a new [Session] id
         ///and returns it
-        ///The [HiveUser] contains the info of the last [Session] id. the session when we
+        ///The [HiveSession] contains the info of the last [Session] id. the session when we
         ///last connect to this user.
-        final hiveUser = await hiveManager.saveSession(
+        final hiveSession = await hiveManager.saveSession(
             requestUserServerInfo.user.id, _session!.id);
         final session = Session(
-          id: hiveUser.previousSessionId ?? _session!.id,
+          id: hiveSession.previousSessionId ?? _session!.id,
           usersOnSession: [myServerInfo.user, requestUserServerInfo.user],
         );
 
         ///We create a [connectedUserPreviousSessionState] based on the info we got
         ///from the above operation
-        connectedUserPreviousSessionState.setUserPrevSession(session, hiveUser);
+        connectedUserPreviousSessionState.setUserPrevSession(session, hiveSession);
+        connectedUserState.setUserState(requestUserServerInfo);
+
       }
       // _showAcceptDeclineAlert = false;
       return result;

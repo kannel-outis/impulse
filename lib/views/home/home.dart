@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,6 +82,15 @@ class _HomePageState extends ConsumerState<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(connectionStateProvider, (previous, next) {
+      if (next.isConnected) {
+        final (_, previousHiveSession) =
+            ref.read(connectedUserPreviousSessionStateProvider)!;
+        if (previousHiveSession.previousSessionReceivable.isNotEmpty) {
+          log("${previousHiveSession.previousSessionReceivable.length} ::::::::::::::::::::: previously");
+        }
+      }
+    });
     return WillPopScope(
       onWillPop: () async {
         final miniPlayerControllerP = ref.read(miniPlayerController);

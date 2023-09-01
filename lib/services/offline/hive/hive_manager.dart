@@ -1,11 +1,12 @@
 import 'package:impulse/services/services.dart';
 
-
 abstract class HiveManager {
   Future<void> saveItem(Item item, String sessionId);
-  Future<HiveUser> saveSession(String userId, String sessionId);
+  Future<HiveSession> saveSession(String userId, String sessionId);
   List<HiveItem> getAllShareableItems();
   List<HiveItem> getAllReceiveableItems();
+  // List<HiveItem> getAllReceiveableItemsFromSession(String sessionId);
+  // List<HiveItem> getAllShareableItemsFromSession(String sessionId);
   HiveItem? getShareableItemWithKey(String key);
   HiveItem? getReceiveableItemWithKey(String key);
 }

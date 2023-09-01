@@ -176,7 +176,6 @@ class ReceiverProvider extends ChangeNotifier {
         } else {
           /// we have successfully connected to the select host/sender
           sessionStateProvider.setSession(session);
-          connectedUserState.setUserState(_selectedHost);
 
           ///////////////
           ///The [Host] implementation of this is in "server_controller.dart"
@@ -191,6 +190,8 @@ class ReceiverProvider extends ChangeNotifier {
           ///from the above op
           connectedUserPreviousSessionState.setUserPrevSession(
               previousSession, hiveUser);
+          connectedUserState.setUserState(_selectedHost);
+
           return null;
         }
       }

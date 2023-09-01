@@ -8,7 +8,9 @@ final connectionStateProvider =
 
   return ConnectionStateProvider(
     ConnectionState.notConnected,
-    () => share(genericRef, true),
+    () {
+      share(genericRef, true);
+    },
   );
 });
 
@@ -23,6 +25,4 @@ class ConnectionStateProvider extends StateNotifier<ConnectionState> {
       onConnectionCallback?.call();
     }
   }
-
-  
 }

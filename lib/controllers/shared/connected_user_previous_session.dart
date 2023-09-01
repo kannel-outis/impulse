@@ -3,15 +3,15 @@ import 'package:impulse/models/models.dart';
 import 'package:impulse/services/services.dart';
 
 final connectedUserPreviousSessionStateProvider = StateNotifierProvider<
-    ConnectedUserPreviousSessionState, (Session session, HiveUser hiveUser)?>(
+    ConnectedUserPreviousSessionState, (Session session, HiveSession hiveUser)?>(
   (ref) => ConnectedUserPreviousSessionState(),
 );
 
 class ConnectedUserPreviousSessionState
-    extends StateNotifier<(Session, HiveUser)?> {
+    extends StateNotifier<(Session, HiveSession)?> {
   ConnectedUserPreviousSessionState() : super(null);
 
-  void setUserPrevSession(Session session, HiveUser user) {
+  void setUserPrevSession(Session session, HiveSession user) {
     state = (session, user);
   }
 

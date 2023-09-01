@@ -60,17 +60,31 @@ class HiveManagerImpl extends HiveManager {
   }
 
   @override
-  Future<HiveUser> saveSession(String userId, String sessionId) async {
-    final userBox = Hive.box<HiveUser>(HiveInit.user);
+  Future<HiveSession> saveSession(String userId, String sessionId) async {
+    final userBox = Hive.box<HiveSession>(HiveInit.session);
     if (userBox.containsKey(userId)) {
       return userBox.get(userId)!;
     }
-    final hiveUser = HiveUser(
-      id: userId,
+    final hiveUser = HiveSession(
+      userId: userId,
       previousSessionId: sessionId,
       lastSessionDateTime: DateTime.now().toString(),
     );
     final _ = await userBox.put(userId, hiveUser);
     return hiveUser;
+  }
+
+  // @override
+  // List<HiveItem> getAllReceiveableItemsFromSession(String sessionId) {
+  //   final box = Hive.box<HiveItem>(HiveInit.receiveableItemsBox);
+  //   final List<HiveItem> itemsFromSession = [];
+  //   final Map  _map= {};
+  //   _map.
+  // }
+
+  @override
+  List<HiveItem> getAllShareableItemsFromSession(String sessionId) {
+    // TODO: implement getAllShareableItemsFromSession
+    throw UnimplementedError();
   }
 }
