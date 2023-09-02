@@ -52,10 +52,10 @@ class HiveItem extends Item with HiveObjectMixin {
         filePath,
       ];
 
-  @override
-  Map<String, dynamic> toMap() {
-    return {};
-  }
+  // @override
+  // Map<String, dynamic> toMap() {
+  //   return {};
+  // }
 
   @override
   int get proccessedBytes => processedBytes;

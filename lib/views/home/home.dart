@@ -9,6 +9,7 @@ import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/views/home/components/side_bar.dart';
 import 'package:impulse/views/home/widgets/app_item.dart';
 import 'package:impulse/views/home/widgets/fab_location.dart';
+import 'package:impulse/views/shared/continue_dialog.dart';
 import 'package:impulse/views/shared/custom_speed_dial.dart';
 import 'package:impulse/views/shared/padded_body.dart';
 import 'package:impulse/views/shared/selectable_item_widget.dart';
@@ -36,7 +37,7 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   bool tabBarTapped = false;
   bool isOverlayOpen = false;
   bool waitForOverlayReverseAnimation = true;
@@ -44,6 +45,7 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   Map<String, (IconData, IconData)> get bars => {
@@ -80,17 +82,38 @@ class _HomePageState extends ConsumerState<HomePage>
     }
   }
 
+  void _listener(ConnectionState? previous, ConnectionState next) {
+    if (next.isConnected) {
+      final (_, previousHiveSession) =
+          ref.read(connectedUserPreviousSessionStateProvider)!;
+      if (previousHiveSession.previousSessionReceivable.isNotEmpty) {
+        showDialog(
+          context: context,
+          useRootNavigator: true,
+          builder: (context) {
+            return const ContinueDownloadDialog();
+          },
+        );
+      }
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    log(state.name);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    ref.listen(connectionStateProvider, (previous, next) {
-      if (next.isConnected) {
-        final (_, previousHiveSession) =
-            ref.read(connectedUserPreviousSessionStateProvider)!;
-        if (previousHiveSession.previousSessionReceivable.isNotEmpty) {
-          log("${previousHiveSession.previousSessionReceivable.length} ::::::::::::::::::::: previously");
-        }
-      }
-    });
+    ref.listen(connectionStateProvider, _listener);
     return WillPopScope(
       onWillPop: () async {
         final miniPlayerControllerP = ref.read(miniPlayerController);

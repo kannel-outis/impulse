@@ -181,7 +181,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       httpRequest.response.headers.contentType = ContentType.json;
       httpRequest.response.write(
         json.encode(
-          {"msg": "Reveived"},
+          {"msg": "Received"},
         ),
       );
       httpRequest.response.close();
@@ -203,11 +203,26 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       serverManager.removeCanceledItem(fileId);
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.close();
+    } else if (url == _buildUrl(ServicesUtils.serverRoutes.continue_previous)) {
+      serverManager.continuePreviousDownloads();
+      httpRequest.response.statusCode = Constants.STATUS_OK;
+      httpRequest.response.headers.contentType = ContentType.json;
+      httpRequest.response.write(
+        json.encode(
+          {"msg": "Success"},
+        ),
+      );
+      httpRequest.response.close();
+    } else {
+      httpRequest.response.statusCode = 404;
+      httpRequest.response.headers.contentType = ContentType.json;
+      httpRequest.response.write(
+        json.encode(
+          {"msg": "Route not found"},
+        ),
+      );
+      httpRequest.response.close();
     }
-  }
-
-  String _buildUrl(String path) {
-    return "http://${address.address}:$port/$path";
   }
 
   Future<void> _downloadShareableFile(HttpRequest httpRequest) async {
@@ -324,6 +339,10 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       httpRequest.response.close();
       return;
     }
+  }
+
+  String _buildUrl(String path) {
+    return "http://${address.address}:$port/$path";
   }
 
   @override

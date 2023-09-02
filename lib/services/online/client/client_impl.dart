@@ -138,4 +138,13 @@ class ClientImpl implements ClientHost {
       shareableItemMap,
     );
   }
+
+  @override
+  Future<dartz.Either<AppException, Map<String, dynamic>>>
+      continuePreviousDownloads((String, int) destination) {
+    final url = Uri.parse(
+        "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.continue_previous}");
+    final body = {"continue": true};
+    return RequestHelper.post(url, body);
+  }
 }

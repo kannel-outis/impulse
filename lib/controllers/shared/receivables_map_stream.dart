@@ -96,10 +96,52 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
     state = [];
   }
 
+  void continueDownloads(HiveItem prevItem) {
+    final hiveItem = hiveManager.getReceiveableItemWithKey(prevItem.id);
+
+    final item = ReceiveableItem(
+      file: File(prevItem.path),
+      fileType: prevItem.fileType,
+      fileSize: prevItem.fileSize,
+      id: prevItem.id,
+      homeDestination: (
+        ref.read(connectUserStateProvider)!.ipAddress!,
+        ref.read(connectUserStateProvider)!.port!
+      ),
+      authorId: prevItem.authorId,
+      start: prevItem.processedBytes,
+    );
+
+    void listener(int received, int totalSize, file, String? reason, state) {
+      hiveItem?.iState = state;
+      hiveItem?.processedBytes = received;
+      hiveItem?.setEndTime = DateTime.now();
+      hiveItem?.save();
+
+      // update prevItem
+      // prevItem.iState = state;
+      // prevItem.processedBytes = received;
+      // prevItem.setEndTime = DateTime.now();
+      // prevItem.save();
+      if (state.isCompleted) {
+        item.removeListener(listener);
+      }
+    }
+
+    item.addListener(listener);
+    state = [...state, item];
+
+    downloadManager.addToQueue([item]);
+    if (downloadManager.isDownloading == false) {
+      downloadManager.download();
+    }
+  }
+
   void cancelItemWithId(ReceiveableItem item) async {
     await downloadManager.removeItemFromDownloadList(item);
-    await client.cancelItem(item.homeDestination!, item.id);
     state.removeWhere((element) => element.id == item.id);
     state = [...state];
+    hiveManager.removeItemWithKey(item.id);
+    await client.cancelItem(item.homeDestination!, item.id);
   }
 }

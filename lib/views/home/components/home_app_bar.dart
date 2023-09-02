@@ -1,9 +1,11 @@
-import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/services/online/shared/transfer/receiveable_item.dart';
+import 'package:impulse/views/shared/continue_dialog.dart';
 import 'package:impulse/views/shared/impulse_ink_well.dart';
 
 import '../widgets/top_stack.dart';
@@ -47,6 +49,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                   title,
                   style: $styles.text.h3.copyWith(
                     fontWeight: FontWeight.w400,
+                    // color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 SizedBox(
@@ -67,13 +70,13 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                           // log("PresentSessio: ${ref.read(sessionStateProvider)?.id}");
                           // log("LastSession: ${ref.read(connectedUserPreviousSessionStateProvider)?.$1.id}");
                           // log("HiveUserLastSession: ${ref.read(connectedUserPreviousSessionStateProvider)?.$2.previousSessionId}");
-                          showDialog(
-                            context: context,
-                            useRootNavigator: true,
-                            builder: (context) {
-                              return ContinueDownloadDialog();
-                            },
-                          );
+                          // showDialog(
+                          //   context: context,
+                          //   useRootNavigator: true,
+                          //   builder: (context) {
+                          //     return const ContinueDownloadDialog();
+                          //   },
+                          // );
                         },
                         child: GestureDetector(
                           child: Container(
@@ -104,63 +107,4 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => $styles.sizes.defaultAppBarSize;
-}
-
-class ContinueDownloadDialog extends StatelessWidget {
-  const ContinueDownloadDialog({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      child: Container(
-        height: 130,
-        width: double.infinity,
-        constraints: const BoxConstraints(maxWidth: 400),
-        color: Theme.of(context).colorScheme.background,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              "Do you want continue download ?",
-              style: $styles.text.body,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _optionButton("Yes", context, () {}),
-                _optionButton("No", context, () {}),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _optionButton(String label, BuildContext context, VoidCallback onTap) {
-    return ImpulseInkWell(
-      onTap: onTap,
-      child: Container(
-        height: 30,
-        width: 80,
-        // color: Colors.white,
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Theme.of(context).colorScheme.tertiary,
-          ),
-          borderRadius: BorderRadius.circular(
-            $styles.corners.sm,
-          ),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style: $styles.text.bodySmallBold,
-        ),
-      ),
-    );
-  }
 }

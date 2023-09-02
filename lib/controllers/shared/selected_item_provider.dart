@@ -105,7 +105,7 @@ class ShareableItemsProvider extends StateNotifier<List<ShareableItem>> {
   ShareableItemsProvider() : super([]);
   List<Item> _filtered = [];
 
-  void addAllItems(List<Item> items) {
+  void addAllItems(List<ShareableItem> items) {
     state = [...state, ..._filteredList(items)];
   }
 
@@ -121,10 +121,8 @@ class ShareableItemsProvider extends StateNotifier<List<ShareableItem>> {
   List<Item> get filteredList => _filtered;
 
   ///filter list so that they are not sent more than once
-  List<ShareableItem> _filteredList(List<Item> items) {
+  List<ShareableItem> _filteredList(List<ShareableItem> items) {
     return _filtered = items
-        .map((e) => e as ShareableItem)
-        .toList()
         .where((element) =>
             !state.map((e) => e.id).toList().contains(element.id) &&
             !state.map((e) => e.filePath).toList().contains(element.filePath))

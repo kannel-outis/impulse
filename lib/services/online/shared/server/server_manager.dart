@@ -54,5 +54,7 @@ abstract class ServerManager {
   /// adds Client File Request To ShareableItemsList
   void addSharableToList(Map<String, dynamic> shareableMap) {}
 
+  void continuePreviousDownloads();
+
   StreamController<Map<String, dynamic>> get receivablesStreamController;
 }

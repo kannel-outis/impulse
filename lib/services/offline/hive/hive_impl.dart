@@ -24,17 +24,21 @@ class HiveManagerImpl extends HiveManager {
     } else {}
 
     final newItem = HiveItem(
-        fileId: item.id,
-        path: item.filePath,
-        filename: item.fileName,
-        type: item.fileType,
-        totalSize: item.fileSize,
-        homeUserId: item.authorId,
-        homeDestinationAddress: item.homeDestination!.$1,
-        homeDestinationPort: item.homeDestination!.$2,
-        iState: item.state,
-        processedBytes: item.proccessedBytes,
-        sessionId: sessionId);
+      fileId: item.id,
+      path: item.filePath,
+      filename: item.fileName,
+      type: item.fileType,
+      totalSize: item.fileSize,
+      homeUserId: item.authorId,
+      homeDestinationAddress: item.homeDestination!.$1,
+      homeDestinationPort: item.homeDestination!.$2,
+      iState: item.state,
+      processedBytes: item.proccessedBytes,
+      sessionId: sessionId,
+    );
+    if (box.containsKey(newItem.id)) {
+      return;
+    }
 
     await box.put(newItem.id, newItem);
   }
@@ -82,9 +86,20 @@ class HiveManagerImpl extends HiveManager {
   //   _map.
   // }
 
+  // @override
+  // List<HiveItem> getAllShareableItemsFromSession(String sessionId) {
+  //   // TODO: implement getAllShareableItemsFromSession
+  //   throw UnimplementedError();
+  // }
+
   @override
-  List<HiveItem> getAllShareableItemsFromSession(String sessionId) {
-    // TODO: implement getAllShareableItemsFromSession
-    throw UnimplementedError();
+  void removeItemWithKey(String key) {
+    final shareableBox = Hive.box<HiveItem>(HiveInit.shareableItemsBox);
+    final receivableBox = Hive.box<HiveItem>(HiveInit.receiveableItemsBox);
+    if (shareableBox.containsKey(key)) {
+      shareableBox.delete(key);
+    } else if (receivableBox.containsKey(key)) {
+      receivableBox.delete(key);
+    }
   }
 }

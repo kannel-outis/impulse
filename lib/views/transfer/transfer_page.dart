@@ -26,6 +26,7 @@ class _TransferPageState extends ConsumerState<TransferPage> {
   Widget build(BuildContext context) {
     return MiniPlayer(
       miniPlayerController: ref.watch(miniPlayerController),
+      // collapseChild: Container(),
     );
   }
 }

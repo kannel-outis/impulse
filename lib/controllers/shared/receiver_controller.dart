@@ -217,9 +217,17 @@ class ReceiverProvider extends ChangeNotifier {
 
   Future<void> addMoreShareablesOnHostServer({
     required Map<String, dynamic> shareableItemMap,
-    required (String, int) destination,
+    required ServerInfo destination,
   }) async {
-    await client.addMoreShareablesOnHostServer(shareableItemMap, destination);
+    await client.addMoreShareablesOnHostServer(
+        shareableItemMap, (destination.ipAddress!, destination.port!));
+  }
+
+  Future<void> continuePreviousDownloads({
+    required ServerInfo destination,
+  }) async {
+    await client
+        .continuePreviousDownloads((destination.ipAddress!, destination.port!));
   }
 
   void disconnect() {

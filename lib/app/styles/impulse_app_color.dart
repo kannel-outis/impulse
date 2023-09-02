@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   const AppColors();
-  final _accentColor1 = const Color(0xff343a40);
+  // final _accentColor1 = const Color(0xff343a40);
+  final _accentColor1 = const Color(0xff3b3a3c);
+  // final _accentColor1 = const Color(0xff3b443e);
   final _accentColor2 = const Color(0xff363e45);
-  final _primaryColor = const Color(0xff04a4e3);
+  // final _primaryColor = const Color(0xff04a4e3);
+  // final _primaryColor = const Color(0xffbe3d1b);
+  final _primaryColor = Colors.red;
   final _iconColor1 = const Color(0xffc4c9cf);
   final _iconColor2 = const Color(0xff04a4e3);
   final folderColor2 = const Color(0xfff7be3a);

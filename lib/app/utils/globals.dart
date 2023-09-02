@@ -69,6 +69,20 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
 }
 
 Future<void> disconnect(GenericProviderRef ref) async {
+  //Set prev session and save to hive box
+  ref.read(connectedUserPreviousSessionStateProvider)?.$2
+    ?..previousSessionId = ref.read(sessionStateProvider)?.id
+    ..previousSessionReceivable = ref
+        .read(receivableListItems)
+        .where((element) => !element.state.isCompleted)
+        .map((e) => e.toHiveItem(ref.read(sessionStateProvider)!.id))
+        .toList()
+    ..previousSessionShareable = ref
+        .read(shareableItemsProvider)
+        .where((element) => !element.state.isCompleted)
+        .map((e) => e.toHiveItem(ref.read(sessionStateProvider)!.id))
+        .toList()
+    ..save();
   //is user was a client, close server
   if (ref.read(userTypeProvider) != UserType.host) {
     ref.read(receiverProvider).disconnect();
@@ -89,18 +103,7 @@ Future<void> disconnect(GenericProviderRef ref) async {
       ..port = null
       ..ipAddress = null;
   }
-  //Set prev session and save to hive box
-  ref.read(connectedUserPreviousSessionStateProvider)?.$2
-    ?..previousSessionId = ref.read(sessionStateProvider)?.id
-    ..previousSessionReceivable = ref
-        .read(receivableListItems)
-        .map((e) => e.toHiveItem(ref.read(sessionStateProvider)!.id))
-        .toList()
-    ..previousSessionShareable = ref
-        .read(shareableItemsProvider)
-        .map((e) => e.toHiveItem(ref.read(sessionStateProvider)!.id))
-        .toList()
-    ..save();
+
   //clear all lists
   ref.read(shareableItemsProvider.notifier).clear();
   ref.read(selectedItemsProvider.notifier).clear();

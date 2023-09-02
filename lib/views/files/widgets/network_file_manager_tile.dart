@@ -106,7 +106,7 @@ class _NetworkFileManagerTileState
                 child: GestureDetector(
                   onTap: () async {
                     final receiverController = ref.read(receiverProvider);
-                    final connectUser = ref.read(connectUserStateProvider);
+                    final connectedUser = ref.read(connectUserStateProvider);
                     final serverController = ref.read(serverControllerProvider);
 
                     ///This Network item is converted to a map so it can be sent to the files home server
@@ -117,18 +117,22 @@ class _NetworkFileManagerTileState
                       "path": widget.item.path,
                       "fileType": widget.item.path.getFileType.type,
                       "fileSize": widget.item.size,
-                      "id": const Uuid().v4(),
-                      "authorId": widget.item.serverInfo.user.id,
+                      "fileId": const Uuid().v4(),
+                      "senderId": widget.item.serverInfo.user.id,
                       "altName": widget.item.name,
-                      "ip": widget.item.serverInfo.ipAddress,
-                      "port": widget.item.serverInfo.port,
+                      // "ip": widget.item.serverInfo.ipAddress,
+                      // "port": widget.item.serverInfo.port,
+                      "homeDestination": {
+                        "ip": widget.item.serverInfo.ipAddress,
+                        "port": widget.item.serverInfo.port,
+                      }
                     };
 
                     ///This map is then sent to the home server basically telling that server
                     ///"i want this item too, add it to the list of items that should be shared with me"
                     await receiverController.addMoreShareablesOnHostServer(
                       shareableItemMap: shareableItemMap,
-                      destination: (connectUser!.ipAddress!, connectUser.port!),
+                      destination: connectedUser!,
                     );
 
                     ///Becuase we dont want to just circle back and go through the original process of sending and receiving items,

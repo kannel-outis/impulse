@@ -24,3 +24,5 @@ export 'utils/extensions.dart';
 export 'utils/request_helper.dart';
 export 'utils/services_utils.dart';
 export 'utils/typedef.dart';
+
+export 'dart:io';

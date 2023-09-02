@@ -9,4 +9,5 @@ abstract class HiveManager {
   // List<HiveItem> getAllShareableItemsFromSession(String sessionId);
   HiveItem? getShareableItemWithKey(String key);
   HiveItem? getReceiveableItemWithKey(String key);
+  void removeItemWithKey(String key);
 }

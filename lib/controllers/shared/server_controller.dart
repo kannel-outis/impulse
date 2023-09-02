@@ -39,6 +39,9 @@ final serverControllerProvider =
   ref.listen(sessionStateProvider, (previous, next) {
     serverController.sessionState = next;
   });
+  ref.listen(connectedUserPreviousSessionStateProvider, (previous, next) {
+    serverController.prevSessionState = next?.$2;
+  });
   return serverController;
 });
 
@@ -67,6 +70,7 @@ class ServerController extends ServerManager with ChangeNotifier {
       StreamController<Map<String, dynamic>>();
   ConnectionState _connectionState = ConnectionState.notConnected;
   Session? _session;
+  HiveSession? _prevSession;
   Timer? _timer;
   // List<Item> _items = [];
 
@@ -95,6 +99,11 @@ class ServerController extends ServerManager with ChangeNotifier {
   set sessionState(Session? session) {
     _session = session;
     log("${_session?.id}");
+  }
+
+  set prevSessionState(HiveSession? session) {
+    _prevSession = session;
+    log("${_prevSession?.previousSessionId}");
   }
 
   @override
@@ -164,9 +173,10 @@ class ServerController extends ServerManager with ChangeNotifier {
 
         ///We create a [connectedUserPreviousSessionState] based on the info we got
         ///from the above operation
-        connectedUserPreviousSessionState.setUserPrevSession(session, hiveSession);
+        connectedUserPreviousSessionState.setUserPrevSession(
+            session, hiveSession);
+        _prevSession = hiveSession;
         connectedUserState.setUserState(requestUserServerInfo);
-
       }
       // _showAcceptDeclineAlert = false;
       return result;
@@ -207,6 +217,7 @@ class ServerController extends ServerManager with ChangeNotifier {
   void removeCanceledItem(String id) {
     uploadManagerController.removeWhere(id);
     shareableItemsProvider.cancelItemWithId(id);
+    hiveManager.removeItemWithKey(id);
   }
 
   @override
@@ -265,6 +276,28 @@ class ServerController extends ServerManager with ChangeNotifier {
 
     ///TODO: move into shareableItemsProvider
     uploadManagerController.addToQueue([shareableItem]);
+  }
+
+  @override
+  void continuePreviousDownloads() {
+    // final s = _prevSession!.previousSessionShareable.map((e) => e.toMap());
+    // for (var d in s) {
+    //   log(d.toString());
+    // }
+
+    for (var prevItem in _prevSession!.previousSessionShareable) {
+      final shareable = ShareableItem(
+        file: File(prevItem.path),
+        fileType: prevItem.fileType,
+        fileSize: prevItem.fileSize,
+        id: prevItem.fileId,
+        authorId: prevItem.authorId,
+        altName: prevItem.fileName,
+        homeDestination: (myServerInfo.ipAddress!, myServerInfo.port!),
+      );
+      shareableItemsProvider.addAllItems([shareable]);
+      uploadManagerController.addToQueue([shareable]);
+    }
   }
 
   @override

@@ -127,6 +127,7 @@ extension ToHiveItem on Item {
       homeDestinationAddress: homeDestination!.$1,
       homeDestinationPort: homeDestination!.$2,
       sessionId: sessionId,
+      processedBytes: proccessedBytes,
     );
   }
 
