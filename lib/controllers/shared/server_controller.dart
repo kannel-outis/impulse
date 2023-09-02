@@ -17,7 +17,7 @@ final serverControllerProvider =
   final connectedUser = ref.read(connectUserStateProvider.notifier);
   final shareableProvider = ref.read(shareableItemsProvider.notifier);
   final uploadManager = ref.read(uploadManagerProvider.notifier);
-  final sessionState = ref.read(sessionStateProvider.notifier);
+  final sessionState = ref.read(currentSessionStateProvider.notifier);
   final connectedUserPreviousSessionState =
       ref.read(connectedUserPreviousSessionStateProvider.notifier);
 
@@ -36,7 +36,7 @@ final serverControllerProvider =
       serverController.connectionState = newState;
     },
   );
-  ref.listen(sessionStateProvider, (previous, next) {
+  ref.listen(currentSessionStateProvider, (previous, next) {
     serverController.sessionState = next;
   });
   ref.listen(connectedUserPreviousSessionStateProvider, (previous, next) {
@@ -165,7 +165,9 @@ class ServerController extends ServerManager with ChangeNotifier {
         ///The [HiveSession] contains the info of the last [Session] id. the session when we
         ///last connect to this user.
         final hiveSession = await hiveManager.saveSession(
-            requestUserServerInfo.user.id, _session!.id);
+          requestUserServerInfo.user.id,
+          _session!.id,
+        );
         final session = Session(
           id: hiveSession.previousSessionId ?? _session!.id,
           usersOnSession: [myServerInfo.user, requestUserServerInfo.user],
@@ -285,9 +287,10 @@ class ServerController extends ServerManager with ChangeNotifier {
     //   log(d.toString());
     // }
 
-    for (var prevItem in _prevSession!.previousSessionShareable) {
+    for (var prevItemId in _prevSession!.previousSessionShareable) {
+      final prevItem = hiveManager.getShareableItemWithKey(prevItemId);
       final shareable = ShareableItem(
-        file: File(prevItem.path),
+        file: File(prevItem!.path),
         fileType: prevItem.fileType,
         fileSize: prevItem.fileSize,
         id: prevItem.fileId,

@@ -47,6 +47,17 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         .stream
         .listen((event) async {
       final item = ReceiveableItem.fromShareableMap(event);
+      final prevSession =
+          ref.read(connectedUserPreviousSessionStateProvider)!.$2;
+      if (ref
+          .read(connectedUserPreviousSessionStateProvider.notifier)
+          .hasSetNewPrevSession) {
+        prevSession.previousSessionReceivable = [
+          ...prevSession.previousSessionReceivable,
+          item.id
+        ];
+        prevSession.save();
+      }
 
       ///save each receivable to hive offline db
       await hiveManager.saveItem(item, session!.id);
@@ -71,6 +82,12 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         hiveItem?.save();
         if (state.isCompleted) {
           item.removeListener(listener);
+
+          ///if this item is completed, remove from the prevsession receivable and save to db
+          prevSession.previousSessionReceivable = prevSession
+              .previousSessionReceivable
+            ..removeWhere((element) => element == item.id);
+          prevSession.save();
         }
       }
 
@@ -84,7 +101,7 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
     });
   }
 
-  Session? get session => ref.read(sessionStateProvider);
+  Session? get session => ref.read(currentSessionStateProvider);
 
   @override
   void dispose() {
@@ -96,27 +113,27 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
     state = [];
   }
 
-  void continueDownloads(HiveItem prevItem) {
-    final hiveItem = hiveManager.getReceiveableItemWithKey(prevItem.id);
+  void continueDownloads(String prevItemId) {
+    final hiveItem = hiveManager.getReceiveableItemWithKey(prevItemId);
 
     final item = ReceiveableItem(
-      file: File(prevItem.path),
-      fileType: prevItem.fileType,
-      fileSize: prevItem.fileSize,
-      id: prevItem.id,
+      file: File(hiveItem!.path),
+      fileType: hiveItem.fileType,
+      fileSize: hiveItem.fileSize,
+      id: hiveItem.id,
       homeDestination: (
         ref.read(connectUserStateProvider)!.ipAddress!,
         ref.read(connectUserStateProvider)!.port!
       ),
-      authorId: prevItem.authorId,
-      start: prevItem.processedBytes,
+      authorId: hiveItem.authorId,
+      start: hiveItem.processedBytes,
     );
 
     void listener(int received, int totalSize, file, String? reason, state) {
-      hiveItem?.iState = state;
-      hiveItem?.processedBytes = received;
-      hiveItem?.setEndTime = DateTime.now();
-      hiveItem?.save();
+      hiveItem.iState = state;
+      hiveItem.processedBytes = received;
+      hiveItem.setEndTime = DateTime.now();
+      hiveItem.save();
 
       // update prevItem
       // prevItem.iState = state;

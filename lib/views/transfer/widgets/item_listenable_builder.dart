@@ -74,6 +74,8 @@ class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
       if (mounted) setState(() {});
     });
 
+    print("$reason:::::::::::::::");
+
     // setState(() {});
 
     _prevState = state;

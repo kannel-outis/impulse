@@ -8,8 +8,8 @@ class HiveSession extends HiveObject with EquatableMixin {
   final String userId;
   String? previousSessionId;
   String? lastSessionDateTime;
-  List<HiveItem> previousSessionReceivable;
-  List<HiveItem> previousSessionShareable;
+  List<String> previousSessionReceivable;
+  List<String> previousSessionShareable;
 
   HiveSession({
     required this.userId,
@@ -41,8 +41,8 @@ class HiveUserAdapter extends TypeAdapter<HiveSession> {
       userId: fields[0] as String,
       previousSessionId: fields[1] as String?,
       lastSessionDateTime: fields[2] as String?,
-      previousSessionReceivable: List<HiveItem>.from(fields[3] as List),
-      previousSessionShareable: List<HiveItem>.from(fields[4] as List),
+      previousSessionReceivable: List<String>.from(fields[3] as List),
+      previousSessionShareable: List<String>.from(fields[4] as List),
     );
   }
 

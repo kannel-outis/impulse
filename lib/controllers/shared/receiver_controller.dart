@@ -12,7 +12,7 @@ final receiverProvider = ChangeNotifierProvider<ReceiverProvider>(
   (ref) {
     final servermanager = ref.read(serverControllerProvider);
     final connectedUserState = ref.read(connectUserStateProvider.notifier);
-    final sessionState = ref.read(sessionStateProvider.notifier);
+    final sessionState = ref.read(currentSessionStateProvider.notifier);
     final connectedUserPreviousSessionState =
         ref.read(connectedUserPreviousSessionStateProvider.notifier);
     return ReceiverProvider(

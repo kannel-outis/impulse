@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/models/models.dart';
 
-final sessionStateProvider =
+final currentSessionStateProvider =
     StateNotifierProvider<SessionState, Session?>((ref) {
   return SessionState();
 });

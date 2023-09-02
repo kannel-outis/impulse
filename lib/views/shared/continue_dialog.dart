@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
-import 'package:impulse/services/services.dart';
 
 import 'impulse_ink_well.dart';
 
@@ -31,13 +30,15 @@ class ContinueDownloadDialog extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _optionButton(
+                  ref,
                   "No",
                   context,
-                  () {
+                  () async {
                     Navigator.pop(context);
                   },
                 ),
                 _optionButton(
+                  ref,
                   "Yes",
                   context,
                   () async {
@@ -50,10 +51,8 @@ class ContinueDownloadDialog extends ConsumerWidget {
                         final (_, previousSession) = ref
                             .read(connectedUserPreviousSessionStateProvider)!;
 
-                        for (var prevItem in previousSession
-                            .previousSessionReceivable
-                            .where((element) => !element.state.isCompleted)) {
-                          
+                        for (var prevItem
+                            in previousSession.previousSessionReceivable) {
                           ref
                               .read(receivableListItems.notifier)
                               .continueDownloads(prevItem);
@@ -71,9 +70,29 @@ class ContinueDownloadDialog extends ConsumerWidget {
     );
   }
 
-  Widget _optionButton(String label, BuildContext context, VoidCallback onTap) {
+  Widget _optionButton(
+    WidgetRef ref,
+    String label,
+    BuildContext context,
+    Future Function() onTap,
+  ) {
     return ImpulseInkWell(
-      onTap: onTap,
+      onTap: () {
+        onTap.call().then((value) {
+          ///Because at this point we do not longer need the previous the previous session info anymore
+          ///so we might as well just set it and save.
+          ref.read(connectedUserPreviousSessionStateProvider)!.$2
+            ..previousSessionId = ref.read(currentSessionStateProvider)!.id
+            ..previousSessionReceivable =
+                ref.read(receivableListItems).map((e) => e.id).toList()
+            ..previousSessionShareable =
+                ref.read(shareableItemsProvider).map((e) => e.id).toList()
+            ..save();
+          ref
+              .read(connectedUserPreviousSessionStateProvider.notifier)
+              .hasSetNewPrev();
+        });
+      },
       child: Container(
         height: 30,
         width: 80,

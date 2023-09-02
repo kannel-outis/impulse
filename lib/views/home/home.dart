@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/services/offline/hive/hive_impl.dart';
 import 'package:impulse/views/home/components/side_bar.dart';
 import 'package:impulse/views/home/widgets/app_item.dart';
 import 'package:impulse/views/home/widgets/fab_location.dart';
@@ -82,22 +83,6 @@ class _HomePageState extends ConsumerState<HomePage>
     }
   }
 
-  void _listener(ConnectionState? previous, ConnectionState next) {
-    if (next.isConnected) {
-      final (_, previousHiveSession) =
-          ref.read(connectedUserPreviousSessionStateProvider)!;
-      if (previousHiveSession.previousSessionReceivable.isNotEmpty) {
-        showDialog(
-          context: context,
-          useRootNavigator: true,
-          builder: (context) {
-            return const ContinueDownloadDialog();
-          },
-        );
-      }
-    }
-  }
-
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
@@ -113,7 +98,9 @@ class _HomePageState extends ConsumerState<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(connectionStateProvider, _listener);
+    ref.listen(connectionStateProvider, (prev, next) {
+      checkPrevDownloadListener(prev, next, GenericProviderRef(ref), context);
+    });
     return WillPopScope(
       onWillPop: () async {
         final miniPlayerControllerP = ref.read(miniPlayerController);
