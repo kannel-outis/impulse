@@ -47,17 +47,16 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         .stream
         .listen((event) async {
       final item = ReceiveableItem.fromShareableMap(event);
-      final prevSession =
-          ref.read(connectedUserPreviousSessionStateProvider)!.$2;
-      if (ref
-          .read(connectedUserPreviousSessionStateProvider.notifier)
-          .hasSetNewPrevSession) {
-        prevSession.previousSessionReceivable = [
-          ...prevSession.previousSessionReceivable,
-          item.id
-        ];
-        prevSession.save();
-      }
+
+      // if (ref
+      //     .read(connectedUserPreviousSessionStateProvider.notifier)
+      //     .hasSetNewPrevSession) {
+      _nextSession.previousSessionReceivable = [
+        ..._nextSession.previousSessionReceivable,
+        item.id
+      ];
+      _nextSession.save();
+      // }
 
       ///save each receivable to hive offline db
       await hiveManager.saveItem(item, session!.id);
@@ -83,11 +82,10 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         if (state.isCompleted) {
           item.removeListener(listener);
 
-          ///if this item is completed, remove from the prevsession receivable and save to db
-          prevSession.previousSessionReceivable = prevSession
-              .previousSessionReceivable
-            ..removeWhere((element) => element == item.id);
-          prevSession.save();
+          ///if this item is completed, remove from the nextSession receivable and save to db
+          _nextSession.previousSessionReceivable
+              .removeWhere((element) => element == item.id);
+          _nextSession.save();
         }
       }
 
@@ -102,6 +100,10 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
   }
 
   Session? get session => ref.read(currentSessionStateProvider);
+  // HiveSession get _prevSessions =>
+  //     ref.read(connectedUserPreviousSessionStateProvider)!.$1;
+  HiveSession get _nextSession =>
+      ref.read(connectedUserPreviousSessionStateProvider)!.$2;
 
   @override
   void dispose() {
@@ -113,11 +115,9 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
     state = [];
   }
 
-  void continueDownloads(String prevItemId) {
-    final hiveItem = hiveManager.getReceiveableItemWithKey(prevItemId);
-
+  void continueDownloads(HiveItem hiveItem) {
     final item = ReceiveableItem(
-      file: File(hiveItem!.path),
+      file: File(hiveItem.path),
       fileType: hiveItem.fileType,
       fileSize: hiveItem.fileSize,
       id: hiveItem.id,
@@ -142,6 +142,11 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
       // prevItem.save();
       if (state.isCompleted) {
         item.removeListener(listener);
+
+        ///if this item is completed, remove from the prevsession receivable and save to db
+        _nextSession.previousSessionReceivable
+            .removeWhere((element) => element == item.id);
+        _nextSession.save();
       }
     }
 

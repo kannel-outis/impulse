@@ -120,7 +120,7 @@ Future<void> disconnect(GenericProviderRef ref) async {
 void checkPrevDownloadListener(ConnectionState? previous, ConnectionState next,
     GenericProviderRef ref, BuildContext context) {
   if (next.isConnected) {
-    final (_, previousHiveSession) =
+    final (previousHiveSession, _) =
         ref.read(connectedUserPreviousSessionStateProvider)!;
     for (var element in previousHiveSession.previousSessionReceivable) {
       print("$element ::::::::::::::");
@@ -132,7 +132,7 @@ void checkPrevDownloadListener(ConnectionState? previous, ConnectionState next,
         .toList();
     if (inCompleteDownloads.isNotEmpty) {
       for (var s in inCompleteDownloads) {
-        log(s!.state.name);
+        log(s!.name);
       }
       showDialog(
         context: context,

@@ -1,8 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 
-import 'hive_item.dart';
-
 // ignore: must_be_immutable
 class HiveSession extends HiveObject with EquatableMixin {
   final String userId;
@@ -13,8 +11,8 @@ class HiveSession extends HiveObject with EquatableMixin {
 
   HiveSession({
     required this.userId,
-    required this.lastSessionDateTime,
-    this.previousSessionId,
+    this.lastSessionDateTime,
+    required this.previousSessionId,
     this.previousSessionReceivable = const [],
     this.previousSessionShareable = const [],
   });
@@ -25,6 +23,16 @@ class HiveSession extends HiveObject with EquatableMixin {
         previousSessionId,
         lastSessionDateTime,
       ];
+
+  HiveSession newInstance() {
+    return HiveSession(
+      userId: userId,
+      lastSessionDateTime: lastSessionDateTime,
+      previousSessionId: previousSessionId,
+      previousSessionReceivable: previousSessionReceivable,
+      previousSessionShareable: previousSessionShareable,
+    );
+  }
 }
 
 class HiveUserAdapter extends TypeAdapter<HiveSession> {

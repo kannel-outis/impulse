@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/services/services.dart';
 
 import 'impulse_ink_well.dart';
 
@@ -43,19 +46,24 @@ class ContinueDownloadDialog extends ConsumerWidget {
                   context,
                   () async {
                     final connectedUser = ref.read(connectUserStateProvider)!;
-                    await ref
-                        .read(receiverProvider)
+                    final receiverController = ref.read(receiverProvider);
+                    await receiverController
                         .continuePreviousDownloads(destination: connectedUser)
                         .then(
                       (value) {
-                        final (_, previousSession) = ref
+                        final (previousSession, _) = ref
                             .read(connectedUserPreviousSessionStateProvider)!;
+                        final prevItemsIds =
+                            previousSession.previousSessionReceivable;
+                        for (final prevItem in prevItemsIds) {
+                          log("$prevItem ::::::::::::::::: Receivable");
 
-                        for (var prevItem
-                            in previousSession.previousSessionReceivable) {
                           ref
                               .read(receivableListItems.notifier)
-                              .continueDownloads(prevItem);
+                              .continueDownloads(
+                                HiveManagerImpl()
+                                    .getReceiveableItemWithKey(prevItem)!,
+                              );
                         }
                         Navigator.pop(context);
                       },
@@ -81,16 +89,16 @@ class ContinueDownloadDialog extends ConsumerWidget {
         onTap.call().then((value) {
           ///Because at this point we do not longer need the previous the previous session info anymore
           ///so we might as well just set it and save.
-          ref.read(connectedUserPreviousSessionStateProvider)!.$2
-            ..previousSessionId = ref.read(currentSessionStateProvider)!.id
-            ..previousSessionReceivable =
-                ref.read(receivableListItems).map((e) => e.id).toList()
-            ..previousSessionShareable =
-                ref.read(shareableItemsProvider).map((e) => e.id).toList()
-            ..save();
-          ref
-              .read(connectedUserPreviousSessionStateProvider.notifier)
-              .hasSetNewPrev();
+          // ref.read(connectedUserPreviousSessionStateProvider)!.$2
+          //   ..previousSessionId = ref.read(currentSessionStateProvider)!.id
+          //   ..previousSessionReceivable =
+          //       ref.read(receivableListItems).map((e) => e.id).toList()
+          //   ..previousSessionShareable =
+          //       ref.read(shareableItemsProvider).map((e) => e.id).toList()
+          //   ..save();
+          // ref
+          //     .read(connectedUserPreviousSessionStateProvider.notifier)
+          //     .hasSetNewPrev();
         });
       },
       child: Container(

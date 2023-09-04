@@ -1,15 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:impulse/models/models.dart';
 import 'package:impulse/services/services.dart';
 
 final connectedUserPreviousSessionStateProvider = StateNotifierProvider<
     ConnectedUserPreviousSessionState,
-    (Session session, HiveSession hiveUser)?>(
+    (HiveSession prevSession, HiveSession nextSession)?>(
   (ref) => ConnectedUserPreviousSessionState(),
 );
 
 class ConnectedUserPreviousSessionState
-    extends StateNotifier<(Session, HiveSession)?> {
+    extends StateNotifier<(HiveSession prev, HiveSession next)?> {
   ConnectedUserPreviousSessionState() : super(null);
 
   bool _hasSetNewPrevSessison = false;
@@ -21,8 +20,8 @@ class ConnectedUserPreviousSessionState
     _hasSetNewPrevSessison = true;
   }
 
-  void setUserPrevSession(Session session, HiveSession user) {
-    state = (session, user);
+  void setUserPrevSession(HiveSession prevSession, HiveSession nextSession) {
+    state = (prevSession, nextSession);
   }
 
   void clear() {

@@ -40,7 +40,7 @@ final serverControllerProvider =
     serverController.sessionState = next;
   });
   ref.listen(connectedUserPreviousSessionStateProvider, (previous, next) {
-    serverController.prevSessionState = next?.$2;
+    serverController.prevSessionState = next?.$1;
   });
   return serverController;
 });
@@ -138,7 +138,6 @@ class ServerController extends ServerManager with ChangeNotifier {
       if (shouldAcceptConnection == false) {
         alertState.updateState(true);
         connectedUserState.setUserState(requestUserServerInfo, fling: true);
-        sessionStateN.setSession(Session.fromMap(sessionmap));
 
         /// so that users wont take too long
         _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
@@ -147,6 +146,7 @@ class ServerController extends ServerManager with ChangeNotifier {
       } else {
         alertResponder.complete(true);
       }
+      sessionStateN.setSession(Session.fromMap(sessionmap));
 
       ////
       final result = await alertResponder.future;
@@ -164,20 +164,30 @@ class ServerController extends ServerManager with ChangeNotifier {
         ///and returns it
         ///The [HiveSession] contains the info of the last [Session] id. the session when we
         ///last connect to this user.
-        final hiveSession = await hiveManager.saveSession(
+        final prevSession = _prevSession = await hiveManager.saveSession(
           requestUserServerInfo.user.id,
           _session!.id,
         );
-        final session = Session(
-          id: hiveSession.previousSessionId ?? _session!.id,
-          usersOnSession: [myServerInfo.user, requestUserServerInfo.user],
-        );
+        // final session = Session(
+        //   id: hiveSession.previousSessionId ?? _session!.id,
+        //   usersOnSession: [myServerInfo.user, requestUserServerInfo.user],
+        // );
+
+        // _prevSession = prevSession;
+
+        final nextSession = prevSession
+          ..previousSessionId = _session!.id
+          ..lastSessionDateTime = DateTime.now().toIso8601String();
+        nextSession.save();
 
         ///We create a [connectedUserPreviousSessionState] based on the info we got
         ///from the above operation
+        ///
+        ///
+        ///create new instance so that we can easily throw an error if we try to use the hive save() function on it
+        ///for debug reasons
         connectedUserPreviousSessionState.setUserPrevSession(
-            session, hiveSession);
-        _prevSession = hiveSession;
+            prevSession.newInstance(), nextSession);
         connectedUserState.setUserState(requestUserServerInfo);
       }
       // _showAcceptDeclineAlert = false;
@@ -210,6 +220,7 @@ class ServerController extends ServerManager with ChangeNotifier {
     if (hiveItem != null) {
       return hiveItem;
     } else {
+      ///TODO: save before downloading
       await hiveManager.saveItem(item, _session!.id);
       return hiveManager.getShareableItemWithKey(item.id)!;
     }
@@ -288,6 +299,7 @@ class ServerController extends ServerManager with ChangeNotifier {
     // }
 
     for (var prevItemId in _prevSession!.previousSessionShareable) {
+      log("$prevItemId ::::::::::::::::: shareable");
       final prevItem = hiveManager.getShareableItemWithKey(prevItemId);
       final shareable = ShareableItem(
         file: File(prevItem!.path),

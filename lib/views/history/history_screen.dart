@@ -41,7 +41,7 @@ class HistoryScreen extends StatelessWidget {
                       return a.endTime.compareTo(b.endTime);
                     });
                     return ListView.separated(
-                      itemCount: receivable.length + shareable.length,
+                      itemCount: list.length,
                       separatorBuilder: (context, index) {
                         return SizedBox(height: $styles.insets.sm);
                       },
@@ -69,7 +69,7 @@ class HistoryScreen extends StatelessWidget {
                                         width: constraints.maxWidth -
                                             (($styles.insets.sm * 2) + 50),
                                         child: Text(
-                                          item.name,
+                                          item.id,
                                           overflow: TextOverflow.ellipsis,
                                           style: $styles.text.body,
                                         ),

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -77,6 +78,12 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                           //     return const ContinueDownloadDialog();
                           //   },
                           // );
+
+                          final (previousSession, _) = ref
+                              .read(connectedUserPreviousSessionStateProvider)!;
+                          final prevItemsIds =
+                              previousSession.previousSessionShareable;
+                          log(prevItemsIds.toString());
                         },
                         child: GestureDetector(
                           child: Container(
