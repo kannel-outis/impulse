@@ -1,4 +1,4 @@
-// ignore_for_file: constant_identifier_names, unused_field, use_build_context_synchronously
+// ignore_for_file: constant_identifier_names, unused_field,
 
 import 'dart:io';
 
@@ -49,9 +49,6 @@ class _SetInfoPageState extends ConsumerState<SetInfoPage> {
     (_ImageType.Assets, AssetsImage.DEFAULT_DISPLAY_IMAGE_2),
   ];
 
-  bool get _isFirstTime =>
-      widget.profileImage == null && widget.userName == null;
-
   @override
   initState() {
     super.initState();
@@ -86,22 +83,13 @@ class _SetInfoPageState extends ConsumerState<SetInfoPage> {
         "wepb",
       ];
 
+  bool get _isFirstRun =>
+      widget.userName == null && widget.profileImage == null;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.userName == null && widget.profileImage == null
-          ? null
-          : AppBar(
-              // leading: IconButton(
-              //   onPressed: () {
-              //     context.pop();
-              //   },
-              //   icon: Icon(
-              //     Icons.arrow_back,
-              //     color: Theme.of(context).colorScheme.tertiary,
-              //   ),
-              // ),
-              ),
+      appBar: _isFirstRun ? null : AppBar(),
       body: PaddedBody(
         child: SizedBox(
           width: double.infinity,
@@ -261,19 +249,23 @@ class _SetInfoPageState extends ConsumerState<SetInfoPage> {
                       deviceOsVersion: Platform.operatingSystemVersion,
                       displayImage: selectedImage.$2,
                     );
-                    Configurations.instance.saveUserInfo(user.toMap());
+                    await Configurations.instance.saveUserInfo(user.toMap());
+                    await Configurations.instance.loadAllInit();
+
                     ref
                         .read(profileImageProvider.notifier)
                         .onChanged(selectedImage.$2);
                     _isLoading = false;
                     setState(() {});
-                    if (_isFirstTime) {
+                    if (_isFirstRun) {
+                      // ignore: use_build_context_synchronously
                       context.go(
                         isAndroid
                             ? ImpulseRouter.routes.home
                             : ImpulseRouter.routes.folder,
                       );
                     } else {
+                      // ignore: use_build_context_synchronously
                       context.pop();
                     }
                   }

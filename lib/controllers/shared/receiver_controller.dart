@@ -22,7 +22,7 @@ final receiverProvider = ChangeNotifierProvider<ReceiverProvider>(
       client: ClientImpl(
         gateWay: MyHttpServer(serverManager: servermanager),
       ),
-      hiveManager: HiveManagerImpl(),
+      hiveManager: HiveManagerImpl.instance,
       connectedUserPreviousSessionState: connectedUserPreviousSessionState,
     );
   },
@@ -181,9 +181,9 @@ class ReceiverProvider extends ChangeNotifier {
           ///The [Host] implementation of this is in "server_controller.dart"
           final prevSession =
               await hiveManager.saveSession(_selectedHost!.user.id, session.id);
-          final nextSession = prevSession
-            ..previousSessionId = session.id
-            ..lastSessionDateTime = DateTime.now().toIso8601String();
+          final nextSession = prevSession;
+          nextSession.previousSessionId = session.id;
+          nextSession.lastSessionDateTime = DateTime.now().toIso8601String();
           nextSession.save();
 
           ///We create a [connectedUserPreviousSessionState] based on the info we get

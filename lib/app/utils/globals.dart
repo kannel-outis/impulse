@@ -47,6 +47,8 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
       ref.read(serverControllerProvider).ipAddress!,
       ref.read(serverControllerProvider).port!
     );
+    await HiveManagerImpl.instance
+        .saveItem(item, ref.read(currentSessionStateProvider)!.id);
   }
 
   ///filter the selected items and seperate the once that are not duplicate and can be shared
@@ -126,7 +128,7 @@ void checkPrevDownloadListener(ConnectionState? previous, ConnectionState next,
       print("$element ::::::::::::::");
     }
     final inCompleteDownloads = previousHiveSession.previousSessionReceivable
-        .map((e) => HiveManagerImpl().getReceiveableItemWithKey(e))
+        .map((e) => HiveManagerImpl.instance.getReceiveableItemWithKey(e))
         .toList()
         .where((e) => e != null && !e.state.isCompleted && !e.state.isCanceled)
         .toList();

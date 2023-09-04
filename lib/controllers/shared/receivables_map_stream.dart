@@ -21,7 +21,7 @@ final receivableListItems =
   return ReceiveableItemsProvider(
     ref,
     downloadManager,
-    HiveManagerImpl(),
+    HiveManagerImpl.instance,
     ClientImpl(),
   );
 });
@@ -59,43 +59,44 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
       // }
 
       ///save each receivable to hive offline db
-      await hiveManager.saveItem(item, session!.id);
+      hiveManager.saveItem(item, session!.id).then((value) {
+        ///get the saved instance of that receiveable using the id
+        ///(which we used to save it to make each item uniques and also for easy access)
+        final hiveItem = hiveManager.getReceiveableItemWithKey(item.id);
 
-      ///get the saved instance of that receiveable using the id
-      ///(which we used to save it to make each item uniques and also for easy access)
-      final hiveItem = hiveManager.getReceiveableItemWithKey(item.id);
+        ///define the onprogress call back so that we can collect the state and proccessed byte
+        ///and save to thet hive instance.
+        // item.onProgressCallback = (received, totalSize, state) async {
+        //   hiveItem?.iState = state;
+        //   hiveItem?.processedBytes = received;
 
-      ///define the onprogress call back so that we can collect the state and proccessed byte
-      ///and save to thet hive instance.
-      // item.onProgressCallback = (received, totalSize, state) async {
-      //   hiveItem?.iState = state;
-      //   hiveItem?.processedBytes = received;
+        //   await hiveItem?.save();
+        // };
 
-      //   await hiveItem?.save();
-      // };
+        void listener(
+            int received, int totalSize, file, String? reason, state) {
+          hiveItem?.iState = state;
+          hiveItem?.processedBytes = received;
+          hiveItem?.setEndTime = DateTime.now();
+          hiveItem?.save();
+          if (state.isCompleted) {
+            item.removeListener(listener);
 
-      void listener(int received, int totalSize, file, String? reason, state) {
-        hiveItem?.iState = state;
-        hiveItem?.processedBytes = received;
-        hiveItem?.setEndTime = DateTime.now();
-        hiveItem?.save();
-        if (state.isCompleted) {
-          item.removeListener(listener);
-
-          ///if this item is completed, remove from the nextSession receivable and save to db
-          _nextSession.previousSessionReceivable
-              .removeWhere((element) => element == item.id);
-          _nextSession.save();
+            ///if this item is completed, remove from the nextSession receivable and save to db
+            _nextSession.previousSessionReceivable
+                .removeWhere((element) => element == item.id);
+            _nextSession.save();
+          }
         }
-      }
 
-      item.addListener(listener);
-      state = [...state, item];
+        item.addListener(listener);
+        state = [...state, item];
 
-      downloadManager.addToQueue([item]);
-      if (downloadManager.isDownloading == false) {
-        downloadManager.download();
-      }
+        downloadManager.addToQueue([item]);
+        if (downloadManager.isDownloading == false) {
+          downloadManager.download();
+        }
+      });
     });
   }
 

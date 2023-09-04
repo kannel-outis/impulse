@@ -15,7 +15,9 @@ class ImpulseSharedPrefImpl implements ImpulseSharedPref {
   static const String _allowBrowseFile = "allow_browse_file";
   static const String _receiverPortNumber = "receiver_port_number";
 
-  static late final SharedPreferences _preferences;
+  static SharedPreferences? _pref;
+
+  SharedPreferences get _preferences => _pref!;
 
   static ImpulseSharedPref? _instance;
   static ImpulseSharedPref get instance {
@@ -25,7 +27,7 @@ class ImpulseSharedPrefImpl implements ImpulseSharedPref {
 
   @override
   Future<void> loadInstance() async {
-    _preferences = await SharedPreferences.getInstance();
+    _pref ??= await SharedPreferences.getInstance();
   }
 
   @override

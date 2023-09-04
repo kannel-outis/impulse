@@ -25,7 +25,7 @@ abstract class ServerManager {
   int? get port;
 
   ///Gets a local version of a shareableitem and creates one if it does not exist
-  Future<HiveItem> getHiveItemForShareable(Item item);
+  HiveItem getHiveItemForShareable(Item item);
 
   ///Removes Canceled download from shareableitems list
   void removeCanceledItem(String id);

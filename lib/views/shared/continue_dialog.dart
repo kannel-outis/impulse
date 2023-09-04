@@ -61,7 +61,8 @@ class ContinueDownloadDialog extends ConsumerWidget {
                           ref
                               .read(receivableListItems.notifier)
                               .continueDownloads(
-                                HiveManagerImpl()
+                                ///TODO: pu into controller
+                                HiveManagerImpl.instance
                                     .getReceiveableItemWithKey(prevItem)!,
                               );
                         }

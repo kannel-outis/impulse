@@ -24,7 +24,7 @@ final serverControllerProvider =
   final serverController = ServerController(
     alertState: alert,
     connectedUserState: connectedUser,
-    hiveManager: HiveManagerImpl(),
+    hiveManager: HiveManagerImpl.instance,
     shareableItemsProvider: shareableProvider,
     uploadManagerController: uploadManager,
     sessionStateN: sessionState,
@@ -98,12 +98,12 @@ class ServerController extends ServerManager with ChangeNotifier {
 
   set sessionState(Session? session) {
     _session = session;
-    log("${_session?.id}");
+    log("currentSesion ::::${_session?.id}");
   }
 
   set prevSessionState(HiveSession? session) {
     _prevSession = session;
-    log("${_prevSession?.previousSessionId}");
+    log(" previos session::::${_prevSession?.previousSessionId}");
   }
 
   @override
@@ -175,9 +175,9 @@ class ServerController extends ServerManager with ChangeNotifier {
 
         // _prevSession = prevSession;
 
-        final nextSession = prevSession
-          ..previousSessionId = _session!.id
-          ..lastSessionDateTime = DateTime.now().toIso8601String();
+        final nextSession = prevSession;
+        nextSession.previousSessionId = _session!.id;
+        nextSession.lastSessionDateTime = DateTime.now().toIso8601String();
         nextSession.save();
 
         ///We create a [connectedUserPreviousSessionState] based on the info we got
@@ -215,15 +215,8 @@ class ServerController extends ServerManager with ChangeNotifier {
   }
 
   @override
-  Future<HiveItem> getHiveItemForShareable(Item item) async {
-    final hiveItem = hiveManager.getShareableItemWithKey(item.id);
-    if (hiveItem != null) {
-      return hiveItem;
-    } else {
-      ///TODO: save before downloading
-      await hiveManager.saveItem(item, _session!.id);
-      return hiveManager.getShareableItemWithKey(item.id)!;
-    }
+  HiveItem getHiveItemForShareable(Item item) {
+    return hiveManager.getShareableItemWithKey(item.id)!;
   }
 
   @override
@@ -299,7 +292,6 @@ class ServerController extends ServerManager with ChangeNotifier {
     // }
 
     for (var prevItemId in _prevSession!.previousSessionShareable) {
-      log("$prevItemId ::::::::::::::::: shareable");
       final prevItem = hiveManager.getShareableItemWithKey(prevItemId);
       final shareable = ShareableItem(
         file: File(prevItem!.path),
@@ -310,8 +302,11 @@ class ServerController extends ServerManager with ChangeNotifier {
         altName: prevItem.fileName,
         homeDestination: (myServerInfo.ipAddress!, myServerInfo.port!),
       );
-      shareableItemsProvider.addAllItems([shareable]);
-      uploadManagerController.addToQueue([shareable]);
+      if (!shareable.state.isCompleted) {
+        log("$prevItemId ::::::::::::::::: shareable");
+        shareableItemsProvider.addAllItems([shareable]);
+        uploadManagerController.addToQueue([shareable]);
+      }
     }
   }
 

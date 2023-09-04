@@ -79,11 +79,12 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                           //   },
                           // );
 
-                          final (previousSession, _) = ref
+                          final (previousSession, nextSession) = ref
                               .read(connectedUserPreviousSessionStateProvider)!;
                           final prevItemsIds =
                               previousSession.previousSessionShareable;
-                          log(prevItemsIds.toString());
+                          log(ref.read(currentSessionStateProvider)?.id ?? "");
+                          log(nextSession.previousSessionId ?? "");
                         },
                         child: GestureDetector(
                           child: Container(

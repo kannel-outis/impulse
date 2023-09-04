@@ -4,6 +4,15 @@ import 'package:hive/hive.dart';
 import 'package:impulse/services/services.dart';
 
 class HiveManagerImpl extends HiveManager {
+  HiveManagerImpl._();
+
+  static HiveManager? _instance;
+
+  static HiveManager get instance {
+    _instance ??= HiveManagerImpl._();
+    return _instance!;
+  }
+
   @override
   List<HiveItem> getAllReceiveableItems() {
     final box = Hive.box<HiveItem>(HiveInit.receiveableItemsBox);
@@ -71,14 +80,15 @@ class HiveManagerImpl extends HiveManager {
     final userBox = Hive.box<HiveSession>(HiveInit.session);
     if (userBox.containsKey(userId)) {
       return userBox.get(userId)!;
+    } else {
+      final hiveUser = HiveSession(
+        userId: userId,
+        previousSessionId: sessionId,
+        lastSessionDateTime: DateTime.now().toString(),
+      );
+      final _ = await userBox.put(userId, hiveUser);
+      return hiveUser;
     }
-    final hiveUser = HiveSession(
-      userId: userId,
-      previousSessionId: sessionId,
-      lastSessionDateTime: DateTime.now().toString(),
-    );
-    final _ = await userBox.put(userId, hiveUser);
-    return hiveUser;
   }
 
   // @override

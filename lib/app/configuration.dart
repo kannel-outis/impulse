@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -39,6 +40,7 @@ class Configurations {
       impulseDir = await Directory(
               "${fileManager.rootPath.where((element) => element.contains("emulated")).toList().first}impulse files${Platform.pathSeparator}")
           .create();
+      print(impulseDir?.path);
       return;
     }
     impulseDir =
@@ -157,15 +159,18 @@ class Configurations {
 
   Future<void> loadAllInit() async {
     await ImpulseSharedPrefImpl.instance.loadInstance();
+    loadUser();
+    if (_user == null) return;
+
     await _loadHiveInit();
     await _loadPaths();
-    loadUser();
     loadTheme();
     loadRootFolderLocation();
     loadDestinationLocation();
     loadAlwaysAcceptConnection();
     loadAllowToBrowseFile();
     loadReceiverPortNumber();
+
     // composition = await AssetLottie("assets/lottie/waiting.json").load();
   }
 
