@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:impulse/app/app.dart';
@@ -126,7 +127,8 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       ///get the id of the file from the url query parameter
       try {
         await _downloadShareableFile(httpRequest);
-      } catch (e) {
+      } catch (e, s) {
+        log(e.toString(), stackTrace: s);
         httpRequest.response.statusCode = 404;
         httpRequest.response.close();
       }
@@ -273,7 +275,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
             "attachment; filename=${const Utf8Codec(allowMalformed: true).encode(item.name)}")
         ..headers.set("Content-Length", "${item.file.lengthSync() - start}");
 
-      final hiveItem = serverManager.getHiveItemForShareable(item);
+      final hiveItem = await serverManager.getHiveItemForShareable(item);
       void listener(int received, int totalSize, File? file, String? reason,
           IState state) {
         hiveItem.iState = state;

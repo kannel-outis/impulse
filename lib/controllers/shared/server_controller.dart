@@ -225,9 +225,15 @@ class ServerController extends ServerManager with ChangeNotifier {
     _receivableStreamController.add(map);
   }
 
-  @override
-  HiveItem getHiveItemForShareable(Item item) {
-    return hiveManager.getShareableItemWithKey(item.id)!;
+   @override
+  Future<HiveItem> getHiveItemForShareable(Item item) async {
+    final hiveItem = hiveManager.getShareableItemWithKey(item.id);
+    if (hiveItem != null) {
+      return hiveItem;
+    } else {
+      await hiveManager.saveItem(item, _session!.id);
+      return hiveManager.getShareableItemWithKey(item.id)!;
+    }
   }
 
   @override
