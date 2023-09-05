@@ -103,13 +103,13 @@ class DownloadManager extends MBps {
     if (contains) {
       ///check if receivable list is empty, if so, add and call download();
       if (_listOfWaitingReceivables.isEmpty) {
-        item.start = item.downloadedBytes;
+        item.start = item.proccessedBytes;
         _listOfWaitingReceivables.add(item);
         download();
       } else {
         ///if not empty, that means something is currently downloading, add to next on the list
 
-        item.start = item.downloadedBytes;
+        item.start = item.proccessedBytes;
 
         _listOfWaitingReceivables.insert(1, item);
         item.changeState(IState.waiting);

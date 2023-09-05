@@ -25,82 +25,91 @@ class HistoryScreen extends StatelessWidget {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 800),
           child: ValueListenableBuilder(
-            valueListenable:
-                Hive.box<HiveItem>(HiveInit.receiveableItemsBox).listenable(),
-            builder: (context, value, child) {
-              final list = value.values.toList();
-              list.sort((a, b) {
-                return a.endTime.compareTo(b.endTime);
-              });
-              return ListView.separated(
-                itemCount: value.length,
-                separatorBuilder: (context, index) {
-                  return SizedBox(height: $styles.insets.sm);
-                },
-                itemBuilder: (context, index) {
-                  // list.reversed.toList()[index].name
-                  final item = list.reversed.toList()[index];
-                  return Container(
-                    height: 70,
-                    width: double.infinity,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: $styles.insets.sm),
-                    // color: _color(item.state, context),
-                    child: LayoutBuilder(builder: (context, constraints) {
-                      return ImpulseInkWell(
-                        onTap: () {},
-                        child: Row(
-                          children: [
-                            FilePlaceHolder(
-                              name: item.path,
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                  width: constraints.maxWidth -
-                                      (($styles.insets.sm * 2) + 50),
-                                  child: Text(
-                                    item.name,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: $styles.text.body,
+              valueListenable:
+                  Hive.box<HiveItem>(HiveInit.shareableItemsBox).listenable(),
+              builder: (context, shareable, child) {
+                return ValueListenableBuilder(
+                  valueListenable:
+                      Hive.box<HiveItem>(HiveInit.receiveableItemsBox)
+                          .listenable(),
+                  builder: (context, receivable, child) {
+                    final list = [
+                      ...receivable.values.toList(),
+                      ...shareable.values.toList()
+                    ];
+                    list.sort((a, b) {
+                      return a.endTime.compareTo(b.endTime);
+                    });
+                    return ListView.separated(
+                      itemCount: list.length,
+                      separatorBuilder: (context, index) {
+                        return SizedBox(height: $styles.insets.sm);
+                      },
+                      itemBuilder: (context, index) {
+                        // list.reversed.toList()[index].name
+                        final item = list.reversed.toList()[index];
+                        return Container(
+                          height: 70,
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: $styles.insets.sm),
+                          // color: _color(item.state, context),
+                          child: LayoutBuilder(builder: (context, constraints) {
+                            return ImpulseInkWell(
+                              onTap: () {},
+                              child: Row(
+                                children: [
+                                  FilePlaceHolder(
+                                    name: item.path,
                                   ),
-                                ),
-                                SizedBox(
-                                  width: constraints.maxWidth -
-                                      (($styles.insets.sm * 2) + 50),
-                                  child: Text(
-                                    item.itemSize.sizeToString,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: $styles.text.body,
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      );
-                    }),
-                  );
-                },
-              );
-            },
-          ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width: constraints.maxWidth -
+                                            (($styles.insets.sm * 2) + 50),
+                                        child: Text(
+                                          item.id,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: $styles.text.body,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: constraints.maxWidth -
+                                            (($styles.insets.sm * 2) + 50),
+                                        child: Text(
+                                          item.itemSize.sizeToString,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: $styles.text.body,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            );
+                          }),
+                        );
+                      },
+                    );
+                  },
+                );
+              }),
         ),
       ),
     );
   }
 
-  Color _color(IState state, BuildContext context) {
-    return Colors.transparent;
-    if (state.isWaiting) {
-      return const Color(0xff9D9D9D).withOpacity(.2);
-    } else if (state.isFailed) {
-      return Colors.red.withOpacity(.2);
-    } else if (state.isPaused) {
-      return $styles.colors.folderColor2.withOpacity(.2);
-    } else {
-      return Theme.of(context).colorScheme.primary.withOpacity(.2);
-    }
-  }
+  // Color _color(IState state, BuildContext context) {
+  //   return Colors.transparent;
+  //   if (state.isWaiting) {
+  //     return const Color(0xff9D9D9D).withOpacity(.2);
+  //   } else if (state.isFailed) {
+  //     return Colors.red.withOpacity(.2);
+  //   } else if (state.isPaused) {
+  //     return $styles.colors.folderColor2.withOpacity(.2);
+  //   } else {
+  //     return Theme.of(context).colorScheme.primary.withOpacity(.2);
+  //   }
+  // }
 }

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/main.dart';
@@ -157,15 +155,18 @@ class Configurations {
 
   Future<void> loadAllInit() async {
     await ImpulseSharedPrefImpl.instance.loadInstance();
+    loadUser();
+    if (_user == null) return;
+
     await _loadHiveInit();
     await _loadPaths();
-    loadUser();
     loadTheme();
     loadRootFolderLocation();
     loadDestinationLocation();
     loadAlwaysAcceptConnection();
     loadAllowToBrowseFile();
     loadReceiverPortNumber();
+
     // composition = await AssetLottie("assets/lottie/waiting.json").load();
   }
 

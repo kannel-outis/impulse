@@ -67,7 +67,22 @@ abstract class Item extends StateListenable with EquatableMixin {
   // ignore: library_private_types_in_public_api
   _ItemFileSize get itemSize => _ItemFileSize(fileSize);
 
-  Map<String, dynamic> toMap();
+  Map<String, dynamic> toMap() {
+    return {
+      "path": filePath,
+      "fileSize": fileSize,
+      "fileType": fileType,
+      "fileId": id,
+      "senderId": authorId,
+      "fileName": fileName,
+      //TODO: check later
+      "altName": fileName,
+      "homeDestination": {
+        "ip": homeDestination!.$1,
+        "port": homeDestination!.$2,
+      }
+    };
+  }
 }
 
 class _ItemFileSize extends FileSize {

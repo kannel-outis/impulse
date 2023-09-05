@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:hive/hive.dart';
 import 'package:impulse/app/app.dart';
@@ -16,6 +15,7 @@ class HiveItem extends Item with HiveObjectMixin {
   final int homeDestinationPort;
   int processedBytes;
   IState iState;
+  final String sessionId;
   // String progress;
 
   HiveItem({
@@ -27,6 +27,7 @@ class HiveItem extends Item with HiveObjectMixin {
     required this.homeUserId,
     required this.homeDestinationAddress,
     required this.homeDestinationPort,
+    required this.sessionId,
     this.processedBytes = 0,
     // this.progress ="0",
     this.iState = IState.pending,
@@ -50,10 +51,10 @@ class HiveItem extends Item with HiveObjectMixin {
         filePath,
       ];
 
-  @override
-  Map<String, dynamic> toMap() {
-    return {};
-  }
+  // @override
+  // Map<String, dynamic> toMap() {
+  //   return {};
+  // }
 
   @override
   int get proccessedBytes => processedBytes;
@@ -83,13 +84,14 @@ class HiveItemAdapter extends TypeAdapter<HiveItem> {
       totalSize: fields[7] as int,
       processedBytes: fields[8] as int,
       iState: fields[9] as IState,
+      sessionId: fields[11] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, HiveItem obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.fileId)
       ..writeByte(1)
@@ -112,7 +114,9 @@ class HiveItemAdapter extends TypeAdapter<HiveItem> {
       ..write(obj.iState)
       ..writeByte(10)
       ///////
-      ..write(obj.endTime);
+      ..write(obj.endTime)
+      ..writeByte(11)
+      ..write(obj.sessionId);
   }
 
   @override

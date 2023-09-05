@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:impulse/app/impulse_exception.dart';
@@ -44,11 +43,16 @@ class ClientImpl implements ClientHost {
   Future<dartz.Either<AppException, bool>> createServerAndNotifyHost({
     required String address,
     int? port,
-    required Map<String, dynamic> body,
+    required Map<String, dynamic> serverInfo,
+    required Map<String, dynamic> sessionInfo,
   }) async {
     ///seperate uri builder
     final uri = Uri.parse(
         "http://$address:${port ?? _port}/${ServicesUtils.serverRoutes.client_server_info}");
+    final body = {
+      "serverInfo": serverInfo,
+      "sessionInfo": sessionInfo,
+    };
     final s = await RequestHelper.post(uri, body);
     final result =
         s.map((r) => (r["msg"] as String) == "Denied" ? false : true);
@@ -132,5 +136,14 @@ class ClientImpl implements ClientHost {
       url,
       shareableItemMap,
     );
+  }
+
+  @override
+  Future<dartz.Either<AppException, Map<String, dynamic>>>
+      continuePreviousDownloads((String, int) destination) {
+    final url = Uri.parse(
+        "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.continue_previous}");
+    final body = {"continue": true};
+    return RequestHelper.post(url, body);
   }
 }

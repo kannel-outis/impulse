@@ -8,8 +8,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
 
-import 'impulse_app_color.dart';
-
 @immutable
 class AppStyle {
   AppStyle({Size? screenSize}) {

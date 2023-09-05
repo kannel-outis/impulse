@@ -93,7 +93,7 @@ class TransferListTile extends StatelessWidget {
                         color: state.isWaiting
                             ? const Color(0xff9D9D9D).withOpacity(.2)
                             : state.isFailed
-                                ? Colors.red.withOpacity(.2)
+                                ? Colors.blue.withOpacity(.2)
                                 : state.isPaused
                                     ? $styles.colors.folderColor2
                                         .withOpacity(.2)

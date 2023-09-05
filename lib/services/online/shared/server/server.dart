@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:impulse/app/app.dart';
@@ -124,20 +125,27 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       }
 
       ///get the id of the file from the url query parameter
-      await _downloadShareableFile(httpRequest);
+      try {
+        await _downloadShareableFile(httpRequest);
+      } catch (e, s) {
+        log(e.toString(), stackTrace: s);
+        httpRequest.response.statusCode = 404;
+        httpRequest.response.close();
+      }
     }
   }
 
   Future<void> _handlePostRequest(HttpRequest httpRequest) async {
     final url = httpRequest.requestedUri.toString();
     if (url == _buildUrl(ServicesUtils.serverRoutes.client_server_info)) {
-      ///need to wait for the result to load to memory before closing and decoding
-      ///else it may just enter in chunks. the image may make it too large
       final result = await httpRequest.fold<List<int>>(
           [], (previous, element) => previous..addAll(element));
       final bodyEncoded = String.fromCharCodes(result);
-      final accepted = await serverManager
-          .handleClientServerNotification(json.decode(bodyEncoded));
+      final body = json.decode(bodyEncoded);
+      final accepted = await serverManager.handleClientServerNotification(
+        body["serverInfo"] as Map<String, dynamic>,
+        body["sessionInfo"] as Map<String, dynamic>,
+      );
 
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.headers.contentType = ContentType.json;
@@ -180,7 +188,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       httpRequest.response.headers.contentType = ContentType.json;
       httpRequest.response.write(
         json.encode(
-          {"msg": "Reveived"},
+          {"msg": "Received"},
         ),
       );
       httpRequest.response.close();
@@ -202,11 +210,26 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       serverManager.removeCanceledItem(fileId);
       httpRequest.response.statusCode = Constants.STATUS_OK;
       httpRequest.response.close();
+    } else if (url == _buildUrl(ServicesUtils.serverRoutes.continue_previous)) {
+      serverManager.continuePreviousDownloads();
+      httpRequest.response.statusCode = Constants.STATUS_OK;
+      httpRequest.response.headers.contentType = ContentType.json;
+      httpRequest.response.write(
+        json.encode(
+          {"msg": "Success"},
+        ),
+      );
+      httpRequest.response.close();
+    } else {
+      httpRequest.response.statusCode = 404;
+      httpRequest.response.headers.contentType = ContentType.json;
+      httpRequest.response.write(
+        json.encode(
+          {"msg": "Route not found"},
+        ),
+      );
+      httpRequest.response.close();
     }
-  }
-
-  String _buildUrl(String path) {
-    return "http://${address.address}:$port/$path";
   }
 
   Future<void> _downloadShareableFile(HttpRequest httpRequest) async {
@@ -241,12 +264,15 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
     ///Check if the file with that id exists on the device,
     ///if it does proceed to open the file and make it downloadable
+    ///const Utf8Codec(allowMalformed: true).encode(item.name)
     if (await item.file.exists()) {
       item.startTime = DateTime.now();
       httpRequest.response
-        ..headers.set("Content-Type", item.mime ?? "application/octat-stream")
-        ..headers
-            .set("Content-Disposition", "attachment; filename=${item.name}")
+        ..headers.set("Content-Type",
+            item.mime ?? "application/octat-stream;charset=UTF-8")
+        ..headers.set("charset", "UTF-8")
+        ..headers.set("Content-Disposition",
+            "attachment; filename=${const Utf8Codec(allowMalformed: true).encode(item.name)}")
         ..headers.set("Content-Length", "${item.file.lengthSync() - start}");
 
       final hiveItem = await serverManager.getHiveItemForShareable(item);
@@ -323,6 +349,10 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       httpRequest.response.close();
       return;
     }
+  }
+
+  String _buildUrl(String path) {
+    return "http://${address.address}:$port/$path";
   }
 
   @override

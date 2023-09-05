@@ -26,8 +26,12 @@ class HostImpl extends Client implements Host {
   // }
 
   @override
-  Future<Either<AppException, bool>> createServerAndNotifyHost(
-      {String? address, int? port, required Map<String, dynamic> body}) {
+  Future<Either<AppException, bool>> createServerAndNotifyHost({
+    String? address,
+    int? port,
+    required Map<String, dynamic> serverInfo,
+    required Map<String, dynamic> sessionInfo,
+  }) {
     throw UnimplementedError();
   }
 
@@ -138,5 +142,14 @@ class HostImpl extends Client implements Host {
       url,
       shareableItemMap,
     );
+  }
+
+  @override
+  Future<Either<AppException, Map<String, dynamic>>> continuePreviousDownloads(
+      (String, int) destination) {
+    final url = Uri.parse(
+        "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.continue_previous}");
+    final body = {"continue": true};
+    return RequestHelper.post(url, body);
   }
 }

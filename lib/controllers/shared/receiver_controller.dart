@@ -6,17 +6,24 @@ import 'package:impulse/app/impulse_exception.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/models.dart';
 import 'package:impulse/services/services.dart';
+import 'package:uuid/uuid.dart';
 
 final receiverProvider = ChangeNotifierProvider<ReceiverProvider>(
   (ref) {
-    final servermanager = ref.watch(serverControllerProvider);
-    final connectedUserState = ref.watch(connectUserStateProvider.notifier);
+    final servermanager = ref.read(serverControllerProvider);
+    final connectedUserState = ref.read(connectUserStateProvider.notifier);
+    final sessionState = ref.read(currentSessionStateProvider.notifier);
+    final connectedUserPreviousSessionState =
+        ref.read(connectedUserPreviousSessionStateProvider.notifier);
     return ReceiverProvider(
       servermanager,
       connectedUserState: connectedUserState,
+      sessionStateProvider: sessionState,
       client: ClientImpl(
         gateWay: MyHttpServer(serverManager: servermanager),
       ),
+      hiveManager: HiveManagerImpl.instance,
+      connectedUserPreviousSessionState: connectedUserPreviousSessionState,
     );
   },
 );
@@ -25,11 +32,17 @@ class ReceiverProvider extends ChangeNotifier {
   final Client client;
   final ServerManager _myServer;
   final ConnectedUserState connectedUserState;
+  final SessionState sessionStateProvider;
+  final HiveManager hiveManager;
+  final ConnectedUserPreviousSessionState connectedUserPreviousSessionState;
 
   ReceiverProvider(
     this._myServer, {
     required this.client,
     required this.connectedUserState,
+    required this.sessionStateProvider,
+    required this.hiveManager,
+    required this.connectedUserPreviousSessionState,
   });
 
   String? _address;
@@ -45,7 +58,7 @@ class ReceiverProvider extends ChangeNotifier {
   ///This function will be called after a successful scan and an available host has be selected
   ///That way we can be sure of two things. 1) a host has been found/selected, 2) The selected host has already occupied the default port ----
   /// --- Thats the green light we need to use the second port.
-  Future<AppException?> createServer({
+  Future<AppException?> _createServer({
     dynamic address,
     int? port,
     Function(AppException)? onErrorCallback,
@@ -125,11 +138,12 @@ class ReceiverProvider extends ChangeNotifier {
   ///It creates the client server and notifies the host by making a post request to the host server
   Future<AppException?> createServerAndNotifyHost(
       {String? hostIpAddress, int? hostPort, required int myPort}) async {
+    late final Session session;
     if (selectedHost == null && (hostIpAddress == null || hostPort == null)) {
       return const AppException("No Host has been Selected or found");
     }
     // ignore: unnecessary_this
-    final exception = await this.createServer(port: myPort);
+    final exception = await _createServer(port: myPort);
     if (exception != null) {
       return exception;
     } else {
@@ -138,23 +152,57 @@ class ReceiverProvider extends ChangeNotifier {
       ///
       /// and in case a qr code is used, ipAddress and port parameters should not be empty
       final myInfo = _myServer.myServerInfo;
+      session = Session(
+        id: const Uuid().v4(),
+        usersOnSession: [
+          selectedHost!.user,
+          myInfo.user,
+        ],
+      );
       final notifyHost = await client.createServerAndNotifyHost(
         address: hostIpAddress ?? selectedHost!.ipAddress!,
         port: hostPort ?? selectedHost?.port,
-        body: myInfo.toMap(),
+        serverInfo: myInfo.toMap(),
+        sessionInfo: session.toMap(),
       );
       if (notifyHost is Left) {
         final exception = (notifyHost as Left).value as AppException;
         return exception;
       } else if (notifyHost is Right) {
         final result = (notifyHost as Right).value as bool;
-        print(result);
         if (result == false) {
           (client as Host).closeServer();
           return const AppException("Request Denied");
         } else {
           /// we have successfully connected to the select host/sender
+          sessionStateProvider.setSession(session);
+
+          ///////////////
+          ///The [Host] implementation of this is in "server_controller.dart"
+          final prevSession =
+              await hiveManager.saveSession(_selectedHost!.user.id, session.id);
+          // final nextSession = prevSession;
+          // nextSession.previousSessionId = session.id;
+          // nextSession.previousSessionReceivable = [];
+          // nextSession.previousSessionShareable = [];
+          // nextSession.lastSessionDateTime = DateTime.now().toIso8601String();
+          // nextSession.save();
+
+          final nextSession = HiveSession(
+            userId: prevSession.userId,
+            previousSessionId: session.id,
+            lastSessionDateTime: DateTime.now().toString(),
+            previousSessionReceivable: [],
+            previousSessionShareable: [],
+          );
+          await hiveManager.updateUserSession(nextSession);
+
+          ///We create a [connectedUserPreviousSessionState] based on the info we get
+          ///from the above op
+          connectedUserPreviousSessionState.setUserPrevSession(
+              prevSession.newInstance(), nextSession);
           connectedUserState.setUserState(_selectedHost);
+
           return null;
         }
       }
@@ -180,9 +228,17 @@ class ReceiverProvider extends ChangeNotifier {
 
   Future<void> addMoreShareablesOnHostServer({
     required Map<String, dynamic> shareableItemMap,
-    required (String, int) destination,
+    required ServerInfo destination,
   }) async {
-    await client.addMoreShareablesOnHostServer(shareableItemMap, destination);
+    await client.addMoreShareablesOnHostServer(
+        shareableItemMap, (destination.ipAddress!, destination.port!));
+  }
+
+  Future<void> continuePreviousDownloads({
+    required ServerInfo destination,
+  }) async {
+    await client
+        .continuePreviousDownloads((destination.ipAddress!, destination.port!));
   }
 
   void disconnect() {

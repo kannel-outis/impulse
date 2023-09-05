@@ -13,7 +13,10 @@ abstract class Client {
   }
 
   Future<Either<AppException, bool>> createServerAndNotifyHost(
-      {required String address, int? port, required Map<String, dynamic> body});
+      {required String address,
+      int? port,
+      required Map<String, dynamic> serverInfo,
+      required Map<String, dynamic> sessionInfo});
 
   Stream<List<int>> getFileStreamFromHostServer(
     (String, int) destination,
@@ -34,6 +37,8 @@ abstract class Client {
   Future<Either<AppException?, Map<String, dynamic>>>
       addMoreShareablesOnHostServer(
           Map<String, dynamic> shareableItemMap, (String, int) destination);
+  Future<Either<AppException, Map<String, dynamic>>> continuePreviousDownloads(
+      (String, int) destination);
 }
 
 abstract interface class ClientHost implements Client, Host {}

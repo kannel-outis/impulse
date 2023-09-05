@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
@@ -10,7 +9,7 @@ import 'package:uuid/uuid.dart';
 
 final selectedItemsProvider =
     StateNotifierProvider<SelectedItems, List<ShareableItem>>((ref) {
-  final serverController = ref.watch(serverControllerProvider);
+  final serverController = ref.read(serverControllerProvider);
   return SelectedItems(
     serverManager: serverController,
   );
@@ -97,37 +96,3 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
   bool get selectedIsEmpty => items.isEmpty;
 }
 
-final shareableItemsProvider =
-    StateNotifierProvider<ShareableItemsProvider, List<ShareableItem>>(
-        (ref) => ShareableItemsProvider());
-
-class ShareableItemsProvider extends StateNotifier<List<ShareableItem>> {
-  ShareableItemsProvider() : super([]);
-  List<Item> _filtered = [];
-
-  void addAllItems(List<Item> items) {
-    state = [...state, ..._filteredList(items)];
-  }
-
-  void cancelItemWithId(String itemId) {
-    state.removeWhere((element) => element.id == itemId);
-    state = [...state];
-  }
-
-  void clear() {
-    state = [];
-  }
-
-  List<Item> get filteredList => _filtered;
-
-  ///filter list so that they are not sent more than once
-  List<ShareableItem> _filteredList(List<Item> items) {
-    return _filtered = items
-        .map((e) => e as ShareableItem)
-        .toList()
-        .where((element) =>
-            !state.map((e) => e.id).toList().contains(element.id) &&
-            !state.map((e) => e.filePath).toList().contains(element.filePath))
-        .toList();
-  }
-}

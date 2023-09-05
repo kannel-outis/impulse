@@ -1,5 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api, unused_element, file_names
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
@@ -49,6 +51,7 @@ class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
     _prevState = _state;
     _progress = _listenableAsItem(widget).proccessedBytes /
         _listenableAsItem(widget).fileSize;
+    log("${(widget.listenable as Item).name}: ${(widget.listenable as Item).proccessedBytes}");
 
     if (refreshListener && oldWidget != null) {
       _listenableAsItem(oldWidget).removeListener(_listener);

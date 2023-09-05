@@ -4,19 +4,27 @@ import 'package:impulse/models/models.dart';
 
 class Session {
   final String id;
-  final DateTime sessionCreated;
   final List<User> usersOnSession;
   Session({
     required this.id,
     required this.usersOnSession,
-    required this.sessionCreated,
   });
 
-  DateTime? _sessionActivated = null;
+  factory Session.fromMap(Map<String, dynamic> map) {
+    return Session(
+      id: map["id"],
+      usersOnSession: [
+        for (final userMap in map["users"]) User.fromMap(userMap)
+      ],
+    );
+  }
 
-  DateTime? get sessionActivated => _sessionActivated;
-
-  set sessionActivated(DateTime? time) {
-    _sessionActivated = time;
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      "users": [
+        for (final user in usersOnSession) user.toMap(),
+      ]
+    };
   }
 }

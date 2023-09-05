@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,7 +36,7 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   bool tabBarTapped = false;
   bool isOverlayOpen = false;
   bool waitForOverlayReverseAnimation = true;
@@ -42,6 +44,7 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   Map<String, (IconData, IconData)> get bars => {
@@ -79,7 +82,23 @@ class _HomePageState extends ConsumerState<HomePage>
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    log(state.name);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    ref.listen(connectionStateProvider, (prev, next) {
+      checkPrevDownloadListener(prev, next, GenericProviderRef(ref), context);
+    });
     return WillPopScope(
       onWillPop: () async {
         final miniPlayerControllerP = ref.read(miniPlayerController);

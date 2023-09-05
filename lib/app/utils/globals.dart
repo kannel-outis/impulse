@@ -1,13 +1,13 @@
-import 'dart:io';
+import 'dart:developer';
 
 import 'package:flutter/material.dart' hide ConnectionState;
-import 'package:impulse/app/utils/enums.dart';
+import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/services/services.dart';
 import 'package:impulse/views/home/components/custom_modal.dart';
+import 'package:impulse/views/shared/continue_dialog.dart';
 
 import '../../impulse_scaffold.dart';
-import '../styles/impulse_app_style.dart';
-import 'generic_provider_ref.dart';
 
 AppStyle get $styles => ImpulseScaffold.style;
 TextStyle get bodyStyle => $styles.text.body;
@@ -46,6 +46,8 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
       ref.read(serverControllerProvider).ipAddress!,
       ref.read(serverControllerProvider).port!
     );
+    await HiveManagerImpl.instance
+        .saveItem(item, ref.read(currentSessionStateProvider)!.id);
   }
 
   ///filter the selected items and seperate the once that are not duplicate and can be shared
@@ -59,7 +61,7 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
       .map((e) => e.toMap())
       .toList();
   // print(files);
-  print(shareableFiles.length);
+  // print(shareableFiles.length);
 
   // return;
 
@@ -71,6 +73,20 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
 }
 
 Future<void> disconnect(GenericProviderRef ref) async {
+  //Set prev session and save to hive box
+  // ref.read(connectedUserPreviousSessionStateProvider)?.$2
+  //   ?..previousSessionId = ref.read(currentSessionStateProvider)?.id
+  //   ..previousSessionReceivable = ref
+  //       .read(receivableListItems)
+  //       .where((element) => !element.state.isCompleted)
+  //       .map((e) => e.toHiveItem(ref.read(currentSessionStateProvider)!.id))
+  //       .toList()
+  //   ..previousSessionShareable = ref
+  //       .read(shareableItemsProvider)
+  //       .where((element) => !element.state.isCompleted)
+  //       .map((e) => e.toHiveItem(ref.read(currentSessionStateProvider)!.id))
+  //       .toList()
+  //   ..save();
   //is user was a client, close server
   if (ref.read(userTypeProvider) != UserType.host) {
     ref.read(receiverProvider).disconnect();
@@ -79,11 +95,6 @@ Future<void> disconnect(GenericProviderRef ref) async {
   ref
       .read(connectUserStateProvider.notifier)
       .setUserState(null, disconnected: true);
-  //clear all lists
-  ref.read(shareableItemsProvider.notifier).clear();
-  ref.read(selectedItemsProvider.notifier).clear();
-  ref.read(receivableListItems.notifier).clear();
-  ref.read(uploadManagerProvider.notifier).clear();
 
   // set connection state to disconneted
   ref
@@ -96,6 +107,47 @@ Future<void> disconnect(GenericProviderRef ref) async {
       ..port = null
       ..ipAddress = null;
   }
+
+  //clear all lists
+  ref.read(shareableItemsProvider.notifier).clear();
+  ref.read(selectedItemsProvider.notifier).clear();
+  ref.read(receivableListItems.notifier).clear();
+  ref.read(uploadManagerProvider.notifier).clear();
+  ref.read(connectedUserPreviousSessionStateProvider.notifier).clear();
   //remove all server list for shareable items
   // ref.read(serverControllerProvider).setSelectedItems([]);
+}
+
+void checkPrevDownloadListener(ConnectionState? previous, ConnectionState next,
+    GenericProviderRef ref, BuildContext context) {
+  if (next.isConnected) {
+    final connectedUserSessions =
+        ref.read(connectedUserPreviousSessionStateProvider)!;
+    for (var element
+        in connectedUserSessions.prevSession.previousSessionReceivable) {
+      print("$element ::::::::::::::");
+    }
+    final inCompleteDownloads = connectedUserSessions
+        .prevSession.previousSessionReceivable
+        .map((e) => HiveManagerImpl.instance.getReceiveableItemWithKey(e))
+        .toList()
+        .where((e) => e != null && !e.state.isCompleted && !e.state.isCanceled)
+        .toList();
+    if (inCompleteDownloads.isNotEmpty) {
+      for (var s in inCompleteDownloads) {
+        log(s!.name);
+      }
+      showDialog(
+        context: context,
+        useRootNavigator: true,
+        builder: (context) {
+          return const ContinueDownloadDialog();
+        },
+      );
+    } else {
+      ref
+          .read(connectedUserPreviousSessionStateProvider.notifier)
+          .hasSetNewPrev();
+    }
+  }
 }

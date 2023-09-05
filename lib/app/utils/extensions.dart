@@ -1,7 +1,7 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:impulse/services/services.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
 import 'globals.dart';
@@ -111,5 +111,34 @@ extension Contains on Offset {
         position1.dx + size1.width > position2.dx &&
         position1.dy < position2.dy + size2.height &&
         position1.dy + size1.height > position2.dy);
+  }
+}
+
+extension ToHiveItem on Item {
+  HiveItem toHiveItem(String sessionId) {
+    return HiveItem(
+      fileId: id,
+      path: filePath,
+      filename: name,
+      type: fileType,
+      totalSize: fileSize,
+      homeUserId: authorId,
+      homeDestinationAddress: homeDestination!.$1,
+      homeDestinationPort: homeDestination!.$2,
+      sessionId: sessionId,
+      processedBytes: proccessedBytes,
+    );
+  }
+
+  bool get isReceivable {
+    return this is ReceiveableItem;
+  }
+
+  bool get isHive {
+    return this is HiveItem;
+  }
+
+  bool get isShareable {
+    return this is ShareableItem;
   }
 }

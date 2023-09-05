@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 
@@ -38,10 +36,13 @@ class ShareableItem extends Item {
       file: File(map["path"] as String),
       fileType: map["fileType"] as String,
       fileSize: map["fileSize"] as int,
-      id: map["id"] as String,
-      authorId: map["authorId"] as String,
+      id: map["fileId"] as String,
+      authorId: map["senderId"] as String,
       altName: map["altName"] as String?,
-      homeDestination: (map["ip"] as String, map["port"] as int),
+      homeDestination: (
+        map["homeDestination"]["ip"] as String,
+        map["homeDestination"]["port"] as int
+      ),
     );
   }
 
@@ -86,21 +87,21 @@ class ShareableItem extends Item {
   @override
   IState get state => _state;
 
-  @override
-  Map<String, dynamic> toMap() {
-    return {
-      "fileSize": fileSize,
-      "fileType": fileType,
-      "fileId": id,
-      "senderId": authorId,
-      "fileName": fileName,
-      "altName": altName,
-      "homeDestination": {
-        "ip": homeDestination!.$1,
-        "port": homeDestination!.$2,
-      }
-    };
-  }
+  // @override
+  // Map<String, dynamic> toMap() {
+  //   return {
+  //     "fileSize": fileSize,
+  //     "fileType": fileType,
+  //     "fileId": id,
+  //     "senderId": authorId,
+  //     "fileName": fileName,
+  //     "altName": altName,
+  //     "homeDestination": {
+  //       "ip": homeDestination!.$1,
+  //       "port": homeDestination!.$2,
+  //     }
+  //   };
+  // }
 
   @override
   List<Object?> get props => [

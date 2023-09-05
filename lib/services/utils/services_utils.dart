@@ -155,5 +155,6 @@ class _ServerRoutes {
   final client_server_info = "impulse/client_server_info";
   final shareables = "shareables";
   final shareables_more = "shareables/more";
+  final continue_previous = "continue_previous";
   final cancel = "cancel";
 }
