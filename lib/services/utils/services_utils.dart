@@ -99,7 +99,7 @@ class ServicesUtils {
       bool validate = true,
       int start = 0,
       required int end,
-      Function(int, IClient)? init,
+      Function(IClient)? init,
       int errorCount = 0}) async* {
     var client = http.Client();
     try {
@@ -114,7 +114,6 @@ class ServicesUtils {
 
       final response = await client.send(request);
       init?.call(
-        int.parse(response.headers[HttpHeaders.contentLengthHeader]!),
         IClient(client),
       );
 

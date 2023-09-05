@@ -1,4 +1,3 @@
-
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:impulse/app/impulse_exception.dart';
 
@@ -74,7 +73,7 @@ class ClientImpl implements ClientHost {
       {Map<String, String>? headers,
       int start = 0,
       required int end,
-      Function(int p1, IClient p2)? init}) {
+      Function(IClient p2)? init}) {
     final url =
         "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.download}?id=$fileId";
     // return Stream.empty();

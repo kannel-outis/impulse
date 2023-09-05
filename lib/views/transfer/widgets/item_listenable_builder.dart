@@ -51,7 +51,7 @@ class _ItemListenableBuilderState extends State<ItemListenableBuilder> {
     _prevState = _state;
     _progress = _listenableAsItem(widget).proccessedBytes /
         _listenableAsItem(widget).fileSize;
-    log("${(widget.listenable as Item).name}: ${(widget.listenable as Item).proccessedBytes}");
+    log("${(widget.listenable as Item).id}: ${(widget.listenable as Item).proccessedBytes}");
 
     if (refreshListener && oldWidget != null) {
       _listenableAsItem(oldWidget).removeListener(_listener);

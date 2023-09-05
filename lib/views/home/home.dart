@@ -36,7 +36,10 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+    with
+        SingleTickerProviderStateMixin,
+        WidgetsBindingObserver,
+        SharingIntentListener {
   bool tabBarTapped = false;
   bool isOverlayOpen = false;
   bool waitForOverlayReverseAnimation = true;

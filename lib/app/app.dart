@@ -19,3 +19,4 @@ export 'utils/file_placeholder.dart';
 
 export 'dart:convert';
 export "permission_handler.dart";
+export 'sharing_intent.dart';
