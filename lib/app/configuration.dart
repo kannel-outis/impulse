@@ -1,6 +1,3 @@
-import 'dart:developer';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/main.dart';
@@ -40,7 +37,6 @@ class Configurations {
       impulseDir = await Directory(
               "${fileManager.rootPath.where((element) => element.contains("emulated")).toList().first}impulse files${Platform.pathSeparator}")
           .create();
-      print(impulseDir?.path);
       return;
     }
     impulseDir =

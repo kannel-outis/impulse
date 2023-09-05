@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:impulse/app/impulse_exception.dart';

@@ -1,5 +1,4 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:impulse/app/app.dart';
@@ -62,7 +61,7 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
       .map((e) => e.toMap())
       .toList();
   // print(files);
-  print(shareableFiles.length);
+  // print(shareableFiles.length);
 
   // return;
 

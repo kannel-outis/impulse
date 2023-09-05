@@ -100,16 +100,16 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 
-  Color _color(IState state, BuildContext context) {
-    return Colors.transparent;
-    if (state.isWaiting) {
-      return const Color(0xff9D9D9D).withOpacity(.2);
-    } else if (state.isFailed) {
-      return Colors.red.withOpacity(.2);
-    } else if (state.isPaused) {
-      return $styles.colors.folderColor2.withOpacity(.2);
-    } else {
-      return Theme.of(context).colorScheme.primary.withOpacity(.2);
-    }
-  }
+  // Color _color(IState state, BuildContext context) {
+  //   return Colors.transparent;
+  //   if (state.isWaiting) {
+  //     return const Color(0xff9D9D9D).withOpacity(.2);
+  //   } else if (state.isFailed) {
+  //     return Colors.red.withOpacity(.2);
+  //   } else if (state.isPaused) {
+  //     return $styles.colors.folderColor2.withOpacity(.2);
+  //   } else {
+  //     return Theme.of(context).colorScheme.primary.withOpacity(.2);
+  //   }
+  // }
 }

@@ -94,7 +94,6 @@ class _ScanPageState extends ConsumerState<ScanPage> {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
       counter++;
-      print(counter);
       setState(() {
         result = scanData;
       });

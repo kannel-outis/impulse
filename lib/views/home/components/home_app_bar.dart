@@ -1,13 +1,9 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
-import 'package:impulse/services/online/shared/transfer/receiveable_item.dart';
-import 'package:impulse/views/shared/continue_dialog.dart';
-import 'package:impulse/views/shared/impulse_ink_well.dart';
 
 import '../widgets/top_stack.dart';
 

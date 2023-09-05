@@ -10,7 +10,7 @@ class AppColors {
   // final _primaryColor = const Color(0xffbe3d1b);
   final _primaryColor = Colors.red;
   final _iconColor1 = const Color(0xffc4c9cf);
-  final _iconColor2 = const Color(0xff04a4e3);
+  // final _iconColor2 = const Color(0xff04a4e3);
   final folderColor2 = const Color(0xfff7be3a);
   Color get _fontColor1 => _iconColor1;
   final _fontColor2 = const Color(0xff7e848b);
