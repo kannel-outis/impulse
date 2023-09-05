@@ -51,20 +51,16 @@ class ContinueDownloadDialog extends ConsumerWidget {
                         .continuePreviousDownloads(destination: connectedUser)
                         .then(
                       (value) {
-                        final (previousSession, _) = ref
+                        final connectedUserSessions = ref
                             .read(connectedUserPreviousSessionStateProvider)!;
-                        final prevItemsIds =
-                            previousSession.previousSessionReceivable;
+                        final prevItemsIds = connectedUserSessions
+                            .prevSession.previousSessionReceivable;
                         for (final prevItem in prevItemsIds) {
                           log("$prevItem ::::::::::::::::: Receivable");
 
                           ref
                               .read(receivableListItems.notifier)
-                              .continueDownloads(
-                                ///TODO: pu into controller
-                                HiveManagerImpl.instance
-                                    .getReceiveableItemWithKey(prevItem)!,
-                              );
+                              .continueDownloads(prevItem);
                         }
                         Navigator.pop(context);
                       },

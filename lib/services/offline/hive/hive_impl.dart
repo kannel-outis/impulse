@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:hive/hive.dart';
+import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 
 class HiveManagerImpl extends HiveManager {
@@ -77,33 +78,19 @@ class HiveManagerImpl extends HiveManager {
 
   @override
   Future<HiveSession> saveSession(String userId, String sessionId) async {
-    final userBox = Hive.box<HiveSession>(HiveInit.session);
-    if (userBox.containsKey(userId)) {
-      return userBox.get(userId)!;
+    final sessionBox = Hive.box<HiveSession>(HiveInit.session);
+    if (sessionBox.containsKey(userId)) {
+      return sessionBox.get(userId)!;
     } else {
       final hiveUser = HiveSession(
         userId: userId,
         previousSessionId: sessionId,
         lastSessionDateTime: DateTime.now().toString(),
       );
-      final _ = await userBox.put(userId, hiveUser);
+      final _ = await sessionBox.put(userId, hiveUser);
       return hiveUser;
     }
   }
-
-  // @override
-  // List<HiveItem> getAllReceiveableItemsFromSession(String sessionId) {
-  //   final box = Hive.box<HiveItem>(HiveInit.receiveableItemsBox);
-  //   final List<HiveItem> itemsFromSession = [];
-  //   final Map  _map= {};
-  //   _map.
-  // }
-
-  // @override
-  // List<HiveItem> getAllShareableItemsFromSession(String sessionId) {
-  //   // TODO: implement getAllShareableItemsFromSession
-  //   throw UnimplementedError();
-  // }
 
   @override
   void removeItemWithKey(String key) {
@@ -113,6 +100,16 @@ class HiveManagerImpl extends HiveManager {
       shareableBox.delete(key);
     } else if (receivableBox.containsKey(key)) {
       receivableBox.delete(key);
+    }
+  }
+
+  @override
+  Future<void> updateUserSession(HiveSession session) async {
+    final sessionBox = Hive.box<HiveSession>(HiveInit.session);
+    if (sessionBox.containsKey(session.userId)) {
+      sessionBox.put(session.userId, session);
+    } else {
+      throw const AppException("User does not exist");
     }
   }
 }

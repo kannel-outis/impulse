@@ -3,12 +3,12 @@ import 'package:impulse/services/services.dart';
 
 final connectedUserPreviousSessionStateProvider = StateNotifierProvider<
     ConnectedUserPreviousSessionState,
-    (HiveSession prevSession, HiveSession nextSession)?>(
+    ({HiveSession prevSession, HiveSession nextSession})?>(
   (ref) => ConnectedUserPreviousSessionState(),
 );
 
-class ConnectedUserPreviousSessionState
-    extends StateNotifier<(HiveSession prev, HiveSession next)?> {
+class ConnectedUserPreviousSessionState extends StateNotifier<
+    ({HiveSession prevSession, HiveSession nextSession})?> {
   ConnectedUserPreviousSessionState() : super(null);
 
   bool _hasSetNewPrevSessison = false;
@@ -21,7 +21,7 @@ class ConnectedUserPreviousSessionState
   }
 
   void setUserPrevSession(HiveSession prevSession, HiveSession nextSession) {
-    state = (prevSession, nextSession);
+    state = (prevSession: prevSession, nextSession: nextSession);
   }
 
   void clear() {

@@ -104,7 +104,7 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
   // HiveSession get _prevSessions =>
   //     ref.read(connectedUserPreviousSessionStateProvider)!.$1;
   HiveSession get _nextSession =>
-      ref.read(connectedUserPreviousSessionStateProvider)!.$2;
+      ref.read(connectedUserPreviousSessionStateProvider)!.nextSession;
 
   @override
   void dispose() {
@@ -116,9 +116,10 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
     state = [];
   }
 
-  void continueDownloads(HiveItem hiveItem) {
+  void continueDownloads(String prevItem) {
+    final hiveItem = hiveManager.getReceiveableItemWithKey(prevItem);
     final item = ReceiveableItem(
-      file: File(hiveItem.path),
+      file: File(hiveItem!.path),
       fileType: hiveItem.fileType,
       fileSize: hiveItem.fileSize,
       id: hiveItem.id,
@@ -129,6 +130,11 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
       authorId: hiveItem.authorId,
       start: hiveItem.processedBytes,
     );
+    _nextSession.previousSessionReceivable = [
+      ..._nextSession.previousSessionReceivable,
+      item.id
+    ];
+    _nextSession.save();
 
     void listener(int received, int totalSize, file, String? reason, state) {
       hiveItem.iState = state;

@@ -40,7 +40,7 @@ final serverControllerProvider =
     serverController.sessionState = next;
   });
   ref.listen(connectedUserPreviousSessionStateProvider, (previous, next) {
-    serverController.prevSessionState = next?.$1;
+    serverController.prevSessionState = next?.prevSession;
   });
   return serverController;
 });
@@ -164,7 +164,7 @@ class ServerController extends ServerManager with ChangeNotifier {
         ///and returns it
         ///The [HiveSession] contains the info of the last [Session] id. the session when we
         ///last connect to this user.
-        final prevSession = _prevSession = await hiveManager.saveSession(
+        _prevSession = await hiveManager.saveSession(
           requestUserServerInfo.user.id,
           _session!.id,
         );
@@ -175,10 +175,21 @@ class ServerController extends ServerManager with ChangeNotifier {
 
         // _prevSession = prevSession;
 
-        final nextSession = prevSession;
-        nextSession.previousSessionId = _session!.id;
-        nextSession.lastSessionDateTime = DateTime.now().toIso8601String();
-        nextSession.save();
+        final nextSession = HiveSession(
+          userId: _prevSession!.userId,
+          previousSessionId: _session!.id,
+          lastSessionDateTime: DateTime.now().toString(),
+          previousSessionReceivable: [],
+          previousSessionShareable: [],
+        );
+        await hiveManager.updateUserSession(nextSession);
+
+        // prevSession;
+        // nextSession.previousSessionId = _session!.id;
+        // nextSession.lastSessionDateTime = DateTime.now().toIso8601String();
+        // nextSession.previousSessionReceivable = [];
+        // nextSession.previousSessionShareable = [];
+        // nextSession.save();
 
         ///We create a [connectedUserPreviousSessionState] based on the info we got
         ///from the above operation
@@ -187,7 +198,7 @@ class ServerController extends ServerManager with ChangeNotifier {
         ///create new instance so that we can easily throw an error if we try to use the hive save() function on it
         ///for debug reasons
         connectedUserPreviousSessionState.setUserPrevSession(
-            prevSession.newInstance(), nextSession);
+            _prevSession!.newInstance(), nextSession);
         connectedUserState.setUserState(requestUserServerInfo);
       }
       // _showAcceptDeclineAlert = false;
@@ -301,7 +312,7 @@ class ServerController extends ServerManager with ChangeNotifier {
         authorId: prevItem.authorId,
         altName: prevItem.fileName,
         homeDestination: (myServerInfo.ipAddress!, myServerInfo.port!),
-      );
+      )..sentBytes = prevItem.processedBytes;
       if (!shareable.state.isCompleted) {
         log("$prevItemId ::::::::::::::::: shareable");
         shareableItemsProvider.addAllItems([shareable]);

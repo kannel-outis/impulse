@@ -23,7 +23,8 @@ class ReceiveableItem extends Item {
     required (String, int) homeDestination,
     required String authorId,
     this.altName,
-  }) : super(
+  })  : _downloadedBytes = start,
+        super(
           id: id,
           file: file,
           fileSize: fileSize,
@@ -91,7 +92,7 @@ class ReceiveableItem extends Item {
   bool _downloading = false;
   bool _downloadPaused = false;
 
-  int downloadedBytes = 0;
+  int _downloadedBytes = 0;
 
   void _readyFileForDownload() {
     _cleanPath();
@@ -112,7 +113,7 @@ class ReceiveableItem extends Item {
       //   fileSize,
       //   state,
       // );
-      notifyListeners(downloadedBytes, fileSize, file, "", state);
+      notifyListeners(_downloadedBytes, fileSize, file, "", state);
     } else if (_downloadPaused) {
       _downloadCanceled = false;
       _downloadFailed = false;
@@ -128,7 +129,7 @@ class ReceiveableItem extends Item {
     await _output?.flush().then((value) {
       _output?.close();
       _downloading = false;
-      final totalBytes = downloadedBytes;
+      final totalBytes = _downloadedBytes;
       // final contentSize = _contentSize(totalBytes);
 
       // onStateChange?.call(totalBytes, fileSize, file, "", state);
@@ -137,7 +138,7 @@ class ReceiveableItem extends Item {
     startTime = null;
   }
 
-  double get _progress => (downloadedBytes / fileSize) * 100;
+  double get _progress => (_downloadedBytes / fileSize) * 100;
 
   @override
   Future<void> receive() async {
@@ -147,7 +148,7 @@ class ReceiveableItem extends Item {
     _readyFileForDownload();
     _downloadPaused = false;
     try {
-      downloadedBytes = start;
+      _downloadedBytes = start;
       final stream = _client.getFileStreamFromHostServer(homeDestination!, id,
           start: start, end: fileSize, init: (length, client) {
         _iClient = client;
@@ -155,7 +156,7 @@ class ReceiveableItem extends Item {
       _downloading = true;
       final streamSize = fileSize;
 
-      if (downloadedBytes >= streamSize) {
+      if (_downloadedBytes >= streamSize) {
         /////does nothing
       } else {
         await for (final data in stream) {
@@ -166,13 +167,13 @@ class ReceiveableItem extends Item {
 
             return;
           }
-          downloadedBytes += data.length;
+          _downloadedBytes += data.length;
           // onProgressCallback?.call(
           //   downloadedBytes,
           //   fileSize,
           //   state,
           // );
-          notifyListeners(downloadedBytes, fileSize, file, "", state);
+          notifyListeners(_downloadedBytes, fileSize, file, "", state);
           _output?.add(data);
         }
 
@@ -184,15 +185,15 @@ class ReceiveableItem extends Item {
         //   IState.completed,
         // );
       }
-      print(downloadedBytes);
-      await _closeOutputStreams(downloadedBytes == fileSize ? true : false);
+      print(_downloadedBytes);
+      await _closeOutputStreams(_downloadedBytes == fileSize ? true : false);
       return;
     } catch (e) {
       _downloading = false;
       _downloadFailed = true;
       // onStateChange?.call(downloadedBytes, fileSize, file, e.toString(), state);
       await _closeOutputStreams();
-      notifyListeners(downloadedBytes, fileSize, file, e.toString(), state);
+      notifyListeners(_downloadedBytes, fileSize, file, e.toString(), state);
       return;
     }
   }
@@ -225,12 +226,12 @@ class ReceiveableItem extends Item {
   }
 
   @override
-  int get proccessedBytes => downloadedBytes;
+  int get proccessedBytes => _downloadedBytes;
 
   @override
   void changeState(IState newState) {
     notifyListeners(
-        downloadedBytes, fileSize, file, "Queue from pause", newState);
+        _downloadedBytes, fileSize, file, "Queue from pause", newState);
   }
 
   @override

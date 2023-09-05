@@ -122,12 +122,14 @@ Future<void> disconnect(GenericProviderRef ref) async {
 void checkPrevDownloadListener(ConnectionState? previous, ConnectionState next,
     GenericProviderRef ref, BuildContext context) {
   if (next.isConnected) {
-    final (previousHiveSession, _) =
+    final connectedUserSessions =
         ref.read(connectedUserPreviousSessionStateProvider)!;
-    for (var element in previousHiveSession.previousSessionReceivable) {
+    for (var element
+        in connectedUserSessions.prevSession.previousSessionReceivable) {
       print("$element ::::::::::::::");
     }
-    final inCompleteDownloads = previousHiveSession.previousSessionReceivable
+    final inCompleteDownloads = connectedUserSessions
+        .prevSession.previousSessionReceivable
         .map((e) => HiveManagerImpl.instance.getReceiveableItemWithKey(e))
         .toList()
         .where((e) => e != null && !e.state.isCompleted && !e.state.isCanceled)

@@ -124,7 +124,12 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       }
 
       ///get the id of the file from the url query parameter
-      await _downloadShareableFile(httpRequest);
+      try {
+        await _downloadShareableFile(httpRequest);
+      } catch (e) {
+        httpRequest.response.statusCode = 404;
+        httpRequest.response.close();
+      }
     }
   }
 
@@ -257,15 +262,18 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
     ///Check if the file with that id exists on the device,
     ///if it does proceed to open the file and make it downloadable
+    ///const Utf8Codec(allowMalformed: true).encode(item.name)
     if (await item.file.exists()) {
       item.startTime = DateTime.now();
       httpRequest.response
-        ..headers.set("Content-Type", item.mime ?? "application/octat-stream")
-        ..headers
-            .set("Content-Disposition", "attachment; filename=${item.name}")
+        ..headers.set("Content-Type",
+            item.mime ?? "application/octat-stream;charset=UTF-8")
+        ..headers.set("charset", "UTF-8")
+        ..headers.set("Content-Disposition",
+            "attachment; filename=${const Utf8Codec(allowMalformed: true).encode(item.name)}")
         ..headers.set("Content-Length", "${item.file.lengthSync() - start}");
 
-      final hiveItem = await serverManager.getHiveItemForShareable(item);
+      final hiveItem = serverManager.getHiveItemForShareable(item);
       void listener(int received, int totalSize, File? file, String? reason,
           IState state) {
         hiveItem.iState = state;

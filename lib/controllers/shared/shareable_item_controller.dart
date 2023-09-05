@@ -14,7 +14,7 @@ class ShareableItemsProvider extends StateNotifier<List<ShareableItem>> {
 
   void addAllItems(List<ShareableItem> items) {
     state = [...state, ..._filteredList(items)];
-    ref.read(connectedUserPreviousSessionStateProvider)!.$2
+    ref.read(connectedUserPreviousSessionStateProvider)!.nextSession
       ..previousSessionShareable = state.map((e) => e.id).toList()
       ..save();
   }
