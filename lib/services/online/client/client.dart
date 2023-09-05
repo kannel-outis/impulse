@@ -24,7 +24,7 @@ abstract class Client {
     Map<String, String>? headers,
     int start = 0,
     required int end,
-    Function(int, IClient)? init,
+    Function(IClient)? init,
   });
 
   Future<void> cancelItem(

@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 
@@ -254,6 +255,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
           },
         ),
       );
+      log("File: $fileId not Found");
       httpRequest.response.close();
       return;
     }
@@ -273,7 +275,8 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         ..headers.set("charset", "UTF-8")
         ..headers.set("Content-Disposition",
             "attachment; filename=${const Utf8Codec(allowMalformed: true).encode(item.name)}")
-        ..headers.set("Content-Length", "${item.file.lengthSync() - start}");
+        ..headers.set(
+            Headers.contentLengthHeader, "${item.file.lengthSync() - start}");
 
       final hiveItem = await serverManager.getHiveItemForShareable(item);
       void listener(int received, int totalSize, File? file, String? reason,

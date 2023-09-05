@@ -150,7 +150,7 @@ class ReceiveableItem extends Item {
     try {
       _downloadedBytes = start;
       final stream = _client.getFileStreamFromHostServer(homeDestination!, id,
-          start: start, end: fileSize, init: (length, client) {
+          start: start, end: fileSize, init: (client) {
         _iClient = client;
       });
       _downloading = true;

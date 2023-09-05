@@ -86,7 +86,7 @@ class HostImpl extends Client implements Host {
       {Map<String, String>? headers,
       int start = 0,
       required int end,
-      Function(int p1, IClient p2)? init}) {
+      Function(IClient p2)? init}) {
     final url =
         "http://${destination.$1}:${destination.$2}/${ServicesUtils.serverRoutes.download}?id=$id";
     return ServicesUtils.getStream(
