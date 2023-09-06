@@ -39,15 +39,15 @@ class _AlertOverlayState extends ConsumerState<AlertOverlay>
     );
 
     //TODO: use ref.listen
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ref.watch(alertStateNotifier.notifier).addListener((state) {
-        if (state == true) {
-          toggleOverlay();
-        } else {
-          toggleOverlay(close: true);
-        }
-      });
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    // ref.watch(alertStateNotifier.notifier).addListener((state) {
+    //   if (state == true) {
+    //     toggleOverlay();
+    //   } else {
+    //     toggleOverlay(close: true);
+    //   }
+    // });
+    // });
   }
 
   @override
@@ -58,6 +58,15 @@ class _AlertOverlayState extends ConsumerState<AlertOverlay>
 
   @override
   Widget build(BuildContext context) {
+    ref.listen(connectionStateProvider, (previous, next) {
+      if (next.isFling) {
+        toggleOverlay();
+        return;
+      } else if (next.isNotConnected || next.isConnected) {
+        toggleOverlay(close: true);
+        return;
+      }
+    });
     return CompositedTransformTarget(
       link: _layerLink,
       child: widget.child,
@@ -193,8 +202,8 @@ class _OverlayChildState extends ConsumerState<_OverlayChild> {
                                     label: "Decline",
                                     callback: () {
                                       ref
-                                          .read(senderProvider)
-                                          .handleAlertResponse(false);
+                                          .read(alertStateNotifier.notifier)
+                                          .alertResult(false);
                                     },
                                   ),
                                   ButtonChild(
@@ -204,8 +213,12 @@ class _OverlayChildState extends ConsumerState<_OverlayChild> {
                                     label: "Accept",
                                     callback: () {
                                       ref
-                                          .read(senderProvider)
-                                          .handleAlertResponse(true);
+                                          .read(alertStateNotifier.notifier)
+                                          .alertResult(true);
+
+                                      // ref
+                                      //     .read(senderProvider)
+                                      //     .handleAlertResponse(true);
                                     },
                                   ),
                                 ],
