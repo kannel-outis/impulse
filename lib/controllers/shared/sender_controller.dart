@@ -32,7 +32,7 @@ class SenderProvider extends ChangeNotifier {
   //   return _clientServerInfo;
   // }
 
-  ServerController get _myServerController => _myServer as ServerController;
+  // ServerController get _myServerController => _myServer as ServerController;
 
   String? _address;
   String? get ipAddress => _address;
@@ -78,7 +78,7 @@ class SenderProvider extends ChangeNotifier {
     }
   }
 
-  void handleAlertResponse(bool response) {
-    _myServerController.handleAlertResponse(response);
-  }
+  // void handleAlertResponse(bool response) {
+  //   _myServerController.handleAlertResponse(response);
+  // }
 }

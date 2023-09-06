@@ -41,6 +41,9 @@ final serverControllerProvider =
   ref.listen(connectedUserPreviousSessionStateProvider, (previous, next) {
     serverController.prevSessionState = next?.prevSession;
   });
+  ref.listen(alertStateNotifier, (previous, next) {
+    serverController.handleAlertResponse(next.alertResult);
+  });
   return serverController;
 });
 
@@ -135,7 +138,7 @@ class ServerController extends ServerManager with ChangeNotifier {
 
       final requestUserServerInfo = ServerInfo.fromMap(serverMap);
       if (shouldAcceptConnection == false) {
-        alertState.updateState(true);
+        // alertState.shouldShowAlert(true);
         connectedUserState.setUserState(requestUserServerInfo, fling: true);
 
         /// so that users wont take too long
@@ -211,7 +214,7 @@ class ServerController extends ServerManager with ChangeNotifier {
 
   void handleAlertResponse(bool response) async {
     alertResponder.complete(response);
-    alertState.updateState(false);
+    // alertState.shouldShowAlert(false);
     _timer?.cancel();
     alertResponder = Completer<bool>();
   }
@@ -224,7 +227,7 @@ class ServerController extends ServerManager with ChangeNotifier {
     _receivableStreamController.add(map);
   }
 
-   @override
+  @override
   Future<HiveItem> getHiveItemForShareable(Item item) async {
     final hiveItem = hiveManager.getShareableItemWithKey(item.id);
     if (hiveItem != null) {

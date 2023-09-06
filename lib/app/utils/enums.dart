@@ -2,7 +2,7 @@ enum ConnectionState {
   //When a user is connected to another user
   connected("Connected"),
 
-  //when a user has not been connected at all
+  //when a user has not been connected at all or after connection request has been rejected
   notConnected("Not Connected"),
 
   //when a use has been connected before but lost the connection
@@ -22,7 +22,9 @@ enum ConnectionState {
   }
 
   bool get isConnected => this == ConnectionState.connected;
+  bool get isFling => this == ConnectionState.fling;
   bool get isDisConnected => this == ConnectionState.disconnected;
+  bool get isNotConnected => this == ConnectionState.notConnected;
 }
 
 enum UserType {
