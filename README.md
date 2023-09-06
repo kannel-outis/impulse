@@ -15,6 +15,10 @@ Impulse presents a rich set of features that contribute to the effortless sharin
 - 📂 <b>Network file manager :</b> Impulse enhances the file-sharing experience by enabling connected users to seamlessly browse each other's file managers. Tired of waiting for files to be sent, simply navigate to the Network file manager and take matters into your own hands.
 - ⬇️ <b>Resumable transfers :</b> Interruptions to connections occur on the network at all times; Impulse makes sure that transfers that are interrupted are resumed in the next connection or session. Impulse ensures that your files are not corrupted and are ready to be used.
 
+# Screenshots
+
+https://github.com/kannel-outis/impulse/assets/32224274/c84008bf-31dc-4805-9d91-4cd587561d59
+
 
 
 
