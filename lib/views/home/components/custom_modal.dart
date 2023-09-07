@@ -215,6 +215,9 @@ class _CustomClientBottomModalSheetState
     Completer<bool> completer = Completer<bool>();
     final clientController = ref.read(receiverProvider);
     clientController.clearAvailableUsers();
+
+    ///Call first before the timer. to take away the 3 sec delay and still maintain the interval
+    clientController.getAvailableUsers();
     _scanTick = Timer.periodic(
       const Duration(seconds: 3),
       (tick) async {

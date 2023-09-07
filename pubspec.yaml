@@ -47,6 +47,7 @@ dependencies:
     git:
       url: https://github.com/kannel-outis/impulse_utils.git
   mime: ^1.0.4
+  open_file: ^3.3.2
   path_drawing: ^1.0.1
   path_provider: ^2.0.15
   permission_handler: ^10.4.3

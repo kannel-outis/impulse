@@ -6,6 +6,7 @@ import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/views/shared/hover.dart';
 import 'package:impulse/views/shared/sizer.dart';
 import 'package:impulse_utils/impulse_utils.dart';
+import 'package:open_file/open_file.dart';
 
 class SelectableItemWidget extends ConsumerStatefulWidget {
   final Application? app;
@@ -93,6 +94,11 @@ class _SelectableItemWidgetState extends ConsumerState<SelectableItemWidget> {
         },
         onTap: () {
           ///if platform is desktop, we dont want tap to happen
+          if (ref.read(selectingItemStateProvider).isSelectingApp == false &&
+              widget.app == null &&
+              !widget.file!.path.endsWith(".apk")) {
+            OpenFile.open(widget.file!.path);
+          }
           if (Platform.isWindows || Platform.isLinux) return;
           _onTap(ref, !_isSelected);
         },

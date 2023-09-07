@@ -388,8 +388,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   List<Widget> get tabs => <Widget>[
         Text("Apps", style: bodyStyle),
-        Text("Images", style: bodyStyle),
-        Text("Videos", style: bodyStyle),
+        // Text("Images", style: bodyStyle),
+        // Text("Videos", style: bodyStyle),
       ];
 
   @override
@@ -428,8 +428,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               physics: const AlwaysScrollableScrollPhysics(),
               children: const [
                 AppsPage(),
-                ImagesPage(),
-                VideosPage(),
+                // ImagesPage(),
+                // VideosPage(),
               ],
             ),
           ),
