@@ -50,13 +50,13 @@ class _CustomHostBottomModalSheetState
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    //   final homeController = ref.read(homeProvider);
-    //   homeController.isWaitingForReceiver = true;
-    //   ref.read(userTypeProvider.notifier).setUserState(UserType.host);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      final homeController = ref.read(homeProvider);
+      homeController.isWaitingForReceiver = true;
+      ref.read(userTypeProvider.notifier).setUserState(UserType.host);
 
-    //   homeController.shouldShowTopStack = false;
-    // });
+      homeController.shouldShowTopStack = false;
+    });
   }
 
   @override
