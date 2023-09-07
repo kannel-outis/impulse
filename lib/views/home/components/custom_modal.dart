@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/models.dart';
+import 'package:impulse/views/shared/impulse_ink_well.dart';
 
 import '../widgets/scan_animation_painter.dart';
 
@@ -29,31 +30,33 @@ class _CustomHostBottomModalSheetState
     super.initState();
     _controller =
         AnimationController(vsync: this, duration: $styles.times.fast);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final homeController = ref.read(homeProvider);
-      final hostController = ref.read(senderProvider);
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    // final homeController = ref.read(homeProvider);
+    // final hostController = ref.read(senderProvider);
 
-      // if both ip address and port are null, that means we have not created ther server yet
-      //but if they are not, we can skip creating the server and just display the qr image
-      if (hostController.ipAddress == null && hostController.port == null) {
-        hostController.createServer().then((value) {
-          homeController.isWaitingForReceiver = true;
-          ref.read(userTypeProvider.notifier).setUserState(UserType.host);
-          // print(hostController.clientServerInfo);
-        });
-      }
-    });
-    Future.delayed($styles.times.fast).then((value) => _controller.forward());
+    // if both ip address and port are null, that means we have not created ther server yet
+    //but if they are not, we can skip creating the server and just display the qr image
+    //   if (hostController.ipAddress == null && hostController.port == null) {
+    //     hostController.createServer().then((value) {
+    // homeController.isWaitingForReceiver = true;
+    // ref.read(userTypeProvider.notifier).setUserState(UserType.host);
+    //       // print(hostController.clientServerInfo);
+    //     });
+    //   }
+    // });
+    // Future.delayed($styles.times.fast).then((value) => _controller.forward());
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final homeController = ref.read(homeProvider);
+    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    //   final homeController = ref.read(homeProvider);
+    //   homeController.isWaitingForReceiver = true;
+    //   ref.read(userTypeProvider.notifier).setUserState(UserType.host);
 
-      homeController.shouldShowTopStack = false;
-    });
+    //   homeController.shouldShowTopStack = false;
+    // });
   }
 
   @override
@@ -75,76 +78,164 @@ class _CustomHostBottomModalSheetState
         width: double.infinity,
         color: Theme.of(context).colorScheme.background,
         constraints: $styles.constraints.modalConstraints,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Lottie(
-            //   composition: Configurations.instance.composition,
-            //   height: $styles.sizes.xxLargeIconSize,
-            //   width: $styles.sizes.xxLargeIconSize,
-            //   controller: _controller..repeat(),
-            //   fit: BoxFit.contain,
-            // ),
-            Consumer(
-              builder: (context, ref, child) {
-                final hostProvider = ref.watch(senderProvider);
-                if (hostProvider.ipAddress == null &&
-                    hostProvider.port == null) {
-                  return Center(
-                    child: Text("Loading...", style: $styles.text.h3),
-                  );
-                }
-                return ScaleTransition(
-                  scale: Tween<double>(begin: 0, end: 1).animate(
-                    CurvedAnimation(
-                      parent: _controller,
-                      curve: $styles.curves.defaultCurve,
+        // child: Column(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        // Lottie(
+        //   composition: Configurations.instance.composition,
+        //   height: $styles.sizes.xxLargeIconSize,
+        //   width: $styles.sizes.xxLargeIconSize,
+        //   controller: _controller..repeat(),
+        //   fit: BoxFit.contain,
+        // ),
+        // Consumer(
+        //   builder: (context, ref, child) {
+        //     final hostProvider = ref.watch(senderProvider);
+        //     if (hostProvider.ipAddress == null &&
+        //         hostProvider.port == null) {
+        //       return Center(
+        //         child: Text("Loading...", style: $styles.text.h3),
+        //       );
+        //     }
+        // return ScaleTransition(
+        //   scale: Tween<double>(begin: 0, end: 1).animate(
+        //     CurvedAnimation(
+        //       parent: _controller,
+        //       curve: $styles.curves.defaultCurve,
+        //     ),
+        //   ),
+        //   child: LayoutBuilder(builder: (context, constraints) {
+        //     return BarcodeWidget(
+        //       height:
+        //           $styles.constraints.modalConstraints.maxHeight * .6,
+        //       width:
+        //           $styles.constraints.modalConstraints.maxHeight * .6,
+        //       backgroundColor:
+        //           Theme.of(context).brightness == Brightness.dark
+        //               ? Colors.white
+        //               : Colors.black,
+        //       color: Theme.of(context).brightness == Brightness.dark
+        //           ? Colors.black
+        //           : Colors.white,
+        //       data: hostProvider.serverInfoBarcodeMap(),
+        //       barcode: Barcode.qrCode(),
+        //       padding: EdgeInsets.all($styles.insets.xxs),
+        //     );
+        //   }),
+        // );
+        //   },
+        // ),
+
+        child: ref.watch(createServerFuture).when(
+              data: (data) {
+                Future.delayed($styles.times.fast)
+                    .then((value) => _controller.forward());
+
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Consumer(
+                      builder: (context, ref, child) {
+                        return child!;
+                      },
+                      child: ScaleTransition(
+                        scale: Tween<double>(begin: 0, end: 1).animate(
+                          CurvedAnimation(
+                            parent: _controller,
+                            curve: $styles.curves.defaultCurve,
+                          ),
+                        ),
+                        child: LayoutBuilder(builder: (context, constraints) {
+                          return BarcodeWidget(
+                            height:
+                                $styles.constraints.modalConstraints.maxHeight *
+                                    .55,
+                            width:
+                                $styles.constraints.modalConstraints.maxHeight *
+                                    .55,
+                            backgroundColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.black
+                                    : Colors.white,
+                            data:
+                                ref.read(senderProvider).serverInfoBarcodeMap(),
+                            barcode: Barcode.qrCode(),
+                            padding: EdgeInsets.all($styles.insets.xxs),
+                          );
+                        }),
+                      ),
                     ),
-                  ),
-                  child: LayoutBuilder(builder: (context, constraints) {
-                    return BarcodeWidget(
-                      height:
-                          $styles.constraints.modalConstraints.maxHeight * .6,
-                      width:
-                          $styles.constraints.modalConstraints.maxHeight * .6,
-                      backgroundColor:
-                          Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.black
-                          : Colors.white,
-                      data: hostProvider.serverInfoBarcodeMap(),
-                      barcode: Barcode.qrCode(),
-                      padding: EdgeInsets.all($styles.insets.xxs),
-                    );
-                  }),
+                    Padding(
+                      padding: EdgeInsets.only(top: $styles.insets.sm),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Icon(
+                          //   Icons.wifi_tethering,
+                          //   color: Theme.of(context).colorScheme.primary,
+                          //   size: $styles.sizes.smallIconSize2,
+                          // ),
+                          // SizedBox(width: $styles.insets.xxs),
+                          Text(
+                            // "Waitng for receivers....",
+                            "Scan the QR code to connect automatically",
+                            style: $styles.text.body,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 );
               },
-            ),
-
-            Padding(
-              padding: EdgeInsets.only(top: $styles.insets.sm),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Icon(
-                  //   Icons.wifi_tethering,
-                  //   color: Theme.of(context).colorScheme.primary,
-                  //   size: $styles.sizes.smallIconSize2,
-                  // ),
-                  // SizedBox(width: $styles.insets.xxs),
-                  Text(
-                    // "Waitng for receivers....",
-                    "Scan the QR code to connect automatically",
-                    style: $styles.text.body,
-                  ),
-                ],
+              error: (error, stackTrace) {
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: constraints.maxWidth * .5,
+                          child: Text(
+                            "Cannot create server. Make sure you are cnonnected to a nextwork and try again.",
+                            textAlign: TextAlign.center,
+                            style: $styles.text.bodyBold,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        ImpulseInkWell(
+                          onTap: () => ref.refresh(createServerFuture.future),
+                          child: Container(
+                            height: 30,
+                            width: 70,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).highlightColor,
+                              borderRadius:
+                                  BorderRadius.circular($styles.corners.sm),
+                            ),
+                            child: Text(
+                              "Try Again",
+                              style: $styles.text.bodySmallBold,
+                            ),
+                          ),
+                        )
+                      ],
+                    );
+                  },
+                );
+              },
+              loading: () => const Center(
+                child: Text("Loading..."),
               ),
             ),
-          ],
-        ),
+        // ],
       ),
+      // ),
     );
   }
 }

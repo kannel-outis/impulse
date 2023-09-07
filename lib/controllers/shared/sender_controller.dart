@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
+import 'package:impulse/models/models.dart';
 import 'package:impulse/services/services.dart';
 
 import 'server_controller.dart';
@@ -17,6 +18,11 @@ final senderProvider = ChangeNotifierProvider<SenderProvider>(
     );
   },
 );
+
+final createServerFuture = FutureProvider((ref) async {
+  // throw AppException("Something went wrong");
+  return await ref.read(senderProvider).createServer();
+});
 
 class SenderProvider extends ChangeNotifier {
   final ServerManager _myServer;
@@ -39,7 +45,7 @@ class SenderProvider extends ChangeNotifier {
   int? _port;
   int? get port => _port;
 
-  Future<AppException?> createServer({
+  Future<ServerInfo> createServer({
     dynamic address,
     int? port,
     Function(AppException)? onErrorCallback,
@@ -47,14 +53,14 @@ class SenderProvider extends ChangeNotifier {
     final result = await host.createServer(address: address, port: port);
     if (result is Left) {
       final exception = (result as Left).value as AppException;
-      onErrorCallback?.call(exception);
-      return exception;
+      // onErrorCallback?.call(exception);
+      throw exception;
     } else {
       final addressAndPort = (result as Right).value as (String, int);
       _myServer.ipAddress = _address = addressAndPort.$1;
       _myServer.port = _port = addressAndPort.$2;
       notifyListeners();
-      return null;
+      return _myServer.myServerInfo;
     }
   }
 
