@@ -31,7 +31,6 @@ dependencies:
   barcode_widget: ^2.0.4
   cupertino_icons: ^1.0.2
   dartz: ^0.10.1
-  dio: ^5.2.1+1
   equatable: ^2.0.5
   file_picker: ^5.3.4
   flutter:
