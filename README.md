@@ -1,5 +1,7 @@
 # impulse
 
+![banner_light](https://github.com/kannel-outis/impulse/assets/32224274/7cbcfef2-ec0d-48c4-abaf-841edc0689af)
+
 # Introduction 👋
 Impulse is a file-sharing application, built with [flutter](https://flutter.dev/), that allows devices within the same network to effortlessly transfer and share files across the network using a single connection.
 
@@ -39,6 +41,34 @@ https://github.com/kannel-outis/impulse/assets/32224274/c84008bf-31dc-4805-9d91-
 
 
 Track project here [project](https://github.com/users/kannel-outis/projects/1) || [issues](https://github.com/kannel-outis/impulse/issues)
+
+
+# Install Project On Your Machine 🛠️
+Assuming you already have [flutter](https://flutter.dev/) and git installed on your machine, To install this project you simply run:
+
+```$bash
+# Clone this repository
+$ git clone https://github.com/kannel-outis/impulse.git
+
+# Go into the repository
+$ cd impulse
+
+# Install packages
+$ flutter pub get
+
+# Run the app
+$ flutter run
+```
+If you do not already have flutter installed on your machine, visit [https://flutter.dev/](https://flutter.dev/) to get started.
+
+# Packages Used 📦
+- [barcode_widget](https://pub.dev/packages/barcode_widget): A Barcode generation widget for Flutter with support for standard barcodes. This project uses this package to generate and display the QR code.
+- [dartz](https://pub.dev/packages/dartz): A dart package for functional programming. This project uses it for functional programming.
+- [file_picker](https://pub.dev/packages/file_picker): A package that allows you to use a native file explorer to pick single or multiple absolute file paths, with extension filtering support. Impulse uses this package to pick file paths.
+- [flutter_riverpod](https://pub.dev/packages/flutter_riverpod): A simple way to access state from anywhere in your application while robust and testable. Impulse uses this packege for statemanagement across the app.
+- [flutter_sharing_intent](https://pub.dev/packages/flutter_sharing_intent): A flutter plugin that allow flutter apps to receive photos, videos, text, urls or any other file types from another app. Impulse uses this package for receiving files from another app for sharing.
+- [go_router](https://pub.dev/packages/go_router): A declarative routing package for Flutter that uses the Router API to provide a convenient, url-based API for navigating between different screens.
+
 
 
 
