@@ -62,12 +62,12 @@ $ flutter run
 If you do not already have flutter installed on your machine, visit [https://flutter.dev/](https://flutter.dev/) to get started.
 
 # Packages Used 📦
-- [barcode_widget](https://pub.dev/packages/barcode_widget): A Barcode generation widget for Flutter with support for standard barcodes. This project uses this package to generate and display the QR code.
-- [dartz](https://pub.dev/packages/dartz): A dart package for functional programming. This project uses it for functional programming.
-- [file_picker](https://pub.dev/packages/file_picker): A package that allows you to use a native file explorer to pick single or multiple absolute file paths, with extension filtering support. Impulse uses this package to pick file paths.
-- [flutter_riverpod](https://pub.dev/packages/flutter_riverpod): A simple way to access state from anywhere in your application while robust and testable. Impulse uses this packege for statemanagement across the app.
-- [flutter_sharing_intent](https://pub.dev/packages/flutter_sharing_intent): A flutter plugin that allow flutter apps to receive photos, videos, text, urls or any other file types from another app. Impulse uses this package for receiving files from another app for sharing.
-- [go_router](https://pub.dev/packages/go_router): A declarative routing package for Flutter that uses the Router API to provide a convenient, url-based API for navigating between different screens.
+- [barcode_widget](https://pub.dev/packages/barcode_widget): Used to generate and display the QR code.
+- [dartz](https://pub.dev/packages/dartz): Used for functional programming.
+- [file_picker](https://pub.dev/packages/file_picker): Used for selecting file paths.
+- [flutter_riverpod](https://pub.dev/packages/flutter_riverpod): Used for statemanagement and dependency injection across the app.
+- [flutter_sharing_intent](https://pub.dev/packages/flutter_sharing_intent): Impulse uses this package for receiving files from another app for sharing.
+- [go_router](https://pub.dev/packages/go_router): Used for navigation across screens in impulse app
 
 
 
