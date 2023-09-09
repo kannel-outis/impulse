@@ -65,6 +65,15 @@ class ImpulseRouter {
       ),
       ImpulseRoute(
         parentNavKey: mainNavKey,
+        path: routes.license,
+        builder: (s) {
+          return const ImpulseScaffold(
+            child: LicensePage(),
+          );
+        },
+      ),
+      ImpulseRoute(
+        parentNavKey: mainNavKey,
         path: routes.scanDialog,
         name: "scan_dialog",
         pageBuilder: (context, state) {
@@ -183,6 +192,7 @@ class _Routes {
   final String scanPage = "/scanPage";
   final String scanDialog = "/qrDialog";
   final String history = "/history";
+  final String license = "/license";
 }
 
 class ImpulseRoute extends GoRoute {

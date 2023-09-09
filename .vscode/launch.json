@@ -1,6 +1,13 @@
 {
     "configurations": [
         {
+            "name": "impulse release",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "flutterMode": "release"
+        },
+        {
             "name": "impulse profile",
             "type": "dart",
             "request": "launch",

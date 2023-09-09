@@ -12,6 +12,12 @@ import '../../impulse_scaffold.dart';
 AppStyle get $styles => ImpulseScaffold.style;
 TextStyle get bodyStyle => $styles.text.body;
 bool get isAndroid => Platform.isAndroid;
+bool get isIos => Platform.isIOS;
+bool get isDeskTop =>
+    Platform.isLinux ||
+    Platform.isWindows ||
+    Platform.isMacOS ||
+    Platform.isFuchsia;
 
 void showModel(bool isHost, BuildContext context) {
   showModalBottomSheet(

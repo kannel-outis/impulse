@@ -10,6 +10,7 @@ import 'package:impulse/models/models.dart';
 import 'package:impulse/views/shared/impulse_ink_well.dart';
 
 import '../widgets/scan_animation_painter.dart';
+import 'why_dialog.dart';
 
 class CustomHostBottomModalSheet extends ConsumerStatefulWidget {
   const CustomHostBottomModalSheet({
@@ -192,41 +193,82 @@ class _CustomHostBottomModalSheetState
                 );
               },
               error: (error, stackTrace) {
-                return LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: constraints.maxWidth * .5,
-                          child: Text(
-                            "Cannot create server. Make sure you are cnonnected to a nextwork and try again.",
-                            textAlign: TextAlign.center,
-                            style: $styles.text.bodyBold,
+                return Padding(
+                  padding: $styles.insets.md.insets,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Column(
+                        // mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // if (isAndroid || isIos)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  // Navigator.pop(context);
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return const WhyDialog();
+                                    },
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.info,
+                                  color: Theme.of(context).colorScheme.tertiary,
+                                ),
+                              )
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        ImpulseInkWell(
-                          onTap: () => ref.refresh(createServerFuture.future),
-                          child: Container(
-                            height: 30,
-                            width: 70,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).highlightColor,
-                              borderRadius:
-                                  BorderRadius.circular($styles.corners.sm),
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: constraints.maxWidth * .5,
+                                  child: Text(
+                                    "Cannot create server. Please Make sure you are connected to a network.",
+                                    textAlign: TextAlign.center,
+                                    style: $styles.text.bodyBold,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                ImpulseInkWell(
+                                  onTap: () =>
+                                      ref.refresh(createServerFuture.future),
+                                  child: Container(
+                                    height: 30,
+                                    width: 70,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).highlightColor,
+                                      borderRadius: BorderRadius.circular(
+                                          $styles.corners.sm),
+                                    ),
+                                    child: Text(
+                                      "Try Again",
+                                      style: $styles.text.bodySmallBold,
+                                    ),
+                                  ),
+                                ),
+                                // const SizedBox(height: 30),
+                                // SizedBox(
+                                //   // width: constraints.maxWidth * .5,
+                                  // child: Text(
+                                  //   "Tip: Both sender and receiver must be on thesame network.",
+                                  //   textAlign: TextAlign.center,
+                                  //   style: $styles.text.bodySmall,
+                                  // ),
+                                // ),
+                              ],
                             ),
-                            child: Text(
-                              "Try Again",
-                              style: $styles.text.bodySmallBold,
-                            ),
-                          ),
-                        )
-                      ],
-                    );
-                  },
+                          )
+                        ],
+                      );
+                    },
+                  ),
                 );
               },
               loading: () => const Center(

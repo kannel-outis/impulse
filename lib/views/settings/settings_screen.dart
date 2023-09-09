@@ -185,7 +185,9 @@ class _SettingScreenState extends State<SettingScreen> {
             SettingsTile(
               title: "Licenses",
               subTitle: "View licenses for all open source packages used",
-              onTap: () {},
+              onTap: () {
+                context.push(ImpulseRouter.routes.license);
+              },
             ),
           ],
         ),
