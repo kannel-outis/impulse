@@ -19,8 +19,8 @@ final senderProvider = ChangeNotifierProvider<SenderProvider>(
   },
 );
 
-final createServerFuture = FutureProvider.autoDispose((ref) async {
-  throw AppException("Something went wrong");
+final createServerFuture = FutureProvider((ref) async {
+  // throw AppException("Something went wrong");
   return await ref.read(senderProvider).createServer();
 });
 

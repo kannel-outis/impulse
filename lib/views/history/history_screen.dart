@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 import 'package:impulse/views/shared/impulse_ink_well.dart';
