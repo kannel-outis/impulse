@@ -3,7 +3,7 @@
 
 <!--![banner_light](https://github.com/kannel-outis/impulse/assets/32224274/7cbcfef2-ec0d-48c4-abaf-841edc0689af)-->
 <div align="center">
-  <img src="https://github.com/kannel-outis/impulse/assets/32224274/7522f0f0-d386-49f2-a7dc-ae4719d3ab51" alt="Flutter Sharez Banner" width="20%" />
+  <img src="https://github.com/kannel-outis/impulse/assets/32224274/7522f0f0-d386-49f2-a7dc-ae4719d3ab51"  width="20%" />
 </div>
 
 </br>
@@ -32,15 +32,15 @@ Impulse presents a rich set of features that contribute to the effortless sharin
 
 https://github.com/kannel-outis/impulse/assets/32224274/c84008bf-31dc-4805-9d91-4cd587561d59
 
-<img src="https://github.com/kannel-outis/impulse/assets/32224274/fd3cb90c-0af7-4c77-a89a-48571665bdbd" width="30%">
-<img src="https://github.com/kannel-outis/impulse/assets/32224274/253e425a-cf47-49c4-9269-bcbfab8ab167" width="30%">
-<img src="https://github.com/kannel-outis/impulse/assets/32224274/cf45e9ff-99e6-4438-8219-4bbf268a72e4" width="30%">
-<img src="https://github.com/kannel-outis/impulse/assets/32224274/294167cc-c39e-4921-8c94-e11c0cb900d6" width="30%">
-<img src="https://github.com/kannel-outis/impulse/assets/32224274/f7d8e06e-3ea0-4d31-824e-703284d79611" width="30%">
-<img src="https://github.com/kannel-outis/impulse/assets/32224274/5a319153-98fd-4c08-baab-e2497c539379" width="30%">
-<img src="https://github.com/kannel-outis/impulse/assets/32224274/62ae9ee0-c5d2-48ef-a8ce-abf4d6f6f400" width="30%">
-<img src="https://github.com/kannel-outis/impulse/assets/32224274/6b399684-848e-4337-aa47-c7e22a4effad" width="30%">
-<img src="https://github.com/kannel-outis/impulse/assets/32224274/7618d6fe-a6c8-4c8b-921f-9934c209bca2" width="30%">
+<img src="https://github.com/kannel-outis/impulse/assets/32224274/fd3cb90c-0af7-4c77-a89a-48571665bdbd" width="40%">
+<img src="https://github.com/kannel-outis/impulse/assets/32224274/253e425a-cf47-49c4-9269-bcbfab8ab167" width="40%">
+<img src="https://github.com/kannel-outis/impulse/assets/32224274/cf45e9ff-99e6-4438-8219-4bbf268a72e4" width="40%">
+<img src="https://github.com/kannel-outis/impulse/assets/32224274/294167cc-c39e-4921-8c94-e11c0cb900d6" width="40%">
+<img src="https://github.com/kannel-outis/impulse/assets/32224274/f7d8e06e-3ea0-4d31-824e-703284d79611" width="40%">
+<img src="https://github.com/kannel-outis/impulse/assets/32224274/5a319153-98fd-4c08-baab-e2497c539379" width="40%">
+<img src="https://github.com/kannel-outis/impulse/assets/32224274/62ae9ee0-c5d2-48ef-a8ce-abf4d6f6f400" width="40%">
+<img src="https://github.com/kannel-outis/impulse/assets/32224274/6b399684-848e-4337-aa47-c7e22a4effad" width="40%">
+<img src="https://github.com/kannel-outis/impulse/assets/32224274/7618d6fe-a6c8-4c8b-921f-9934c209bca2" width="40%">
 <img src="https://github.com/kannel-outis/impulse/assets/32224274/44cc592f-1635-4358-a96a-dce873bcb3b5">
 <img src="https://github.com/kannel-outis/impulse/assets/32224274/29f6db8c-f78d-467e-a1d9-9c0f51adf43d">
 <img src="https://github.com/kannel-outis/impulse/assets/32224274/ea859ffd-0db5-4b9f-b761-965d45c1b0de">
