@@ -50,60 +50,60 @@ class TransferListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ItemListenableBuilder(
-        listenable: item,
-        builder: (context, percentage, state, child) {
-          return Consumer(
-            builder: (context, ref, child) {
-              return GestureDetector(
-                onTap: (mini)
-                    ? null
-                    : () async {
-                        if (item is ReceiveableItem &&
-                            (state.isInProgress || state.isPaused)) {
-                          if (item is ReceiveableItem && !state.isWaiting) {
-                            final downloadManager =
-                                ref.read(downloadManagerProvider.notifier);
-                            if (state.isInProgress) {
-                              downloadManager.pauseCurrentDownload();
-                            } else {
-                              downloadManager.resumeDownload(
-                                item as ReceiveableItem,
-                              );
-                            }
+      listenable: item,
+      builder: (context, percentage, state, child) {
+        return Consumer(
+          builder: (context, ref, child) {
+            return GestureDetector(
+              onTap: (mini)
+                  ? null
+                  : () async {
+                      if (item is ReceiveableItem &&
+                          (state.isInProgress || state.isPaused)) {
+                        if (item is ReceiveableItem && !state.isWaiting) {
+                          final downloadManager =
+                              ref.read(downloadManagerProvider.notifier);
+                          if (state.isInProgress) {
+                            downloadManager.pauseCurrentDownload();
+                          } else {
+                            downloadManager.resumeDownload(
+                              item as ReceiveableItem,
+                            );
                           }
                         }
-                      },
-                child: child,
-              );
-            },
-            child: Stack(
-              children: [
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    return Container(
-                      height: height,
-                      width: constraints.maxWidth *
-                          (state.isFailed ? 1 : percentage),
-                      constraints:
-                          mini ? null : const BoxConstraints(maxWidth: 700),
-                      margin: EdgeInsets.only(
-                        bottom: mini ? 0 : 30,
-                      ),
-                      decoration: BoxDecoration(
-                        color: state.isWaiting
-                            ? const Color(0xff9D9D9D).withOpacity(.2)
-                            : state.isFailed
-                                ? Colors.red.withOpacity(.2)
-                                : state.isPaused
-                                    ? $styles.colors.folderColor2
-                                        .withOpacity(.2)
-                                    : Colors.green.withOpacity(.2),
-                        // boxShadow: $styles.shadows.boxShadowSmall,
-                      ),
-                    );
-                  },
-                ),
-                LayoutBuilder(builder: (context, constraints) {
+                      }
+                    },
+              child: child,
+            );
+          },
+          child: Stack(
+            children: [
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return Container(
+                    height: height,
+                    width: constraints.maxWidth *
+                        (state.isFailed ? 1 : percentage),
+                    constraints:
+                        mini ? null : const BoxConstraints(maxWidth: 700),
+                    margin: EdgeInsets.only(
+                      bottom: mini ? 0 : 30,
+                    ),
+                    decoration: BoxDecoration(
+                      color: state.isWaiting
+                          ? const Color(0xff9D9D9D).withOpacity(.2)
+                          : state.isFailed
+                              ? Colors.red.withOpacity(.2)
+                              : state.isPaused
+                                  ? $styles.colors.folderColor2.withOpacity(.2)
+                                  : Colors.green.withOpacity(.2),
+                      // boxShadow: $styles.shadows.boxShadowSmall,
+                    ),
+                  );
+                },
+              ),
+              LayoutBuilder(
+                builder: (context, constraints) {
                   return Container(
                     height: height,
                     width: constraints.maxWidth,
@@ -197,44 +197,45 @@ class TransferListTile extends StatelessWidget {
                                           CrossAxisAlignment.end,
                                       children: [
                                         Consumer(
-                                            builder: (context, ref, child) {
-                                          return GestureDetector(
-                                            onTap: () {
-                                              // if (state.isInProgress) {
-                                              //   item.cancel();
-                                              // }
-                                              final receivableProvider =
-                                                  ref.read(receivableListItems
-                                                      .notifier);
-                                              receivableProvider
-                                                  .cancelItemWithId(
-                                                      item as ReceiveableItem);
-                                            },
-                                            child: Container(
-                                              height: 50,
-                                              width: 50,
-                                              decoration: const BoxDecoration(
-                                                // borderRadius:
-                                                //     BorderRadius.circular(100),
-                                                color: Colors.transparent,
-                                                // border: Border.all(
-                                                //     color: Colors.red),
-                                              ),
-                                              margin: EdgeInsets.only(
-                                                right: $styles.insets.sm,
-                                              ),
-                                              child: Center(
-                                                child: Icon(
-                                                  CupertinoIcons.clear,
-                                                  size: 15.scale,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .tertiary,
+                                          builder: (context, ref, child) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                // if (state.isInProgress) {
+                                                //   item.cancel();
+                                                // }
+                                                final receivableProvider =
+                                                    ref.read(receivableListItems
+                                                        .notifier);
+                                                receivableProvider
+                                                    .cancelItemWithId(item
+                                                        as ReceiveableItem);
+                                              },
+                                              child: Container(
+                                                height: 50,
+                                                width: 50,
+                                                decoration: const BoxDecoration(
+                                                  // borderRadius:
+                                                  //     BorderRadius.circular(100),
+                                                  color: Colors.transparent,
+                                                  // border: Border.all(
+                                                  //     color: Colors.red),
+                                                ),
+                                                margin: EdgeInsets.only(
+                                                  right: $styles.insets.sm,
+                                                ),
+                                                child: Center(
+                                                  child: Icon(
+                                                    CupertinoIcons.clear,
+                                                    size: 15.scale,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .tertiary,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          );
-                                        }),
+                                            );
+                                          },
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -245,10 +246,12 @@ class TransferListTile extends StatelessWidget {
                       ),
                     ),
                   );
-                }),
-              ],
-            ),
-          );
-        });
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

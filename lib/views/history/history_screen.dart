@@ -78,10 +78,29 @@ class HistoryScreen extends StatelessWidget {
                                       SizedBox(
                                         width: constraints.maxWidth -
                                             (($styles.insets.sm * 2) + 50),
-                                        child: Text(
-                                          item.itemSize.sizeToString,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: $styles.text.body,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            SizedBox(
+                                              // width: constraints.maxWidth -
+                                              //     (($styles.insets.sm * 2) + 50),
+                                              child: Text(
+                                                item.itemSize.sizeToString,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: $styles.text.body,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              // width: constraints.maxWidth -
+                                              //     (($styles.insets.sm * 2) + 50),
+                                              child: Text(
+                                                item.state.label,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: $styles.text.body,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
