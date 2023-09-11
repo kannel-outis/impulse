@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide Path;
 import 'package:go_router/go_router.dart';
+import 'package:impulse/app/utils/drag_drop.dart';
 import 'package:impulse/models/models.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/impulse_scaffold.dart';
@@ -121,8 +122,10 @@ class ImpulseRouter {
             builder: (context, state, navigationShell) {
               statefulNavigationShell = navigationShell;
               return Scaffold(
-                body: HomePage(
-                  navigationShell: navigationShell,
+                body: DragNDrop(
+                  child: HomePage(
+                    navigationShell: navigationShell,
+                  ),
                 ),
                 resizeToAvoidBottomInset: false,
               );

@@ -1,8 +1,10 @@
+import 'package:impulse/app/app.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ImpulsePermissionHandler {
   static Future<bool> checkStoragePermission() async {
+    if (isDeskTop) return true;
     final request = (await _sdkInt) >= 30
         ? await Permission.manageExternalStorage.request()
         : await Permission.storage.request();

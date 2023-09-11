@@ -34,6 +34,7 @@ dependencies:
   barcode_widget: ^2.0.4
   cupertino_icons: ^1.0.2
   dartz: ^0.10.1
+  desktop_drop: ^0.4.3
   equatable: ^2.0.5
   file_picker: ^5.3.4
   flutter:
@@ -126,5 +127,3 @@ msix_config:
   identity_name: impulse.app
   msix_version: 1.0.0.0
   logo_path: C:\Users\emirb\OneDrive\Documents\projects\impulse\windows\runner\resources\app_icon.ico
-
-
