@@ -62,6 +62,7 @@ class HistoryScreen extends StatelessWidget {
                                   FilePlaceHolder(
                                     name: item.path,
                                   ),
+                                  const SizedBox(width: 10),
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -69,7 +70,7 @@ class HistoryScreen extends StatelessWidget {
                                         width: constraints.maxWidth -
                                             (($styles.insets.sm * 2) + 50),
                                         child: Text(
-                                          item.id,
+                                          item.name,
                                           overflow: TextOverflow.ellipsis,
                                           style: $styles.text.body,
                                         ),

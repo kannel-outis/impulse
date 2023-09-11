@@ -41,7 +41,7 @@ class _ImpulseState extends State<Impulse> {
   void initState() {
     super.initState();
     if (mounted) {
-      _themeMode = Configurations.instance.themeMode ?? _themeMode;
+      _themeMode = Configurations.instance.themeMode;
     }
   }
 

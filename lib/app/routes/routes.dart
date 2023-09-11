@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:impulse/models/models.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/impulse_scaffold.dart';
+import 'package:impulse/views/about/about_screen.dart';
 import 'package:impulse/views/files/network_file_manager.dart';
 import 'package:impulse/views/history/history_screen.dart';
 import 'package:impulse/views/information/set_info_page.dart';
@@ -48,7 +49,6 @@ class ImpulseRouter {
         path: routes.history,
         builder: (s) {
           return const ImpulseScaffold(
-            showOverlay: false,
             child: HistoryScreen(),
           );
         },
@@ -65,10 +65,32 @@ class ImpulseRouter {
       ),
       ImpulseRoute(
         parentNavKey: mainNavKey,
-        path: routes.license,
+        path: routes.about,
         builder: (s) {
           return const ImpulseScaffold(
-            child: LicensePage(),
+            child: AboutScreen(),
+          );
+        },
+      ),
+      ImpulseRoute(
+        parentNavKey: mainNavKey,
+        path: routes.license,
+        builder: (s) {
+          return ImpulseScaffold(
+            builder: (context, child) {
+              return LicensePage(
+                applicationName: "Impulse",
+                applicationIcon: Image(
+                  height: 100,
+                  width: 100,
+                  image: AssetImage(
+                    Theme.of(context).brightness == Brightness.dark
+                        ? AssetsImage.logo_light
+                        : AssetsImage.logo_dark,
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
@@ -185,14 +207,15 @@ class _Routes {
   final String transfer = "/transfer";
 
   ////
+  final String about = "/aboutPage";
   final String folder = "/folder";
-  final String namedFolder = "files";
-  final String settings = "/settings";
-  final String setInfo = "/setInfo";
-  final String scanPage = "/scanPage";
-  final String scanDialog = "/qrDialog";
   final String history = "/history";
   final String license = "/license";
+  final String namedFolder = "files";
+  final String scanDialog = "/qrDialog";
+  final String scanPage = "/scanPage";
+  final String setInfo = "/setInfo";
+  final String settings = "/settings";
 }
 
 class ImpulseRoute extends GoRoute {

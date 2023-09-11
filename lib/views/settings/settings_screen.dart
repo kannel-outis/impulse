@@ -35,8 +35,7 @@ class _SettingScreenState extends State<SettingScreen> {
     _rootFolderLocation = Configurations.instance.rootFolderLocation;
     _portNumberTextController = TextEditingController(
         text: Configurations.instance.receiverPortNumber.toString());
-    _themeMode = Configurations.instance.themeMode?.name ??
-        Configurations.of(context).state.themeMode.name;
+    _themeMode = Configurations.of(context).state.themeMode.name;
   }
 
   @override
@@ -70,8 +69,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   builder: (context) {
                     return SettingsDialog<ThemeMode>(
                       title: "Theme Brightness",
-                      value:
-                          Configurations.instance.themeMode ?? ThemeMode.system,
+                      value: Configurations.instance.themeMode,
                       values: ThemeMode.values,
                       labels: ThemeMode.values
                           .map((e) => "${e.name.capitalize} Mode")
@@ -187,6 +185,14 @@ class _SettingScreenState extends State<SettingScreen> {
               subTitle: "View licenses for all open source packages used",
               onTap: () {
                 context.push(ImpulseRouter.routes.license);
+              },
+            ),
+            const _Spacer(),
+            SettingsTile(
+              title: "About",
+              subTitle: Configurations.versionNumber,
+              onTap: () {
+                context.push(ImpulseRouter.routes.about);
               },
             ),
           ],
