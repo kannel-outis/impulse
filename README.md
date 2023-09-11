@@ -25,6 +25,7 @@ Impulse presents a rich set of features that contribute to the effortless sharin
 - 👩🏻‍💻 <b>Create profile :</b> Create a profile to identify yourself on the network. don't just be another ip address, go by your name!.
 - 📂 <b>Network file manager :</b> Impulse enhances the file-sharing experience by enabling connected users to seamlessly browse each other's file managers. Tired of waiting for files to be sent, simply navigate to the Network file manager and take matters into your own hands.
 - ⬇️ <b>Resumable transfers :</b> Interruptions to connections occur on the network at all times; Impulse makes sure that transfers that are interrupted are resumed in the next connection or session. Impulse ensures that your files are not corrupted and are ready to be used.
+- 🖱️<b>Drag 'N Drop :</b> Impulse elevates the file sharing experience with its simple drag 'n drop. Drag and share files with less clicks!
 </br>
 </br>
 
@@ -100,7 +101,8 @@ If you do not already have flutter installed on your machine, visit [https://flu
 # Packages Used 📦
 - [app_settings](https://pub.dev/packages/app_settings): Impulse uses app settings to open Wifi and Hotspot app settings.
 - [barcode_widget](https://pub.dev/packages/barcode_widget): impulse uses barcode_widget to generate and display the QR code.
-- [dartz](https://pub.dev/packages/dartz): fImpulse uses dartz for functional programming.
+- [dartz](https://pub.dev/packages/dartz): Impulse uses dartz for functional programming.
+- [desktop_drop](https://pub.dev/packages/desktop_drop): Impulse uses desktop_drop for easy drag and drop.
 - [file_picker](https://pub.dev/packages/file_picker): Impulse uses the file_picker package for selecting file paths.
 - [flutter_riverpod](https://pub.dev/packages/flutter_riverpod): Impulse uses flutter_riverpod for statemanagement and dependency injection across the app.
 - [flutter_sharing_intent](https://pub.dev/packages/flutter_sharing_intent): Impulse uses this package for receiving files from another app for sharing.
@@ -118,6 +120,7 @@ If you do not already have flutter installed on your machine, visit [https://flu
 - [qr_code_scanner](https://pub.dev/packages/qr_code_scanner): Impulse uses the qr_code_scanner package to scan generated qr code.
 - [riverpod](https://pub.dev/packages/riverpod): Impulse uses the riverpod  package together with flutter_riverpod to handle state management and dependency injection.
 - [shared_preferences](https://pub.dev/packages/shared_preferences): Impulse uses the shared_preferences plugin to handle local caching and storage support.
+- [url_launcher](https://pub.dev/packages/url_launcher): Impulse uses url_launcher to launch urls.
 - [uuid](https://pub.dev/packages/uuid): Impulse uses the uuid package to generate random uniques IDs.
 <br/>
 <br/>
