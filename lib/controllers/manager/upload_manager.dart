@@ -1,17 +1,20 @@
-import 'dart:developer';
-
 import 'package:riverpod/riverpod.dart';
 
 import 'mbps.dart';
 import 'package:impulse/services/services.dart';
 
-final uploadManagerProvider =
-    StateNotifierProvider<UploadManager, (int, Item?)>((ref) {
+final uploadManagerProvider = StateNotifierProvider<UploadManager,
+    ({int mBps, Item? currentDownload, Duration remainingTime})>((ref) {
   return UploadManager();
 });
 
 class UploadManager extends MBps with ServiceUploadManager {
-  UploadManager() : super((0, null));
+  UploadManager()
+      : super((
+          mBps: 0,
+          currentDownload: null,
+          remainingTime: const Duration(),
+        ));
 
   ShareableItem? currentUpload;
 
@@ -21,23 +24,31 @@ class UploadManager extends MBps with ServiceUploadManager {
   int numberOfDownloadedItems = 0;
 
   void addToQueue(Iterable<ShareableItem> newReceivabels) {
+    // if (_uploads.isEmpty) overallStartTime = DateTime.now();
     for (var item in newReceivabels) {
       final contains = _uploads.map((e) => e.id).toList().contains(item.id);
       if (!contains) {
         _uploads.add(item);
-        log("Added one");
+        totalDownloadSize = totalDownloadSize + item.remainingBytes;
       }
     }
   }
 
   void removeWhere(String id) {
-    _uploads.removeWhere((element) => element.id == id);
+    _uploads.removeWhere((element) {
+      // totalDownloadSize = totalDownloadSize - element.fileSize;
+      return element.id == id;
+    });
   }
 
   @override
   void setCurrentUpload(Item? current) {
     currentUpload = current as ShareableItem;
-    state = (previousMBps, currentUpload);
+    state = (
+      mBps: previousMBps,
+      currentDownload: currentUpload,
+      remainingTime: state.remainingTime,
+    );
     currentUpload?.addListener(_listener);
   }
 
@@ -49,7 +60,11 @@ class UploadManager extends MBps with ServiceUploadManager {
     }
     if (_uploads.isEmpty) {
       Future.delayed(const Duration(seconds: 1), () {
-        state = (0, state.$2);
+        state = (
+          mBps: 0,
+          currentDownload: state.currentDownload,
+          remainingTime: const Duration(),
+        );
         cancelMbps();
       });
     }
@@ -62,7 +77,11 @@ class UploadManager extends MBps with ServiceUploadManager {
   }
 
   void clear() {
-    state = (0, null);
+    state = (
+      mBps: 0,
+      currentDownload: null,
+      remainingTime: const Duration(),
+    );
     currentUpload?.removeListener(_listener);
     currentUpload = null;
     _uploads.clear();

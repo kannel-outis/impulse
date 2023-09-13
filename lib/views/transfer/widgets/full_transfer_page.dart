@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
+import 'package:impulse/views/shared/padded_body.dart';
 import 'package:impulse/views/transfer/transfer_page.dart';
 
 import 'transfer_list_tile.dart';
@@ -40,7 +41,28 @@ class _FullTransferPageState extends ConsumerState<FullTransferPage>
             margin: const EdgeInsets.only(bottom: 20),
             child: Column(
               children: [
-                Expanded(child: Container()),
+                Expanded(
+                  child: PaddedBody(
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Consumer(builder: (context, ref, child) {
+                            return Text(
+                              "Remaining Time: ${ref.watch(uploadManagerProvider).remainingTime.toString()}",
+                              style: $styles.text.h3.copyWith(
+                                color: $styles
+                                    .colors.themeLight.scaffoldBackgroundColor,
+                              ),
+                            );
+                          })
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
                 SizedBox(
                   width: 250,
                   child: TabBar(
@@ -55,7 +77,11 @@ class _FullTransferPageState extends ConsumerState<FullTransferPage>
                     splashFactory: NoSplash.splashFactory,
                     overlayColor: MaterialStateProperty.all(Colors.transparent),
                     indicatorColor: Theme.of(context).colorScheme.secondary,
-                    labelColor: Theme.of(context).colorScheme.secondary,
+                    labelColor:
+                        $styles.colors.themeLight.scaffoldBackgroundColor,
+                    unselectedLabelColor: $styles
+                        .colors.themeLight.scaffoldBackgroundColor
+                        .withOpacity(.5),
                     indicatorWeight: 2,
                     padding: EdgeInsets.zero,
                     tabs: [
