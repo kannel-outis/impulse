@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -7,9 +9,15 @@ import 'package:impulse/controllers/controllers.dart';
 
 import 'impulse_ink_well.dart';
 
-class ContinueDownloadDialog extends ConsumerWidget {
-  const ContinueDownloadDialog({
+class CustomDialog extends ConsumerWidget {
+  final String label;
+  final VoidCallback rightAction;
+  final VoidCallback leftAction;
+  const CustomDialog({
     super.key,
+    required this.label,
+    required this.leftAction,
+    required this.rightAction,
   });
 
   @override
@@ -25,7 +33,7 @@ class ContinueDownloadDialog extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Do you want continue download ?",
+              label,
               style: $styles.text.body,
             ),
             Row(
@@ -35,36 +43,13 @@ class ContinueDownloadDialog extends ConsumerWidget {
                   ref,
                   "No",
                   context,
-                  () async {
-                    Navigator.pop(context);
-                  },
+                  () async => leftAction.call(),
                 ),
                 _optionButton(
                   ref,
                   "Yes",
                   context,
-                  () async {
-                    final connectedUser = ref.read(connectUserStateProvider)!;
-                    final receiverController = ref.read(receiverProvider);
-                    await receiverController
-                        .continuePreviousDownloads(destination: connectedUser)
-                        .then(
-                      (value) {
-                        final connectedUserSessions = ref
-                            .read(connectedUserPreviousSessionStateProvider)!;
-                        final prevItemsIds = connectedUserSessions
-                            .prevSession.previousSessionReceivable;
-                        for (final prevItem in prevItemsIds) {
-                          log("$prevItem ::::::::::::::::: Receivable");
-
-                          ref
-                              .read(receivableListItems.notifier)
-                              .continueDownloads(prevItem);
-                        }
-                        Navigator.pop(context);
-                      },
-                    );
-                  },
+                  () async => rightAction.call(),
                 ),
               ],
             ),
@@ -102,9 +87,10 @@ class ContinueDownloadDialog extends ConsumerWidget {
         width: 80,
         // color: Colors.white,
         decoration: BoxDecoration(
-          border: Border.all(
-            color: Theme.of(context).colorScheme.tertiary,
-          ),
+          // border: Border.all(
+          //   color: Theme.of(context).colorScheme.tertiary,
+          // ),
+          color: Theme.of(context).colorScheme.primary.withOpacity(.1),
           borderRadius: BorderRadius.circular(
             $styles.corners.sm,
           ),
@@ -112,7 +98,9 @@ class ContinueDownloadDialog extends ConsumerWidget {
         alignment: Alignment.center,
         child: Text(
           label,
-          style: $styles.text.bodySmallBold,
+          style: $styles.text.bodySmallBold.copyWith(
+            color: Theme.of(context).colorScheme.primary,
+          ),
         ),
       ),
     );

@@ -98,7 +98,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       title: "Allow Browse File",
                       value: _allowToBrowseFile,
                       values: const [true, false],
-                      labels: const ["True", "False"],
+                      labels: const ["Allow", "Deny"],
                       onSelected: (allow) {
                         Configurations.instance.setAllowToBrowseFile(allow);
                         _allowToBrowseFile = allow;
@@ -123,7 +123,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       title: "Always Accept Connection",
                       value: _alwaysAcceptConnection,
                       values: const [true, false],
-                      labels: const ["True", "False"],
+                      labels: const ["Allow", "Deny"],
                       onSelected: (allow) {
                         Configurations.instance
                             .setAlwaysAcceptConnection(allow);

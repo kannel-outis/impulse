@@ -35,7 +35,15 @@ class MBps extends StateNotifier<
   }
 
   @protected
+  set totalReceived(int size) {
+    _totalReceived = size;
+  }
+
+  @protected
   int get totalDownloadSize => _totalDownloadSize;
+
+  @protected
+  int get totalReceived => _totalReceived;
 
   void cancelMbps() {
     _debouncer.cancel();

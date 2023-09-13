@@ -17,6 +17,7 @@ import 'package:impulse_utils/impulse_utils.dart';
 
 import 'components/bottom_nav_bar.dart';
 import 'components/home_app_bar.dart';
+import 'components/should_exit_dialog.dart';
 import 'widgets/path_nav_builder.dart';
 import 'widgets/speed_child_item.dart';
 
@@ -104,10 +105,21 @@ class _HomePageState extends ConsumerState<HomePage>
     });
     return WillPopScope(
       onWillPop: () async {
-        final miniPlayerControllerP = ref.read(miniPlayerController);
-        if (miniPlayerControllerP.isClosed == false) {
-          miniPlayerControllerP.closeMiniPlayer();
-          return false;
+        if (ref.read(connectionStateProvider).isConnected) {
+          final miniPlayerControllerP = ref.read(miniPlayerController);
+          if (miniPlayerControllerP.isClosed == false) {
+            miniPlayerControllerP.closeMiniPlayer();
+            return false;
+          } else {
+            return await showDialog<bool>(
+                  context: context,
+                  useRootNavigator: true,
+                  builder: (context) {
+                    return const ShouldExitDialog();
+                  },
+                ) ??
+                false;
+          }
         } else {
           return true;
         }
