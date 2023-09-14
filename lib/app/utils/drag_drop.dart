@@ -1,4 +1,4 @@
-// import 'package:desktop_drop/desktop_drop.dart';
+import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -45,36 +45,35 @@ class _DragNDropState extends State<DragNDrop> {
         );
       },
     ), builder: (context, ref, child) {
-      // return DropTarget(
-      //   enable:
-      //       !GoRouter.of(context).location.contains(ImpulseRouter.routes.home),
-      //   onDragDone: (details) async {
-      //     for (var item in details.files) {
-      //       if (lookupMimeType(item.path) != null) {
-      //         ref
-      //             .read(selectedItemsProvider.notifier)
-      //             .addSelected(path: item.path);
-      //       }
-      //     }
-      //     if (ref.read(connectionStateProvider).isConnected) {
-      //       final genericRef = GenericProviderRef<WidgetRef>(ref);
+      return DropTarget(
+        enable:
+            !GoRouter.of(context).location.contains(ImpulseRouter.routes.home),
+        onDragDone: (details) async {
+          for (var item in details.files) {
+            if (lookupMimeType(item.path) != null) {
+              ref
+                  .read(selectedItemsProvider.notifier)
+                  .addSelected(path: item.path);
+            }
+          }
+          if (ref.read(connectionStateProvider).isConnected) {
+            final genericRef = GenericProviderRef<WidgetRef>(ref);
 
-      //       await share(genericRef);
-      //       return;
-      //     }
-      //     showModel(true, context);
-      //   },
-      //   onDragEntered: (_) {
-      //     _hasEnteredRegion = true;
-      //     setState(() {});
-      //   },
-      //   onDragExited: (_) {
-      //     _hasEnteredRegion = false;
-      //     setState(() {});
-      //   },
-      //   child: child!,
-      // );
-      return child!;
+            await share(genericRef);
+            return;
+          }
+          showModel(true, context);
+        },
+        onDragEntered: (_) {
+          _hasEnteredRegion = true;
+          setState(() {});
+        },
+        onDragExited: (_) {
+          _hasEnteredRegion = false;
+          setState(() {});
+        },
+        child: child!,
+      );
     });
   }
 }
