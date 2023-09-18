@@ -229,7 +229,7 @@ class _CustomHostBottomModalSheetState
                                 SizedBox(
                                   width: constraints.maxWidth * .5,
                                   child: Text(
-                                    "Cannot create server. Please Make sure you are connected to a network.",
+                                    "Please Make sure you have set up a Hotspot or connected to a Wi-fi.",
                                     textAlign: TextAlign.center,
                                     style: $styles.text.bodyBold,
                                   ),
@@ -256,11 +256,11 @@ class _CustomHostBottomModalSheetState
                                 // const SizedBox(height: 30),
                                 // SizedBox(
                                 //   // width: constraints.maxWidth * .5,
-                                  // child: Text(
-                                  //   "Tip: Both sender and receiver must be on thesame network.",
-                                  //   textAlign: TextAlign.center,
-                                  //   style: $styles.text.bodySmall,
-                                  // ),
+                                // child: Text(
+                                //   "Tip: Both sender and receiver must be on thesame network.",
+                                //   textAlign: TextAlign.center,
+                                //   style: $styles.text.bodySmall,
+                                // ),
                                 // ),
                               ],
                             ),
@@ -430,7 +430,8 @@ class _CustomClientBottomModalSheetState
                 child: Center(
                   child: Icon(
                     Icons.search,
-                    color: Theme.of(context).colorScheme.tertiary,
+                    // color: Theme.of(context).colorScheme.tertiary,
+                    color: $styles.colors.themeLight.scaffoldBackgroundColor,
                     size: $styles.sizes.smallIconSize2,
                   ),
                 ),

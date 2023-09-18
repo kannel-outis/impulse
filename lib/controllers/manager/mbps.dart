@@ -1,8 +1,12 @@
+// import 'dart:developer';
+
+import 'package:flutter/material.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 import 'package:riverpod/riverpod.dart';
 
-class MBps extends StateNotifier<(int mBps, Item? currentItem)> {
+class MBps extends StateNotifier<
+    ({int mBps, Item? currentDownload, Duration remainingTime})> {
   MBps(super.state);
 
   DateTime _previouseReceivedTime = DateTime.now();
@@ -16,6 +20,30 @@ class MBps extends StateNotifier<(int mBps, Item? currentItem)> {
       () => debouncedFunction(now, received, totalSize, file, reason, state),
     );
   }
+
+  // DateTime _overallStartTime = DateTime.now();s
+  int _totalDownloadSize = 0;
+  int _totalReceived = 0;
+  // @protected
+  // set overallStartTime(DateTime time) {
+  //   _overallStartTime = time;
+  // }
+
+  @protected
+  set totalDownloadSize(int size) {
+    _totalDownloadSize = size;
+  }
+
+  @protected
+  set totalReceived(int size) {
+    _totalReceived = size;
+  }
+
+  @protected
+  int get totalDownloadSize => _totalDownloadSize;
+
+  @protected
+  int get totalReceived => _totalReceived;
 
   void cancelMbps() {
     _debouncer.cancel();
@@ -33,11 +61,28 @@ class MBps extends StateNotifier<(int mBps, Item? currentItem)> {
     final bytesPerInterval = (received - _previouseReceivedByte) ~/ duration;
     final mBps =
         bytesPerInterval.isNegative ? previousMBps : bytesPerInterval.toInt();
-    this.state = (mBps, this.state.$2);
+    _totalReceived += mBps;
+    final remainingBytes = _totalDownloadSize - _totalReceived;
+    final remainingTime = (remainingBytes ~/ mBps);
+    this.state = (
+      mBps: mBps,
+      currentDownload: this.state.currentDownload,
+      remainingTime: Duration(
+        seconds: remainingTime.round(),
+      )
+    );
     previousMBps = mBps;
 
     // log(bytesPerInterval.toString());
     _previouseReceivedTime = now;
     _previouseReceivedByte = received;
+    // final b = ((_totalDownloadSize / _totalReceived - 1) *
+    //     (DateTime.now().difference(now).inSeconds));
+    // log("${Duration(milliseconds: int.parse((b - DateTime.now().difference(now).inMilliseconds).toString().split(".").last)).inMinutes} Left");
+
+    // log((Duration(seconds: remainingTime.round())).toString());
+    // log((remainingTime / 60).toString());
+    // log(received.toString());
+    // print("Totalsize: $totalDownloadSize : received: $_totalReceived");
   }
 }

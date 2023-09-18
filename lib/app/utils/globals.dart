@@ -5,7 +5,7 @@ import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/services/services.dart';
 import 'package:impulse/views/home/components/custom_modal.dart';
-import 'package:impulse/views/shared/continue_dialog.dart';
+import 'package:impulse/views/home/components/continue_dialog.dart';
 
 import '../../impulse_scaffold.dart';
 

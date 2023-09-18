@@ -5,15 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 
-final downloadManagerProvider =
-    StateNotifierProvider<DownloadManager, (int, Item?)>((ref) {
+final downloadManagerProvider = StateNotifierProvider<DownloadManager,
+    ({int mBps, Item? currentDownload, Duration remainingTime})>((ref) {
   // final receivables = ref.read(receivableListItems);
   return DownloadManager();
 });
 
 class DownloadManager extends MBps {
   final List<ReceiveableItem> items;
-  DownloadManager({this.items = const []}) : super((0, null));
+  DownloadManager({this.items = const []})
+      : super(
+            (mBps: 0, currentDownload: null, remainingTime: const Duration()));
 
   // ignore: prefer_final_fields
   final List<ReceiveableItem> _listOfWaitingReceivables = <ReceiveableItem>[];
@@ -35,6 +37,7 @@ class DownloadManager extends MBps {
               .contains(item.id) ==
           false) {
         _listOfWaitingReceivables.add(item);
+        totalDownloadSize = totalDownloadSize + item.remainingBytes;
       }
     }
   }
@@ -55,7 +58,11 @@ class DownloadManager extends MBps {
       _downloading = false;
       if (_downloading == false) {
         Future.delayed(const Duration(seconds: 1), () {
-          state = (0, state.$2);
+          state = (
+            mBps: 0,
+            currentDownload: state.currentDownload,
+            remainingTime: const Duration(),
+          );
           cancelMbps();
         });
       }
@@ -64,7 +71,11 @@ class DownloadManager extends MBps {
     numberOfDownloadedItems = index;
     _downloading = true;
     final item = _listOfWaitingReceivables.first;
-    state = (previousMBps, item);
+    state = (
+      mBps: previousMBps,
+      currentDownload: item,
+      remainingTime: state.remainingTime,
+    );
     /////
     item.addListener(_listener);
     ///////
@@ -88,11 +99,11 @@ class DownloadManager extends MBps {
   }
 
   void pauseCurrentDownload() {
-    state.$2?.pause();
+    state.currentDownload?.pause();
 
-    if (state.$2 == null) return;
+    if (state.currentDownload == null) return;
     final index = _listOfWaitingReceivables
-        .indexWhere((element) => element.id == state.$2!.id);
+        .indexWhere((element) => element.id == state.currentDownload!.id);
     _listOfPaused.add(_listOfWaitingReceivables[index]);
     _listOfWaitingReceivables.removeAt(index);
   }

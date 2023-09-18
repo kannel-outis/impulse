@@ -32,19 +32,19 @@ class _SideBarProgressTileState extends ConsumerState<SideBarProgressTile> {
                   ! that way, it can automatically start downloading the items
               */
               ref.read(receivableListItems);
-              if (downloadManager.$2 != null &&
-                  downloadManager.$2!.state.isInProgress) {
+              if (downloadManager.currentDownload != null &&
+                  downloadManager.currentDownload!.state.isInProgress) {
                 return TransferListTile(
-                  item: downloadManager.$2!,
+                  item: downloadManager.currentDownload!,
                   mini: true,
-                  mBps: ImpulseFileSize(downloadManager.$1).sizeToString,
+                  mBps: ImpulseFileSize(downloadManager.mBps).sizeToString,
                   height: 70,
                 );
-              } else if (uploadManager.$2 != null) {
+              } else if (uploadManager.currentDownload != null) {
                 return TransferListTile(
-                  item: uploadManager.$2!,
+                  item: uploadManager.currentDownload!,
                   mini: true,
-                  mBps: ImpulseFileSize(uploadManager.$1).sizeToString,
+                  mBps: ImpulseFileSize(uploadManager.mBps).sizeToString,
                   height: 70,
                 );
               } else {
