@@ -9,7 +9,7 @@ class VideosPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.grey,
-      child: Row(
+      child: const Row(
         children: [
           Expanded(
             child: Text("data 1"),

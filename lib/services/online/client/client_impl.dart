@@ -98,7 +98,6 @@ class ClientImpl implements ClientHost {
   Future<dartz.Either<AppException?, Map<String, dynamic>>>
       shareDownloadableFiles(
           List<Map<String, dynamic>> files, (String, int) destination) {
-    // TODO: implement shareDownloadableFiles
     throw UnimplementedError();
   }
 

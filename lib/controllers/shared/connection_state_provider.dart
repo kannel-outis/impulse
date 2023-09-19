@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
+import 'package:vibration/vibration.dart';
 
 final connectionStateProvider =
     StateNotifierProvider<ConnectionStateProvider, ConnectionState>((ref) {
@@ -9,6 +10,15 @@ final connectionStateProvider =
   return ConnectionStateProvider(
     ConnectionState.notConnected,
     () {
+      if (!isDeskTop) {
+        Vibration.hasCustomVibrationsSupport().then((value) {
+          if (value != null && value) {
+            Vibration.vibrate(duration: 300);
+          } else {
+            Vibration.vibrate();
+          }
+        });
+      }
       share(genericRef, true);
     },
   );

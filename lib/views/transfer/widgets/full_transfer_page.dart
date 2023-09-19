@@ -154,6 +154,7 @@ enum _Tab {
 }
 
 class TransferPageTopAppBar extends StatefulWidget {
+  // ignore: library_private_types_in_public_api
   final Widget Function(_Tab)? durationBuilder;
 
   const TransferPageTopAppBar({

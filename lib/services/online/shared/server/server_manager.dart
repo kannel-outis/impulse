@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:impulse/models/server_info.dart';
 import 'package:impulse/services/services.dart';

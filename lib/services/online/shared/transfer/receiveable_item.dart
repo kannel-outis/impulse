@@ -1,6 +1,6 @@
 // ignore_for_file: must_be_immutable
 
-import 'dart:io';
+import 'dart:developer';
 
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
@@ -39,8 +39,7 @@ class ReceiveableItem extends Item {
   factory ReceiveableItem.fromShareableMap(Map<String, dynamic> map) {
     // .${map["fileType"] as String}
     final fileName = map["altName"] != null
-        ? _joinNameWithId(
-            "${map["altName"] as String}", map["fileId"] as String)
+        ? _joinNameWithId(map["altName"] as String, map["fileId"] as String)
         : _joinNameWithId(map["fileName"] as String, map["fileId"] as String);
     return ReceiveableItem(
       file: File("${Configurations.instance.impulseDir!.path}$fileName"),
@@ -185,7 +184,7 @@ class ReceiveableItem extends Item {
         //   IState.completed,
         // );
       }
-      print(_downloadedBytes);
+      log(_downloadedBytes.toString());
       await _closeOutputStreams(_downloadedBytes == fileSize ? true : false);
       return;
     } catch (e) {

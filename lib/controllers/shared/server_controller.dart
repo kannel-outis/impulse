@@ -301,7 +301,6 @@ class ServerController extends ServerManager with ChangeNotifier {
     final shareableItem = ShareableItem.fromMap(shareableMap);
     shareableItemsProvider.addAllItems([shareableItem]);
 
-    ///TODO: move into shareableItemsProvider
     uploadManagerController.addToQueue([shareableItem]);
   }
 

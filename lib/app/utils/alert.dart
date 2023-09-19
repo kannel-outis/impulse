@@ -38,16 +38,7 @@ class _AlertOverlayState extends ConsumerState<AlertOverlay>
       duration: $styles.times.med,
     );
 
-    //TODO: use ref.listen
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    // ref.watch(alertStateNotifier.notifier).addListener((state) {
-    //   if (state == true) {
-    //     toggleOverlay();
-    //   } else {
-    //     toggleOverlay(close: true);
-    //   }
-    // });
-    // });
+    
   }
 
   @override

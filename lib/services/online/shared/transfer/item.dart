@@ -77,7 +77,7 @@ abstract class Item extends StateListenable with EquatableMixin {
       "fileId": id,
       "senderId": authorId,
       "fileName": fileName,
-      //TODO: check later
+      // check later
       "altName": fileName,
       "homeDestination": {
         "ip": homeDestination!.$1,

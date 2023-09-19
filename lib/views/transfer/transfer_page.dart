@@ -325,11 +325,13 @@ class _MiniPlayerController extends ChangeNotifier {
     required this.maxHeight,
     required this.landScapeMinHeight,
     this.startOpen,
+    // ignore: unused_element
     this.animationDuration = const Duration(milliseconds: 300),
-  }) : _isClosed = startOpen!;
+  }) : _isClosed = !startOpen!;
 
   _MiniPlayerState? _playerState;
 
+  // ignore: unused_element
   factory _MiniPlayerController.nil() {
     return _MiniPlayerController(
       minHeight: 0,

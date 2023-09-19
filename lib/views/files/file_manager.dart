@@ -164,7 +164,7 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
                         builder: (context, constraints) {
                           return Column(
                             children: [
-                              //TODO: Select all code
+                              // Select all code
                               // if ((widget.path != null || !isAndroid) &&
                               //     ref
                               //         .watch(selectingItemStateProvider)

@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
@@ -131,7 +132,7 @@ void checkPrevDownloadListener(ConnectionState? previous, ConnectionState next,
         ref.read(connectedUserPreviousSessionStateProvider)!;
     for (var element
         in connectedUserSessions.prevSession.previousSessionReceivable) {
-      print("$element ::::::::::::::");
+      if (kDebugMode) print("$element ::::::::::::::");
     }
     final inCompleteDownloads = connectedUserSessions
         .prevSession.previousSessionReceivable

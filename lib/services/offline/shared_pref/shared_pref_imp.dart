@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:impulse/services/offline/shared_pref/shared_pref.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-//TODO: replace singleto with DI
 class ImpulseSharedPrefImpl implements ImpulseSharedPref {
   ImpulseSharedPrefImpl._();
 

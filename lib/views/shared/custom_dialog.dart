@@ -1,11 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/app/app.dart';
-import 'package:impulse/controllers/controllers.dart';
 
 import 'impulse_ink_well.dart';
 
