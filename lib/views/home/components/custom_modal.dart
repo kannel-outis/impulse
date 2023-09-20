@@ -201,27 +201,28 @@ class _CustomHostBottomModalSheetState
                         // mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // if (isAndroid || isIos)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  // Navigator.pop(context);
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return const WhyDialog();
-                                    },
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.info,
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                ),
-                              )
-                            ],
-                          ),
+                          if (!isDeskTop)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    // Navigator.pop(context);
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return const WhyDialog();
+                                      },
+                                    );
+                                  },
+                                  icon: Icon(
+                                    Icons.info,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
+                                  ),
+                                )
+                              ],
+                            ),
                           Expanded(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,

@@ -1,0 +1,58 @@
+name: Build and upload windows files
+
+on:
+    workflow_call:
+
+
+jobs:
+    build_windows:
+        if: github.event.pull_request.merged == true
+        name: Build and Upload windows files
+        runs-on: windows-latest
+        env:
+            build_path: build/windows/runner/Release/
+        environment:
+            name: production
+            url: ${{ github.repositoryUrl }}
+        steps:
+            - name: checkout repository
+              uses: actions/checkout@v3
+
+            - name: setup java
+              id: java-setup
+              uses: actions/setup-java@v3
+              with:
+                distribution: 'zulu'
+                java-version: '12.x'
+                cache: 'gradle'
+            - name: setup flutter
+              id: flutter-setup
+              uses: subosito/flutter-action@v2
+              with:
+                flutter-version: "3.13.0"
+                channel: 'stable'
+                cache: true
+
+
+            - name: build and upload flutter windows
+              run: |
+                flutter clean
+                flutter build windows
+                dart run msix:create
+
+            #so that windows msix file is downloadable as standalone from actions.
+            - name: upload msix
+              uses: actions/upload-artifact@v3
+              with:
+                name: impulse-windows
+                path: ${{ env.build_path }}impulse.msix
+            
+            - name: upload other windows files
+              uses: actions/upload-artifact@v3
+              with:
+                name: impulse-windows-zip
+                path: | 
+                    ${{ env.build_path }}*
+                    !${{ env.build_path }}impulse.msix
+
+           

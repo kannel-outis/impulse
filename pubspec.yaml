@@ -103,4 +103,4 @@ msix_config:
   publisher_display_name: T.K apps
   identity_name: impulse.app
   msix_version: 1.0.0.0
-  logo_path: C:\Users\emirb\OneDrive\Documents\projects\impulse\windows\runner\resources\app_icon.ico
+  logo_path: .\windows\runner\resources\app_icon.ico

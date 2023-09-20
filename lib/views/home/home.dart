@@ -193,8 +193,11 @@ class _HomePageState extends ConsumerState<HomePage>
                       ref.watch(connectionStateProvider).isConnected
                           ? const ConnectedFABLocation()
                           : null,
-                  floatingActionButton:
-                      _isNotPhoneSize(constraints.maxWidth) ? null : _fab(),
+                  floatingActionButton: _isNotPhoneSize(constraints.maxWidth)
+                      ? isDeskTop == false
+                          ? _sendButton()
+                          : null
+                      : _fab(),
                   bottomNavigationBar: _isNotPhoneSize(constraints.maxWidth)
                       ? null
                       : MyBottomNavBar(
@@ -239,63 +242,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final selectedItems = ref.watch(selectedItemsProvider);
 
     if (selectedItems.isNotEmpty) {
-      return GestureDetector(
-        onTap: () async {
-          if (connectionState.isConnected) {
-            final genericRef = GenericProviderRef<WidgetRef>(ref);
-
-            await share(genericRef);
-            return;
-          }
-          showModel(true, context);
-        },
-        child: Container(
-          height: 50,
-          width: 50,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(100),
-            color: Theme.of(context).colorScheme.primary,
-          ),
-
-          /// This particular icon is not aligned properly
-          /// it had to be manually done
-          // alignment: const Alignment(0.0, .2),
-          // child: SvgPicture.asset(
-          //   AssetsImage.send,
-          //   theme: SvgTheme(
-          //     currentColor: Colors.white,
-          //     fontSize: 50.scale,
-          //   ),
-          // ),
-          child: Stack(
-            children: [
-              const Center(
-                child: Icon(ImpulseIcons.send),
-              ),
-              Align(
-                alignment: const Alignment(.8, -.5),
-                child: Container(
-                  height: 20,
-                  width: 20,
-                  decoration: BoxDecoration(
-                    color: $styles.colors.theme.colorScheme.tertiary,
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: Center(
-                    child: Text(
-                      selectedItems.length.toString(),
-                      style: $styles.text.bodyBold.copyWith(
-                        color: $styles.colors.theme.colorScheme.surface,
-                        height: 1,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      return _sendButton();
     }
 
     if (!connectionState.isConnected) {
@@ -383,6 +330,69 @@ class _HomePageState extends ConsumerState<HomePage>
     }
 
     return null;
+  }
+
+  Widget? _sendButton() {
+    final connectionState = ref.watch(connectionStateProvider);
+    final selectedItems = ref.watch(selectedItemsProvider);
+    if (selectedItems.isEmpty) return null;
+    return GestureDetector(
+      onTap: () async {
+        if (connectionState.isConnected) {
+          final genericRef = GenericProviderRef<WidgetRef>(ref);
+
+          await share(genericRef);
+          return;
+        }
+        showModel(true, context);
+      },
+      child: Container(
+        height: 50,
+        width: 50,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(100),
+          color: Theme.of(context).colorScheme.primary,
+        ),
+
+        /// This particular icon is not aligned properly
+        /// it had to be manually done
+        // alignment: const Alignment(0.0, .2),
+        // child: SvgPicture.asset(
+        //   AssetsImage.send,
+        //   theme: SvgTheme(
+        //     currentColor: Colors.white,
+        //     fontSize: 50.scale,
+        //   ),
+        // ),
+        child: Stack(
+          children: [
+            const Center(
+              child: Icon(ImpulseIcons.send),
+            ),
+            Align(
+              alignment: const Alignment(.8, -.5),
+              child: Container(
+                height: 20,
+                width: 20,
+                decoration: BoxDecoration(
+                  color: $styles.colors.theme.colorScheme.tertiary,
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Center(
+                  child: Text(
+                    selectedItems.length.toString(),
+                    style: $styles.text.bodyBold.copyWith(
+                      color: $styles.colors.theme.colorScheme.surface,
+                      height: 1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
