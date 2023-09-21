@@ -57,19 +57,19 @@ flutter:
   fonts:
     - family: JosefinSans
       fonts:
-        - asset: assets/fonts/josefin/JosefinSans-Thin.ttf
+        - asset: assets/fonts/josefin/josefinsansthin.ttf
           weight: 100
-        - asset: assets/fonts/josefin/josefinSans-ExtraLight.ttf
+        - asset: assets/fonts/josefin/josefinsansextralight.ttf
           weight: 200
-        - asset: assets/fonts/josefin/josefinSans-Light.ttf
+        - asset: assets/fonts/josefin/josefinsanslight.ttf
           weight: 300
-        - asset: assets/fonts/josefin/josefinSans-Regular.ttf
+        - asset: assets/fonts/josefin/josefinsansregular.ttf
           weight: 400
-        - asset: assets/fonts/josefin/josefinSans-Medium.ttf
+        - asset: assets/fonts/josefin/josefinsansmedium.ttf
           weight: 500
-        - asset: assets/fonts/josefin/josefinSans-Bold.ttf
+        - asset: assets/fonts/josefin/josefinsansbold.ttf
           weight: 600
-        - asset: assets/fonts/josefin/josefinSans-SemiBold.ttf
+        - asset: assets/fonts/josefin/josefinsanssemibold.ttf
           weight: 700
 
     - family: icomoon
@@ -103,4 +103,5 @@ msix_config:
   publisher_display_name: T.K apps
   identity_name: impulse.app
   msix_version: 1.0.0.0
+  install_certificate: false
   logo_path: .\windows\runner\resources\app_icon.ico
