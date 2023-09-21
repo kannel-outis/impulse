@@ -290,7 +290,9 @@ class ServerController extends ServerManager with ChangeNotifier {
     if (Platform.isAndroid) {
       return Directory(Configurations.instance.fileManager.rootPath.first);
     } else {
-      return Configurations.instance.impulseDir!;
+      return Configurations.instance.rootFolderLocation != null
+          ? Directory(Configurations.instance.rootFolderLocation!)
+          : Configurations.instance.impulseDir!;
     }
   }
 
@@ -299,7 +301,6 @@ class ServerController extends ServerManager with ChangeNotifier {
     final shareableItem = ShareableItem.fromMap(shareableMap);
     shareableItemsProvider.addAllItems([shareableItem]);
 
-    ///TODO: move into shareableItemsProvider
     uploadManagerController.addToQueue([shareableItem]);
   }
 

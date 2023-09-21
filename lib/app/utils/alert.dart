@@ -37,17 +37,6 @@ class _AlertOverlayState extends ConsumerState<AlertOverlay>
       vsync: this,
       duration: $styles.times.med,
     );
-
-    //TODO: use ref.listen
-    // WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-    // ref.watch(alertStateNotifier.notifier).addListener((state) {
-    //   if (state == true) {
-    //     toggleOverlay();
-    //   } else {
-    //     toggleOverlay(close: true);
-    //   }
-    // });
-    // });
   }
 
   @override
@@ -198,7 +187,8 @@ class _OverlayChildState extends ConsumerState<_OverlayChild> {
                                 children: [
                                   ButtonChild(
                                     style: style,
-                                    color: Colors.red,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     label: "Decline",
                                     callback: () {
                                       ref
@@ -208,8 +198,7 @@ class _OverlayChildState extends ConsumerState<_OverlayChild> {
                                   ),
                                   ButtonChild(
                                     style: style,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
+                                    color: Colors.green.withOpacity(.7),
                                     label: "Accept",
                                     callback: () {
                                       ref
@@ -268,7 +257,9 @@ class ButtonChild extends StatelessWidget {
         child: Center(
           child: Text(
             label,
-            style: style.text.h4,
+            style: style.text.h4.copyWith(
+              color: $styles.colors.themeLight.scaffoldBackgroundColor,
+            ),
           ),
         ),
       ),

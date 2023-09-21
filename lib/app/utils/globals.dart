@@ -1,17 +1,24 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide ConnectionState;
 import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/services/services.dart';
 import 'package:impulse/views/home/components/custom_modal.dart';
-import 'package:impulse/views/shared/continue_dialog.dart';
+import 'package:impulse/views/home/components/continue_dialog.dart';
 
 import '../../impulse_scaffold.dart';
 
 AppStyle get $styles => ImpulseScaffold.style;
 TextStyle get bodyStyle => $styles.text.body;
 bool get isAndroid => Platform.isAndroid;
+bool get isIos => Platform.isIOS;
+bool get isDeskTop =>
+    Platform.isLinux ||
+    Platform.isWindows ||
+    Platform.isMacOS ||
+    Platform.isFuchsia;
 
 void showModel(bool isHost, BuildContext context) {
   showModalBottomSheet(
@@ -125,7 +132,7 @@ void checkPrevDownloadListener(ConnectionState? previous, ConnectionState next,
         ref.read(connectedUserPreviousSessionStateProvider)!;
     for (var element
         in connectedUserSessions.prevSession.previousSessionReceivable) {
-      print("$element ::::::::::::::");
+      if (kDebugMode) print("$element ::::::::::::::");
     }
     final inCompleteDownloads = connectedUserSessions
         .prevSession.previousSessionReceivable

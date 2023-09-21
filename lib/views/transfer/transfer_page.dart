@@ -175,22 +175,24 @@ class _MiniPlayerState extends State<MiniPlayer> with TickerProviderStateMixin {
                                     ! that way, it can automatically start downloading the items
                                     */
                                 ref.watch(receivableListItems);
-                                if (downloadManager.$2 != null &&
-                                    downloadManager.$2!.state.isInProgress) {
-                                  log(downloadManager.$1);
+                                if (downloadManager.currentDownload != null &&
+                                    downloadManager
+                                        .currentDownload!.state.isInProgress) {
+                                  log(downloadManager.mBps);
                                   return TransferListTile(
-                                    item: downloadManager.$2!,
+                                    item: downloadManager.currentDownload!,
                                     mini: true,
-                                    mBps: ImpulseFileSize(downloadManager.$1)
+                                    mBps: ImpulseFileSize(downloadManager.mBps)
                                         .sizeToString,
                                     height:
                                         widget.miniPlayerController.minHeight,
                                   );
-                                } else if (uploadManager.$2 != null) {
+                                } else if (uploadManager.currentDownload !=
+                                    null) {
                                   return TransferListTile(
-                                    item: uploadManager.$2!,
+                                    item: uploadManager.currentDownload!,
                                     mini: true,
-                                    mBps: ImpulseFileSize(uploadManager.$1)
+                                    mBps: ImpulseFileSize(uploadManager.mBps)
                                         .sizeToString,
                                     height:
                                         widget.miniPlayerController.minHeight,
@@ -323,11 +325,13 @@ class _MiniPlayerController extends ChangeNotifier {
     required this.maxHeight,
     required this.landScapeMinHeight,
     this.startOpen,
+    // ignore: unused_element
     this.animationDuration = const Duration(milliseconds: 300),
-  }) : _isClosed = startOpen!;
+  }) : _isClosed = !startOpen!;
 
   _MiniPlayerState? _playerState;
 
+  // ignore: unused_element
   factory _MiniPlayerController.nil() {
     return _MiniPlayerController(
       minHeight: 0,

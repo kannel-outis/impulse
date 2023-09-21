@@ -16,6 +16,8 @@ class Configurations {
     return _instance!;
   }
 
+  static const String versionNumber = "v1.0.0";
+
   Directory? impulseDir;
 
   FileManager get fileManager => FileManager.instance;
@@ -71,7 +73,7 @@ class Configurations {
   //Theme
 
   ThemeMode? _themeMode;
-  ThemeMode? get themeMode => _themeMode;
+  ThemeMode get themeMode => _themeMode ?? ThemeMode.system;
 
   void loadTheme() {
     _themeMode = localPref.getThemeMode?.toThemeMode;

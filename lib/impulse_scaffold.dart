@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'app/app.dart';
 
 class ImpulseScaffold extends StatelessWidget {
-  final Widget child;
+  final Widget? child;
   final bool showOverlay;
+  final Widget? Function(BuildContext, Widget?)? builder;
   const ImpulseScaffold({
     super.key,
-    required this.child,
+    this.child,
     this.showOverlay = true,
+    this.builder,
   });
 
   static AppStyle get style => _style;
@@ -25,7 +27,7 @@ class ImpulseScaffold extends StatelessWidget {
         key: ValueKey($styles.scale),
         child: DefaultTextStyle(
           style: $styles.text.body,
-          child: child,
+          child: builder?.call(context, child) ?? child!,
         ),
       ),
     );

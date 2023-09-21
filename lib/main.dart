@@ -1,10 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'app/app.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final initializer = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: initializer);
   await Configurations.instance.loadAllInit();
   final container = ProviderContainer();
   // container.
@@ -18,6 +21,10 @@ void main() async {
       child: Impulse(),
     ),
   );
+
+  if (kReleaseMode) await Future.delayed(const Duration(seconds: 1));
+
+  FlutterNativeSplash.remove();
 }
 
 class Impulse extends StatefulWidget {
@@ -41,7 +48,7 @@ class _ImpulseState extends State<Impulse> {
   void initState() {
     super.initState();
     if (mounted) {
-      _themeMode = Configurations.instance.themeMode ?? _themeMode;
+      _themeMode = Configurations.instance.themeMode;
     }
   }
 

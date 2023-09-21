@@ -1,0 +1,77 @@
+name: Build and upload android apks
+
+
+on:
+    workflow_call:
+
+
+
+jobs:
+    build_android:
+        if: github.event.pull_request.merged == true
+        name: Build android apks
+        runs-on: ubuntu-latest
+        environment:
+            name: production
+            url: ${{ github.repositoryUrl }}
+        env:
+            build_path: build/app/outputs/flutter-apk/
+        steps:
+            - name: Check out repo
+              uses: actions/checkout@v3
+            - name: setup java
+              id: java-setup
+              uses: actions/setup-java@v3
+              with:
+                distribution: 'zulu'
+                java-version: '12.x'
+                cache: 'gradle'
+            - name: setup flutter
+              id: flutter-setup
+              uses: subosito/flutter-action@v2
+              with:
+                flutter-version: "3.13.0"
+                channel: 'stable'
+                cache: true
+
+            - name: retrive base64 keystore and decode it to file
+              env:
+                KEYSTORE_BASE64: ${{ secrets.KEYSTORE_FILE_BASE64 }}
+              run: base64 -d <<< $KEYSTORE_BASE64 > ./impulse-keystore.jks
+
+
+            - name: Create key.properties file
+              env:
+                KEYSTORE_PROPERTIES_PATH: ${{ github.workspace }}/android/key.properties
+              run: |
+                echo 'storeFile=${{ github.workspace }}/impulse-keystore.jks' > $KEYSTORE_PROPERTIES_PATH
+                echo 'keyAlias=${{ secrets.KEYSTORE_FILE_ALIAS }}' >> $KEYSTORE_PROPERTIES_PATH
+                echo 'storePassword=${{ secrets.KEYSTORE_PASSWORD }}' >> $KEYSTORE_PROPERTIES_PATH
+                echo 'keyPassword=${{ secrets.KEYSTORE_KEY_PASSWORD }}' >> $KEYSTORE_PROPERTIES_PATH
+
+
+            - name: build release apks
+              run: |
+                flutter clean
+                flutter pub get
+                flutter build apk --release --split-per-abi
+
+            - name: upload app-armeabi-v7a-release.apk
+              uses: actions/upload-artifact@v3
+              with:
+                name: app-armeabi-v7a-release
+                path: ${{env.build_path }}app-armeabi-v7a-release.apk
+                
+
+            - name: upload app-arm64-v8a-release.apk
+              uses: actions/upload-artifact@v3
+              with:
+                name: app-arm64-v8a-release
+                path: ${{env.build_path }}app-arm64-v8a-release.apk
+
+            - name: upload app-x86_64-release.apk
+              uses: actions/upload-artifact@v3
+              with:
+                name: app-x86_64-release
+                path: ${{env.build_path }}app-x86_64-release.apk
+         

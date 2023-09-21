@@ -53,10 +53,15 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
     });
     return Dialog(
       child: Container(
-        height: 400,
+        height: 400.scale,
         width: double.infinity,
-        color: Theme.of(context).colorScheme.background,
-        constraints: const BoxConstraints(maxWidth: 500),
+        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 400),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.background,
+          borderRadius: BorderRadius.circular(
+            $styles.corners.md,
+          ),
+        ),
         child: Consumer(
           builder: (context, ref, child) {
             final receiverController = ref.watch(receiverProvider);
@@ -73,12 +78,12 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  height: 150,
-                  width: 150,
+                  height: 150.scale,
+                  width: 150.scale,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(200),
                     image: DecorationImage(
-                      image: NetworkImage(
+                      image: _imageProvider(
                         serverInfo.user.displayImage,
                       ),
                       fit: BoxFit.cover,
@@ -110,14 +115,14 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ScanDialogButton(
-                      color: Colors.red,
+                      color: Theme.of(context).colorScheme.primary,
                       label: "Cancel",
                       onTap: () {
                         context.pop(false);
                       },
                     ),
                     ScanDialogButton(
-                      color: Theme.of(context).colorScheme.primary,
+                      color: Colors.green.withOpacity(.7),
                       label: "Connect",
                       onTap: () async {
                         final provider = ref.read(receiverProvider);
@@ -144,6 +149,14 @@ class _ScanDialogState extends ConsumerState<ScanDialog> {
       ),
     );
   }
+
+  ImageProvider _imageProvider(String imageUrl) {
+    if (imageUrl.contains("assets")) {
+      return AssetImage(imageUrl.split("=").last);
+    } else {
+      return NetworkImage(imageUrl);
+    }
+  }
 }
 
 class ScanDialogButton extends StatelessWidget {
@@ -159,20 +172,23 @@ class ScanDialogButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
+      mouseCursor: SystemMouseCursors.click,
+      borderRadius: BorderRadius.circular($styles.corners.md),
       onTap: onTap,
       child: Container(
-        height: 50,
-        width: 180,
+        height: 40.scale,
+        width: 120.scale,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular($styles.corners.md),
+          borderRadius: BorderRadius.circular($styles.corners.sm),
         ),
-        alignment: Alignment.center,
-        child: Text(
-          label,
-          style: $styles.text.body.copyWith(
-            color: Colors.white,
+        child: Center(
+          child: Text(
+            label,
+            style: $styles.text.h4.copyWith(
+              color: $styles.colors.themeLight.scaffoldBackgroundColor,
+            ),
           ),
         ),
       ),

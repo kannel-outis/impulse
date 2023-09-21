@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';

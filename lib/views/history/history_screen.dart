@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 import 'package:impulse/views/shared/impulse_ink_well.dart';
@@ -62,6 +62,7 @@ class HistoryScreen extends StatelessWidget {
                                   FilePlaceHolder(
                                     name: item.path,
                                   ),
+                                  const SizedBox(width: 10),
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -69,7 +70,7 @@ class HistoryScreen extends StatelessWidget {
                                         width: constraints.maxWidth -
                                             (($styles.insets.sm * 2) + 50),
                                         child: Text(
-                                          item.id,
+                                          item.name,
                                           overflow: TextOverflow.ellipsis,
                                           style: $styles.text.body,
                                         ),
@@ -77,10 +78,29 @@ class HistoryScreen extends StatelessWidget {
                                       SizedBox(
                                         width: constraints.maxWidth -
                                             (($styles.insets.sm * 2) + 50),
-                                        child: Text(
-                                          item.itemSize.sizeToString,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: $styles.text.body,
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            SizedBox(
+                                              // width: constraints.maxWidth -
+                                              //     (($styles.insets.sm * 2) + 50),
+                                              child: Text(
+                                                item.itemSize.sizeToString,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: $styles.text.body,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              // width: constraints.maxWidth -
+                                              //     (($styles.insets.sm * 2) + 50),
+                                              child: Text(
+                                                item.state.label,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: $styles.text.body,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],

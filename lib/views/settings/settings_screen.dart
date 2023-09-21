@@ -35,8 +35,7 @@ class _SettingScreenState extends State<SettingScreen> {
     _rootFolderLocation = Configurations.instance.rootFolderLocation;
     _portNumberTextController = TextEditingController(
         text: Configurations.instance.receiverPortNumber.toString());
-    _themeMode = Configurations.instance.themeMode?.name ??
-        Configurations.of(context).state.themeMode.name;
+    _themeMode = Configurations.of(context).state.themeMode.name;
   }
 
   @override
@@ -70,8 +69,7 @@ class _SettingScreenState extends State<SettingScreen> {
                   builder: (context) {
                     return SettingsDialog<ThemeMode>(
                       title: "Theme Brightness",
-                      value:
-                          Configurations.instance.themeMode ?? ThemeMode.system,
+                      value: Configurations.instance.themeMode,
                       values: ThemeMode.values,
                       labels: ThemeMode.values
                           .map((e) => "${e.name.capitalize} Mode")
@@ -100,7 +98,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       title: "Allow Browse File",
                       value: _allowToBrowseFile,
                       values: const [true, false],
-                      labels: const ["True", "False"],
+                      labels: const ["Allow", "Deny"],
                       onSelected: (allow) {
                         Configurations.instance.setAllowToBrowseFile(allow);
                         _allowToBrowseFile = allow;
@@ -125,7 +123,7 @@ class _SettingScreenState extends State<SettingScreen> {
                       title: "Always Accept Connection",
                       value: _alwaysAcceptConnection,
                       values: const [true, false],
-                      labels: const ["True", "False"],
+                      labels: const ["Allow", "Deny"],
                       onSelected: (allow) {
                         Configurations.instance
                             .setAlwaysAcceptConnection(allow);
@@ -185,7 +183,17 @@ class _SettingScreenState extends State<SettingScreen> {
             SettingsTile(
               title: "Licenses",
               subTitle: "View licenses for all open source packages used",
-              onTap: () {},
+              onTap: () {
+                context.push(ImpulseRouter.routes.license);
+              },
+            ),
+            const _Spacer(),
+            SettingsTile(
+              title: "About",
+              subTitle: Configurations.versionNumber,
+              onTap: () {
+                context.push(ImpulseRouter.routes.about);
+              },
             ),
           ],
         ),

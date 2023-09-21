@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:dartz/dartz.dart';
@@ -35,7 +34,6 @@ class ServicesUtils {
       gateWay.listen();
       return Right((ip.address, port ?? Constants.DEFAULT_PORT));
     } catch (_) {
-      print(_.toString());
       return const Left(
         AppException(
             "Something went wrong. Cannot create server. Please connect to a network"),
@@ -127,8 +125,7 @@ class ServicesUtils {
         cancelOnError: false,
       );
       yield* stream.stream;
-    } on Exception catch (e) {
-      print(e.toString());
+    } on Exception catch (_) {
       client.close();
     }
     // }

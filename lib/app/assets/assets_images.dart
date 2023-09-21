@@ -18,6 +18,12 @@ class AssetsImage {
   static const String pic_placeholder = "assets/images/image.png";
   static const String ppt_placeholder = "assets/images/ppt.png";
   static const String pdf_placeholder = "assets/images/pdf.png";
+  static const String logo_dark = "assets/images/logo_dark.png";
+  static const String logo_light = "assets/images/logo_light.png";
+  static const String github_mark = "assets/images/github-mark.png";
+  static const String github_mark_white = "assets/images/github-mark-white.png";
+  static const String x = "assets/images/logo-black.png";
+  static const String x_light = "assets/images/logo-white.png";
 
   ///SVGs
   static const String setting_filled = "assets/svgs/settings_filled.svg";
@@ -28,4 +34,5 @@ class AssetsImage {
   static const String info = "assets/svgs/info.svg";
   static const String wifi = "assets/svgs/wifi.svg";
   static const String tiny_chevron_right = "assets/svgs/tiny_chevron_right.svg";
+  static const String gmail = "assets/svgs/gmail.svg";
 }

@@ -1,0 +1,52 @@
+name: Analyze code push
+
+
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref }}
+    cancel-in-progress: true
+
+    
+
+on:
+    push:
+        branches:
+            - main
+            - DEV
+        paths-ignore:
+            - '**.md'
+            - 'doc/**'
+            - '.github/'
+            - '.vscode/'
+
+
+jobs:
+    analyze_code:
+        name: Analyze flutter code 
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout repository
+              uses: actions/checkout@v3
+            - name: setup java
+              uses: actions/setup-java@v3
+              with:
+                distribution: 'zulu'
+                java-version: "12.x"
+                cache: 'gradle'
+              id: java
+            - name: setup flutter
+              uses: subosito/flutter-action@v2
+              with:
+                flutter-version: "3.13.0"
+                channel: 'stable'
+                cache: true
+              id: flutter
+
+
+            - name: flutter get dependencies
+              run: |
+                flutter clean
+                flutter pub get
+
+            - name: run flutter analyze
+              run: flutter analyze

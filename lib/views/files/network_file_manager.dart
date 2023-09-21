@@ -6,6 +6,7 @@ import 'package:impulse/app/app.dart';
 import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/models.dart';
 import 'package:impulse/views/shared/padded_body.dart';
+import 'package:impulse/views/transfer/transfer_page.dart';
 
 import 'widgets/network_file_manager_tile.dart';
 
@@ -45,11 +46,17 @@ class _FileManagerScreenState extends ConsumerState<NetworkFileManagerScreen>
 
     return WillPopScope(
       onWillPop: () async {
-        final pathProvider = ref.watch(pathController.notifier);
-        if (widget.path != null) {
-          pathProvider.pop();
+        final miniPlayerControllerP = ref.read(miniPlayerController);
+        if (miniPlayerControllerP.isClosed == false) {
+          miniPlayerControllerP.closeMiniPlayer();
+          return false;
+        } else {
+          final pathProvider = ref.watch(pathController.notifier);
+          if (widget.path != null) {
+            pathProvider.pop();
+          }
+          return true;
         }
-        return true;
       },
       child: FutureBuilder<List<NetworkImpulseFileEntity>>(
         future: _init_(),

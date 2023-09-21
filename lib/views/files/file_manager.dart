@@ -10,6 +10,7 @@ import 'package:impulse/controllers/controllers.dart';
 import 'package:impulse/models/models.dart';
 import 'package:impulse/views/shared/padded_body.dart';
 import 'package:impulse/views/shared/selectable_item_widget.dart';
+import 'package:impulse/views/transfer/transfer_page.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 
 import 'widgets/file_manager_tile.dart';
@@ -86,11 +87,17 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
 
     return WillPopScope(
       onWillPop: () async {
-        final pathProvider = ref.watch(pathController.notifier);
-        if (widget.path != null) {
-          pathProvider.pop();
+        final miniPlayerControllerP = ref.read(miniPlayerController);
+        if (miniPlayerControllerP.isClosed == false) {
+          miniPlayerControllerP.closeMiniPlayer();
+          return false;
+        } else {
+          final pathProvider = ref.watch(pathController.notifier);
+          if (widget.path != null) {
+            pathProvider.pop();
+          }
+          return true;
         }
-        return true;
       },
       child: dir == null && !isAndroid
           ? Column(
@@ -157,7 +164,7 @@ class _FileManagerScreenState extends ConsumerState<FileManagerScreen>
                         builder: (context, constraints) {
                           return Column(
                             children: [
-                              //TODO: Select all code
+                              // Select all code
                               // if ((widget.path != null || !isAndroid) &&
                               //     ref
                               //         .watch(selectingItemStateProvider)
