@@ -85,6 +85,12 @@ jobs:
             - name: zip windows exe files
               run: |
                 zip -r build/windows-v${{ steps.impulse_version.outputs.version }}.zip build/windows/* -x 'build/windows/*.msix'
+
+
+            
+            - name: Display structure of downloaded files
+              run: ls -R
+              working-directory: build/
             
 
             - name: Rename artifacts
@@ -92,11 +98,8 @@ jobs:
                 mv build/app-armeabi-v7a-release.apk build/impulse-v${{ steps.impulse_version.outputs.version }}-armeabi-v7a.apk
                 mv build/app-arm64-v8a-release.apk build/impulse-v${{ steps.impulse_version.outputs.version }}-arm64-v8a.apk
                 mv build/app-x86_64-release.apk build/impulse-v${{ steps.impulse_version.outputs.version }}-x86_64.apk
-                mv build/windows/impulse-windows.msix build/impulse-v${{ steps.impulse_version.outputs.version }}.msix
+                mv build/windows/impulse.msix build/impulse-v${{ steps.impulse_version.outputs.version }}.msix
 
-            - name: Display structure of downloaded files
-              run: ls -R
-              working-directory: build/
 
 
             - name: create Release
