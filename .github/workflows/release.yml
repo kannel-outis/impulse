@@ -107,6 +107,6 @@ jobs:
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
                 tag: v${{ steps.impulse_version.outputs.version }}
-                artifacts: "build/impulse-v${{ steps.impulse_version.outputs.version }}-armeabi-v7a.apk, build/impulse-v${{ steps.impulse_version.outputs.version }}-arm64-v8a.apk, build/impulse-v${{ steps.impulse_version.outputs.version }}-x86_64.apk, build/github_actions_test.msix, build/windows-v${{ steps.impulse_version.outputs.version }}.zip"
+                artifacts: "build/impulse-v${{ steps.impulse_version.outputs.version }}-armeabi-v7a.apk, build/impulse-v${{ steps.impulse_version.outputs.version }}-arm64-v8a.apk, build/impulse-v${{ steps.impulse_version.outputs.version }}-x86_64.apk, build/impulse-v${{ steps.impulse_version.outputs.version }}.msix, build/windows-v${{ steps.impulse_version.outputs.version }}.zip"
                 # allowUpdates: true
                 generateReleaseNotes: true
