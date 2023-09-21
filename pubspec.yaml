@@ -78,11 +78,11 @@ flutter:
 
     - family: transfer
       fonts:
-        - asset: assets/fonts/icons/transfer_icons.ttf
+        - asset: assets/fonts/icons/transfer.ttf
 
     - family: transfer2
       fonts:
-        - asset: assets/fonts/icons/transfer_2.ttf
+        - asset: assets/fonts/icons/transfer2.ttf
 
 flutter_native_splash:
   color: "#E9F2E3"
