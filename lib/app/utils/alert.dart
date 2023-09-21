@@ -37,8 +37,6 @@ class _AlertOverlayState extends ConsumerState<AlertOverlay>
       vsync: this,
       duration: $styles.times.med,
     );
-
-    
   }
 
   @override
@@ -200,7 +198,7 @@ class _OverlayChildState extends ConsumerState<_OverlayChild> {
                                   ),
                                   ButtonChild(
                                     style: style,
-                                    color: Colors.green.withOpacity(.5),
+                                    color: Colors.green.withOpacity(.7),
                                     label: "Accept",
                                     callback: () {
                                       ref

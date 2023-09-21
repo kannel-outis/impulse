@@ -29,10 +29,16 @@ class CustomDialog extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              label,
-              style: $styles.text.body,
-            ),
+            LayoutBuilder(builder: (context, constrainst) {
+              return SizedBox(
+                width: constrainst.maxWidth,
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: $styles.text.body,
+                ),
+              );
+            }),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -40,12 +46,14 @@ class CustomDialog extends ConsumerWidget {
                   ref,
                   "No",
                   context,
+                  color: Theme.of(context).colorScheme.primary,
                   () async => leftAction.call(),
                 ),
                 _optionButton(
                   ref,
                   "Yes",
                   context,
+                  color: Colors.green.withOpacity(.7),
                   () async => rightAction.call(),
                 ),
               ],
@@ -56,28 +64,12 @@ class CustomDialog extends ConsumerWidget {
     );
   }
 
-  Widget _optionButton(
-    WidgetRef ref,
-    String label,
-    BuildContext context,
-    Future Function() onTap,
-  ) {
+  Widget _optionButton(WidgetRef ref, String label, BuildContext context,
+      Future Function() onTap,
+      {Color? color}) {
     return ImpulseInkWell(
       onTap: () {
-        onTap.call().then((value) {
-          ///Because at this point we do not longer need the previous the previous session info anymore
-          ///so we might as well just set it and save.
-          // ref.read(connectedUserPreviousSessionStateProvider)!.$2
-          //   ..previousSessionId = ref.read(currentSessionStateProvider)!.id
-          //   ..previousSessionReceivable =
-          //       ref.read(receivableListItems).map((e) => e.id).toList()
-          //   ..previousSessionShareable =
-          //       ref.read(shareableItemsProvider).map((e) => e.id).toList()
-          //   ..save();
-          // ref
-          //     .read(connectedUserPreviousSessionStateProvider.notifier)
-          //     .hasSetNewPrev();
-        });
+        onTap.call();
       },
       child: Container(
         height: 30,
@@ -87,7 +79,7 @@ class CustomDialog extends ConsumerWidget {
           // border: Border.all(
           //   color: Theme.of(context).colorScheme.tertiary,
           // ),
-          color: Theme.of(context).colorScheme.primary.withOpacity(.1),
+          color: color ?? Theme.of(context).colorScheme.primary.withOpacity(.1),
           borderRadius: BorderRadius.circular(
             $styles.corners.sm,
           ),
@@ -96,7 +88,8 @@ class CustomDialog extends ConsumerWidget {
         child: Text(
           label,
           style: $styles.text.bodySmallBold.copyWith(
-            color: Theme.of(context).colorScheme.primary,
+            // color: Theme.of(context).colorScheme.primary,
+            color: Colors.white,
           ),
         ),
       ),

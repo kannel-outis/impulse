@@ -112,7 +112,11 @@ class _ScanPageState extends ConsumerState<ScanPage> {
                 })
               },
             );
-            if (result == false) controller.resumeCamera();
+            if (result == false || result == null) {
+              controller.resumeCamera();
+              this.result = null;
+              setState(() {});
+            }
           });
         }
       }
