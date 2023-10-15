@@ -147,6 +147,7 @@ void checkPrevDownloadListener(ConnectionState? previous, ConnectionState next,
       showDialog(
         context: context,
         useRootNavigator: true,
+        barrierDismissible: false,
         builder: (context) {
           return const ContinueDownloadDialog();
         },
