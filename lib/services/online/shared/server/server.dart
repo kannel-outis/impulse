@@ -267,17 +267,18 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
     ///const Utf8Codec(allowMalformed: true).encode(item.name)
     if (await item.file.exists()) {
       item.startTime = DateTime.now();
+      final itemFile = item.file as File;
       httpRequest.response
         ..headers.set("Content-Type",
             item.mime ?? "application/octat-stream;charset=UTF-8")
         ..headers.set("charset", "UTF-8")
         ..headers.set("Content-Disposition",
             "attachment; filename=${const Utf8Codec(allowMalformed: true).encode(item.name)}")
-        ..headers.set("Content-Length", "${item.file.lengthSync() - start}");
+        ..headers.set("Content-Length", "${itemFile.lengthSync() - start}");
 
       final hiveItem = await serverManager.getHiveItemForShareable(item);
-      void listener(int received, int totalSize, File? file, String? reason,
-          IState state) {
+      void listener(int received, int totalSize, FileSystemEntity? file,
+          String? reason, IState state) {
         hiveItem.iState = state;
         hiveItem.processedBytes = received;
         hiveItem.setEndTime = DateTime.now();
@@ -290,8 +291,8 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
       ///This should be start
       int bytesDownloadedByClient = start;
-      final fileSize = await item.file.length();
-      var fileStream = item.file.openRead(start);
+      final fileSize = await itemFile.length();
+      var fileStream = itemFile.openRead(start);
       await httpRequest.response.addStream(fileStream.map((event) {
         bytesDownloadedByClient += event.length;
 
@@ -306,7 +307,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
       (item as ShareableItem).updateProgress(
         bytesDownloadedByClient,
-        item.file.lengthSync(),
+        itemFile.lengthSync(),
         bytesDownloadedByClient != fileSize ? IState.paused : IState.completed,
       );
       serverManager.uploadManager

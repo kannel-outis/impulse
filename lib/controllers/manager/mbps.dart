@@ -21,13 +21,8 @@ class MBps extends StateNotifier<
     );
   }
 
-  // DateTime _overallStartTime = DateTime.now();s
   int _totalDownloadSize = 0;
   int _totalReceived = 0;
-  // @protected
-  // set overallStartTime(DateTime time) {
-  //   _overallStartTime = time;
-  // }
 
   @protected
   set totalDownloadSize(int size) {
@@ -73,16 +68,7 @@ class MBps extends StateNotifier<
     );
     previousMBps = mBps;
 
-    // log(bytesPerInterval.toString());
     _previouseReceivedTime = now;
     _previouseReceivedByte = received;
-    // final b = ((_totalDownloadSize / _totalReceived - 1) *
-    //     (DateTime.now().difference(now).inSeconds));
-    // log("${Duration(milliseconds: int.parse((b - DateTime.now().difference(now).inMilliseconds).toString().split(".").last)).inMinutes} Left");
-
-    // log((Duration(seconds: remainingTime.round())).toString());
-    // log((remainingTime / 60).toString());
-    // log(received.toString());
-    // print("Totalsize: $totalDownloadSize : received: $_totalReceived");
   }
 }

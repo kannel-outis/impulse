@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
@@ -10,12 +12,10 @@ import 'state_listenable.dart';
 // ignore: must_be_immutable
 abstract class Item extends StateListenable with EquatableMixin {
   final String id;
-  final File file;
+  final FileSystemEntity file;
   final String fileType;
   final int fileSize;
   final String? fileName;
-  // OnProgressCallBack? onProgressCallback;
-  // OnStateChange? onStateChange;
   final String authorId;
   (String, int)? homeDestination;
 
@@ -26,8 +26,6 @@ abstract class Item extends StateListenable with EquatableMixin {
     required this.id,
     required this.authorId,
     required this.homeDestination,
-    // this.onProgressCallback,
-    // this.onStateChange,
     this.fileName,
   });
   DateTime? startTime;
@@ -37,22 +35,6 @@ abstract class Item extends StateListenable with EquatableMixin {
   set setEndTime(DateTime endtime) {
     _endTime = endtime;
   }
-
-  Future<void> receive() async {
-    throw UnimplementedError();
-  }
-
-  Future<void> cancel() async {
-    throw UnimplementedError();
-  }
-
-  Future<void> pause() async {
-    throw UnimplementedError();
-  }
-
-  void changeState(IState newState) {}
-
-  // IState get state;
 
   String? get mime => lookupMimeType(file.path);
 
@@ -66,7 +48,6 @@ abstract class Item extends StateListenable with EquatableMixin {
 
   int get remainingBytes => fileSize - proccessedBytes;
 
-  // ignore: library_private_types_in_public_api
   _ItemFileSize get itemSize => _ItemFileSize(fileSize);
 
   Map<String, dynamic> toMap() {

@@ -19,7 +19,7 @@ mixin class StateListenable {
   void notifyListeners(
     int received,
     int totalSize,
-    File? file,
+    FileSystemEntity? file,
     String? reason,
     IState state,
   ) {

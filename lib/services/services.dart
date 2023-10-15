@@ -19,6 +19,7 @@ export 'online/shared/transfer/upload_manager.dart';
 export 'online/shared/transfer/receiveable_item.dart';
 export 'online/shared/transfer/shareable_item.dart';
 export 'online/shared/transfer/state_listenable.dart';
+export 'online/shared/transfer/receiver_item.dart';
 export 'utils/constants.dart';
 export 'utils/extensions.dart';
 export 'utils/request_helper.dart';

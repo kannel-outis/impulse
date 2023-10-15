@@ -11,7 +11,7 @@ typedef OnProgressCallBack = Function(
 typedef OnStateChange = Function(
   int received,
   int totalSize,
-  File? file,
+  FileSystemEntity? file,
   String? reason,
   IState state,
 );

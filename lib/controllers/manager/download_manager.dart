@@ -12,20 +12,20 @@ final downloadManagerProvider = StateNotifierProvider<DownloadManager,
 });
 
 class DownloadManager extends MBps {
-  final List<ReceiveableItem> items;
+  final List<ReceiverItem> items;
   DownloadManager({this.items = const []})
       : super(
             (mBps: 0, currentDownload: null, remainingTime: const Duration()));
 
   // ignore: prefer_final_fields
-  final List<ReceiveableItem> _listOfWaitingReceivables = <ReceiveableItem>[];
-  final _listOfPaused = <ReceiveableItem>[];
+  final List<ReceiverItem> _listOfWaitingReceivables = <ReceiverItem>[];
+  final _listOfPaused = <ReceiverItem>[];
 
   int numberOfDownloadedItems = 0;
   bool _downloading = false;
   bool get isDownloading => _downloading;
 
-  void addToQueue(Iterable<ReceiveableItem> newReceivabels) {
+  void addToQueue(Iterable<ReceiverItem> newReceivabels) {
     // _listOfWaitingReceivables = [
     //   ..._listOfWaitingReceivables,
     //   ...newReceivabels
@@ -44,7 +44,7 @@ class DownloadManager extends MBps {
 
   // Timer? _debounceTimer;
 
-  Future<void> removeItemFromDownloadList(Item item) async {
+  Future<void> removeItemFromDownloadList(ReceiverItem item) async {
     if (item.state.isInProgress) {
       await item.cancel();
     }
@@ -99,7 +99,7 @@ class DownloadManager extends MBps {
   }
 
   void pauseCurrentDownload() {
-    state.currentDownload?.pause();
+    (state.currentDownload as ReceiverItem?)?.pause();
 
     if (state.currentDownload == null) return;
     final index = _listOfWaitingReceivables
@@ -108,7 +108,7 @@ class DownloadManager extends MBps {
     _listOfWaitingReceivables.removeAt(index);
   }
 
-  void resumeDownload(ReceiveableItem item) {
+  void resumeDownload(ReceiverItem item) {
     ///Check if item was paused
     final contains = _listOfPaused.map((e) => e.id).contains(item.id);
     if (contains) {

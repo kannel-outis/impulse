@@ -46,7 +46,7 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         .receivablesStreamController
         .stream
         .listen((event) async {
-      final item = ReceiveableItem.fromShareableMap(event);
+      final item = ReceiveableItem.fromItemShareableMap(event);
 
       // if (ref
       //     .read(connectedUserPreviousSessionStateProvider.notifier)
@@ -118,7 +118,7 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
 
   void continueDownloads(String prevItem) {
     final hiveItem = hiveManager.getReceiveableItemWithKey(prevItem);
-    final item = ReceiveableItem(
+    final item = ReceiveableItem.item(
       file: File(hiveItem!.path),
       fileType: hiveItem.fileType,
       fileSize: hiveItem.fileSize,
@@ -128,7 +128,7 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         ref.read(connectUserStateProvider)!.port!
       ),
       authorId: hiveItem.authorId,
-      start: hiveItem.processedBytes,
+      proccessed: hiveItem.processedBytes,
     );
     _nextSession.previousSessionReceivable = [
       ..._nextSession.previousSessionReceivable,
