@@ -19,6 +19,39 @@
             "type": "dart",
             "request": "launch",
             "program": "lib/main.dart"
-        }
+        },
+        // /////////////////
+        {
+            "name": "impulse debug release",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "flutterMode": "release",
+            "args": [
+                "--flavor",
+                "impulse_debug",
+            ]
+        },
+        {
+            "name": "impulse debug profile",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "flutterMode": "profile",
+            "args": [
+                "--flavor",
+                "impulse_debug",
+            ]
+        },
+        {
+            "name": "impulse debug",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "args": [
+                "--flavor",
+                "impulse_debug",
+            ]
+        },
     ]
 }
