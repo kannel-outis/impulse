@@ -78,6 +78,22 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
+    flavorDimensions "Impulse"
+    productFlavors {
+        impulse {
+            dimension "Impulse"
+            resValue "string", "app_name", "Impulse"
+            applicationId "bart.allen.kidflash.impulse"
+        }
+
+        impulse_debug {
+            dimension "Impulse"
+            resValue "string", "app_name", "Impulse Debug"
+            applicationId "bart.allen.kidflash.impulse_debug"
+        }
+        
+    }
 }
 
 flutter {
