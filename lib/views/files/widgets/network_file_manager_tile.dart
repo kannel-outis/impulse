@@ -140,8 +140,8 @@ class _NetworkFileManagerTileState
                     ///we just want the home server to be aware of this item and do the needed (which will not include sending it back to us, thus making that circle),
                     ///we try to imitate the original behaviour (how it would behave if it were the home server sending it itself)
                     ///by just adding to the receivablesItemsContorller that directly gets items from the server.
-                    serverController.receivablesStreamController
-                        .add(ShareableItem.fromMap(shareableItemMap).toMap());
+                    serverController.receivablesStreamController.add(
+                        await ShareableItem.fromMap(shareableItemMap).toMap());
                   },
                   child: SizedBox(
                     width: isAndroid ? 40 : 30,

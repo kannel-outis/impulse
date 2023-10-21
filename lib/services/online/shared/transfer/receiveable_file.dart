@@ -9,9 +9,7 @@ class _ReceiveableItem extends ReceiveableItem {
     required String fileType,
     required (String, int) homeDestination,
     required String id,
-    int start = 0,
-  })  : _downloadedBytes = start,
-        super(
+  }) : super(
           authorId: authorId,
           file: file,
           fileSize: fileSize,
@@ -19,8 +17,9 @@ class _ReceiveableItem extends ReceiveableItem {
           homeDestination: homeDestination,
           id: id,
           altName: altName,
-          proccessed: start,
-        );
+        ) {
+    _downloadedBytes = start;
+  }
 
   late final Client _client = ClientImpl();
 

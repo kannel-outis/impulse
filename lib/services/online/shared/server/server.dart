@@ -67,6 +67,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
 
         break;
       case "POST":
+        log(httpRequest.requestedUri.toString());
         _handlePostRequest(httpRequest);
       default:
     }
@@ -172,6 +173,7 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       // /TODO: do a response to close the connection
       httpRequest.response.close();
     } else if (url == _buildUrl(ServicesUtils.serverRoutes.shareables)) {
+      log(url.toString());
       final result = await httpRequest.fold<List<int>>(
           [], (previous, element) => previous..addAll(element));
       final bodyEncoded = String.fromCharCodes(result);
@@ -179,7 +181,6 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
       final List<Map<String, dynamic>> list =
           List<Map<String, dynamic>>.from(json.decode(bodyEncoded)["files"]);
       for (var el in list) {
-        // log(el.toString());
         serverManager.receivablesStreamController.add(el);
       }
 

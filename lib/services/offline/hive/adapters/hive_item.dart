@@ -1,10 +1,10 @@
-
 import 'package:hive/hive.dart';
 import 'package:impulse/app/app.dart';
+import 'package:impulse/services/online/shared/transfer/file_entity_item.dart';
 import 'package:impulse/services/services.dart';
 
 // ignore: must_be_immutable
-class HiveItem extends Item with HiveObjectMixin {
+class HiveItem extends FileEntityItem with HiveObjectMixin {
   final String fileId;
   final String path;
   final String type;

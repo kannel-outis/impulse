@@ -37,6 +37,7 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
   if (onConnection == true && ref.read(userTypeProvider) != UserType.host) {
     return;
   }
+  log("message");
 
   // get the [ServerInfo] of the connected user whic contains their ip address and port
   final destination = ref.read(connectUserStateProvider);
@@ -62,21 +63,25 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
   ///These items are them converted to a map and sent to the receiver to initiate download.
   ref.read(shareableItemsProvider.notifier).addAllItems(files);
   ref.read(uploadManagerProvider.notifier).addToQueue(files);
-  final shareableFiles = ref
-      .read(shareableItemsProvider.notifier)
-      .filteredList
-      .map((e) => e.toMap())
-      .toList();
+  final filteredShareableItems =
+      ref.read(shareableItemsProvider.notifier).filteredList;
+  final shareableFiles = <Map<String, dynamic>>[];
+
+  for (var i = 0; i < filteredShareableItems.length; i++) {
+    shareableFiles.add(await filteredShareableItems[i].toMap());
+  }
   // print(files);
   // print(shareableFiles.length);
 
   // return;
-
+  log(shareableFiles.length.toString());
   await hostController.shareDownloadableFiles(
       shareableFiles, (destination.ipAddress!, destination.port!));
 
   /// Selected items list is cleared and made ready for another bunch of items
   ref.read(selectedItemsProvider.notifier).clear();
+
+  log("message222222222");
 }
 
 Future<void> disconnect(GenericProviderRef ref) async {

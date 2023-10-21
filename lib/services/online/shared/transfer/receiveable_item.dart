@@ -9,7 +9,6 @@ part 'receiveable_folder.dart';
 part 'receiveable_file.dart';
 
 abstract class ReceiveableItem extends ReceiverItem {
-  int proccessed;
   final String? altName;
 
   ReceiveableItem({
@@ -17,7 +16,6 @@ abstract class ReceiveableItem extends ReceiverItem {
     required String fileType,
     required int fileSize,
     required String id,
-    this.proccessed = 0,
     required (String, int) homeDestination,
     required String authorId,
     this.altName,
@@ -29,10 +27,10 @@ abstract class ReceiveableItem extends ReceiverItem {
           fileType: fileType,
           homeDestination: homeDestination,
           fileName: file.path.split(Platform.pathSeparator).last,
-          start: proccessed,
         );
 
-  factory ReceiveableItem.fromItemShareableMap(Map<String, dynamic> map) {
+  factory ReceiveableItem.fromItemShareableMap(Map<String, dynamic> nMap) {
+    final map = nMap["file"] as Map<String, dynamic>;
     final fileName = map["altName"] != null
         ? _joinNameWithId(map["altName"] as String, map["fileId"] as String)
         : _joinNameWithId(map["fileName"] as String, map["fileId"] as String);
@@ -98,6 +96,6 @@ abstract class ReceiveableItem extends ReceiverItem {
         id: id,
         altName: altName,
         fileSize: fileSize,
-        start: proccessed,
+        // start: proccessed,
       );
 }

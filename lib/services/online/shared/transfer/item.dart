@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:equatable/equatable.dart';
 import 'package:impulse/app/app.dart';
 import 'package:impulse_utils/impulse_utils.dart';
-import 'package:mime/mime.dart';
 
 import 'state_listenable.dart';
 
@@ -36,11 +35,17 @@ abstract class Item extends StateListenable with EquatableMixin {
     _endTime = endtime;
   }
 
-  String? get mime => lookupMimeType(file.path);
+  // String? get mime => lookupMimeType(file.path);
 
-  String get name => fileName ?? file.path.split("/").last;
+  // String get name => fileName ?? file.path.split("/").last;
 
-  String get filePath => file.path;
+  // String get filePath => file.path;
+
+  String? get mime;
+
+  String get name;
+
+  String get filePath;
 
   IState get state;
 
@@ -50,19 +55,21 @@ abstract class Item extends StateListenable with EquatableMixin {
 
   _ItemFileSize get itemSize => _ItemFileSize(fileSize);
 
-  Map<String, dynamic> toMap() {
+  Future<Map<String, dynamic>> toMap() async {
     return {
-      "path": filePath,
-      "fileSize": fileSize,
-      "fileType": fileType,
-      "fileId": id,
-      "senderId": authorId,
-      "fileName": fileName,
-      // check later
-      "altName": fileName,
-      "homeDestination": {
-        "ip": homeDestination!.$1,
-        "port": homeDestination!.$2,
+      "file": {
+        "path": filePath,
+        "fileSize": fileSize,
+        "fileType": fileType,
+        "fileId": id,
+        "senderId": authorId,
+        "fileName": fileName,
+        // check later
+        "altName": fileName,
+        "homeDestination": {
+          "ip": homeDestination!.$1,
+          "port": homeDestination!.$2,
+        }
       }
     };
   }

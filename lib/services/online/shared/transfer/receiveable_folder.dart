@@ -35,7 +35,8 @@ class _ReceiveableFolder extends ReceiveableItem {
 
     if (complete) {
       _downloadCompleted = complete;
-      notifyListeners(_downloadedBytes, fileSize, file, "", state);
+      notifyListeners(
+          _downloadedBytes, fileSize, _currentItem?.file as File, "", state);
     } else if (_downloadPaused) {
       _downloadCanceled = false;
       _downloadFailed = false;
@@ -59,6 +60,7 @@ class _ReceiveableFolder extends ReceiveableItem {
 
   ReceiverItem? _currentItem;
   int _currentIndex = -1;
+  int get currentIndex => _currentIndex;
   int _startIndex = 0;
 
   ({int index, int fileProccessed}) get _start {
@@ -123,6 +125,9 @@ class _ReceiveableFolder extends ReceiveableItem {
 
   @override
   List<Object?> get props => throw UnimplementedError();
+
+  @override
+  String? get mime => "folder";
 
   @override
   IState get state {

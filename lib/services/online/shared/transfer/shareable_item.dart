@@ -1,10 +1,11 @@
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 
-// ignore: must_be_immutable
-class ShareableItem extends Item {
-  final String? altName;
+import 'file_entity_item.dart';
 
+// ignore: must_be_immutable
+class ShareableItem extends FileEntityItem {
+  final String? altName;
   ShareableItem({
     required FileSystemEntity file,
     required String fileType,
@@ -46,14 +47,16 @@ class ShareableItem extends Item {
     (String, int)? homeDestination,
     String? altName,
     required String authorId,
+    required List<ShareableItem> items,
   }) =>
       _ShareableFolder(
-        file: dir,
+        dir: dir,
         authorId: authorId,
         fileSize: fileSize,
         fileType: fileType,
         id: id,
         altName: altName,
+        items: items,
       );
 
   IState _state = IState.pending;
@@ -82,15 +85,44 @@ class ShareableItem extends Item {
         authorId,
         filePath,
       ];
+
+  // @override
+  // String? get mime => lookupMimeType(file.path);
+
+  // @override
+  // String get name => fileName ?? file.path.split("/").last;
+
+  // @override
+  // String get filePath => file.path;
 }
 
 class _ShareableFolder extends ShareableItem {
+  final List<ShareableItem> items;
+  final Directory dir;
   _ShareableFolder({
-    required super.file,
-    required super.fileType,
-    required super.fileSize,
-    required super.id,
-    required super.authorId,
-    required super.altName,
-  });
+    required this.items,
+    required this.dir,
+    required String fileType,
+    required String authorId,
+    required int fileSize,
+    required String id,
+    (String, int)? homeDestination,
+    String? altName,
+  }) : super(
+          authorId: authorId,
+          file: dir,
+          fileSize: fileSize,
+          fileType: fileType,
+          id: id,
+          altName: altName,
+          homeDestination: homeDestination,
+        );
+
+  @override
+  Future<Map<String, dynamic>> toMap() async {
+    return {
+      "meta_data": await super.toMap(),
+      "folder": {"folder_name": super.fileName, "files": []}
+    };
+  }
 }
