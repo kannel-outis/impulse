@@ -2,26 +2,33 @@ part of 'receiveable_item.dart';
 
 class _ReceiveableFolder extends ReceiveableItem {
   final List<ReceiverItem> items;
+  final _MetaData metaData;
+  final String groupId;
+  final int itemCount;
   _ReceiveableFolder({
-    required super.file,
-    required super.fileType,
-    super.fileSize = 0,
-    required super.id,
-    required super.homeDestination,
-    required super.authorId,
-    required this.items,
-    String? altName,
     int start = 0,
-  });
+    required this.metaData,
+    required this.items,
+    required this.groupId,
+    required this.itemCount,
+  }) : super(
+          authorId: metaData.senderId,
+          id: metaData.id,
+          file: Directory(metaData.filePath),
+          fileSize: metaData.fileSize,
+          fileType: metaData.fileType,
+          homeDestination: metaData.homeDestination,
+          altName: metaData.altName,
+        );
 
-  @override
-  int get fileSize {
-    int size = 0;
-    for (var item in items) {
-      size += item.fileSize;
-    }
-    return size;
-  }
+  // @override
+  // int get fileSize {
+  //   int size = 0;
+  //   for (var item in items) {
+  //     size += item.fileSize;
+  //   }
+  //   return size;
+  // }
 
   bool _downloadCanceled = false;
   bool _downloadCompleted = false;

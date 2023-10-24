@@ -1,7 +1,7 @@
 part of 'receiveable_item.dart';
 
-class _ReceiveableItem extends ReceiveableItem {
-  _ReceiveableItem({
+class _ReceiveableFile extends ReceiveableItem {
+  _ReceiveableFile({
     String? altName,
     required String authorId,
     required File file,

@@ -1,5 +1,7 @@
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
+import 'package:impulse_utils/impulse_utils.dart';
+import 'package:uuid/uuid.dart';
 
 import 'file_entity_item.dart';
 
@@ -47,7 +49,6 @@ class ShareableItem extends FileEntityItem {
     (String, int)? homeDestination,
     String? altName,
     required String authorId,
-    required List<ShareableItem> items,
   }) =>
       _ShareableFolder(
         dir: dir,
@@ -56,7 +57,6 @@ class ShareableItem extends FileEntityItem {
         fileType: fileType,
         id: id,
         altName: altName,
-        items: items,
       );
 
   IState _state = IState.pending;
@@ -97,10 +97,8 @@ class ShareableItem extends FileEntityItem {
 }
 
 class _ShareableFolder extends ShareableItem {
-  final List<ShareableItem> items;
   final Directory dir;
   _ShareableFolder({
-    required this.items,
     required this.dir,
     required String fileType,
     required String authorId,
@@ -120,9 +118,46 @@ class _ShareableFolder extends ShareableItem {
 
   @override
   Future<Map<String, dynamic>> toMap() async {
+    final listSync = dir.listSync();
+    final mapList = <Map<String, dynamic>>[];
+    int size = 0;
+    for (var item in listSync) {
+      final stat = await item.stat();
+      size += stat.size;
+      if (item is File) {
+        mapList.add(
+          await ShareableItem(
+            file: item,
+            fileType: item.path.getFileType.type,
+            fileSize: stat.size,
+            id: const Uuid().v4(),
+            // altName: altName,
+            authorId: authorId,
+            homeDestination: homeDestination,
+          ).toMap(),
+        );
+      } else {
+        mapList.add(
+          await ShareableItem.folder(
+            dir: item as Directory,
+            fileType: "folder",
+            fileSize: stat.size,
+            id: const Uuid().v4(),
+            authorId: authorId,
+            homeDestination: homeDestination,
+          ).toMap(),
+        );
+      }
+    }
     return {
-      "meta_data": await super.toMap(),
-      "folder": {"folder_name": super.fileName, "files": []}
+      "folder": {
+        "group_id": id,
+        "meta_data": ((await super.toMap())["file"] as Map<String, dynamic>)
+          ..["fileSize"] = size,
+        "size": size,
+        "item_count": mapList.length,
+        "files": mapList,
+      },
     };
   }
 }

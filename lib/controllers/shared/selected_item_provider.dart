@@ -80,7 +80,7 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
     return ShareableItem(
       file: file,
       fileType: file.path.getFileType.type,
-      fileSize: file.lengthSync(),
+      fileSize: file.statSync().size,
       id: const Uuid().v4(),
       altName: altName,
 
@@ -95,4 +95,3 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
 
   bool get selectedIsEmpty => items.isEmpty;
 }
-

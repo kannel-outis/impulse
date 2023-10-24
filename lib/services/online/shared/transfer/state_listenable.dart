@@ -1,4 +1,3 @@
-
 import 'package:impulse/app/app.dart';
 import 'package:impulse/services/services.dart';
 
@@ -15,6 +14,12 @@ mixin class StateListenable {
       _listeners.remove(onStateChange);
     }
   }
+
+  void removeLast() {
+    _listeners.removeLast();
+  }
+
+  int get numOfListeners => _listeners.length;
 
   void notifyListeners(
     int received,

@@ -37,8 +37,6 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
   if (onConnection == true && ref.read(userTypeProvider) != UserType.host) {
     return;
   }
-  log("message");
-
   // get the [ServerInfo] of the connected user whic contains their ip address and port
   final destination = ref.read(connectUserStateProvider);
   if (destination == null) return;
@@ -74,14 +72,11 @@ Future<void> share(GenericProviderRef ref, [bool onConnection = false]) async {
   // print(shareableFiles.length);
 
   // return;
-  log(shareableFiles.length.toString());
   await hostController.shareDownloadableFiles(
       shareableFiles, (destination.ipAddress!, destination.port!));
 
   /// Selected items list is cleared and made ready for another bunch of items
   ref.read(selectedItemsProvider.notifier).clear();
-
-  log("message222222222");
 }
 
 Future<void> disconnect(GenericProviderRef ref) async {
