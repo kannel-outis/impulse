@@ -46,7 +46,9 @@ class ReceiveableItemsProvider extends StateNotifier<List<ReceiveableItem>> {
         .receivablesStreamController
         .stream
         .listen((event) async {
-      final item = ReceiveableItem.fromItemShareableMap(event);
+      final item = event.containsKey("file")
+          ? ReceiveableItem.fromItemShareableMap(event)
+          : await ReceiveableItem.fromFolderShareableMap(event);
 
       // if (ref
       //     .read(connectedUserPreviousSessionStateProvider.notifier)

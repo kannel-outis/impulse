@@ -266,18 +266,19 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
     ///Check if the file with that id exists on the device,
     ///if it does proceed to open the file and make it downloadable
     ///const Utf8Codec(allowMalformed: true).encode(item.name)
-    if (await item.file.exists()) {
+    if (await item.fileSystemEntity.exists()) {
       item.startTime = DateTime.now();
-      final itemFile = item.file as File;
+      final fileSize = await item.fileSystemEntity.size();
       httpRequest.response
         ..headers.set("Content-Type",
             item.mime ?? "application/octat-stream;charset=UTF-8")
         ..headers.set("charset", "UTF-8")
         ..headers.set("Content-Disposition",
             "attachment; filename=${const Utf8Codec(allowMalformed: true).encode(item.name)}")
-        ..headers.set("Content-Length", "${itemFile.lengthSync() - start}");
+        ..headers.set("Content-Length", "${fileSize - start}");
 
       final hiveItem = await serverManager.getHiveItemForShareable(item);
+
       void listener(int received, int totalSize, FileSystemEntity? file,
           String? reason, IState state) {
         hiveItem.iState = state;
@@ -287,32 +288,14 @@ class MyHttpServer extends GateWay<HttpServer, HttpRequest> {
         // print("${state} ::::::::::::::::::");
       }
 
-      ///add listener that works the hive operation
       item.addListener(listener);
 
-      ///This should be start
-      int bytesDownloadedByClient = start;
-      final fileSize = await itemFile.length();
-      var fileStream = itemFile.openRead(start);
-      await httpRequest.response.addStream(fileStream.map((event) {
-        bytesDownloadedByClient += event.length;
+      await item.toShareableItem.upload(httpRequest.response.addStream,
+          start: start, onDone: (bytesDownloadedByClient) {
+        serverManager.uploadManager
+            .onCurrentUploadComplete(bytesDownloadedByClient);
+      });
 
-        ///Calling notyfyListeners() and notifying every listener
-        (item as ShareableItem).updateProgress(
-          bytesDownloadedByClient,
-          fileSize,
-          IState.inProgress,
-        );
-        return event;
-      }));
-
-      (item as ShareableItem).updateProgress(
-        bytesDownloadedByClient,
-        itemFile.lengthSync(),
-        bytesDownloadedByClient != fileSize ? IState.paused : IState.completed,
-      );
-      serverManager.uploadManager
-          .onCurrentUploadComplete(bytesDownloadedByClient);
       httpRequest.response.close();
 
       ///remove listener

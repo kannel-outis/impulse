@@ -57,9 +57,10 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
 
   void removeSelected({String? path, File? file}) {
     if (path != null) {
-      items.removeWhere((element) => element.file.path == path);
+      items.removeWhere((element) => element.fileSystemEntity.path == path);
     } else {
-      items.removeWhere((element) => element.file.path == file!.path);
+      items.removeWhere(
+          (element) => element.fileSystemEntity.path == file!.path);
     }
     state = [...items];
     log(items.length.toString());
@@ -77,7 +78,7 @@ class SelectedItems extends StateNotifier<List<ShareableItem>> {
 
   ShareableItem itemFromFile(File file, [String? altName]) {
     final myInfo = serverManager.myServerInfo;
-    return ShareableItem(
+    return ShareableItem.file(
       file: file,
       fileType: file.path.getFileType.type,
       fileSize: file.statSync().size,

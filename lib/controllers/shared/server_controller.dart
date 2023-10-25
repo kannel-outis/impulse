@@ -313,7 +313,7 @@ class ServerController extends ServerManager with ChangeNotifier {
 
     for (var prevItemId in _prevSession!.previousSessionShareable) {
       final prevItem = hiveManager.getShareableItemWithKey(prevItemId);
-      final shareable = ShareableItem(
+      final shareable = ShareableItem.file(
         file: File(prevItem!.path),
         fileType: prevItem.fileType,
         fileSize: prevItem.fileSize,

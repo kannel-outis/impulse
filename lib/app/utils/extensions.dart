@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -140,5 +141,52 @@ extension ToHiveItem on Item {
 
   bool get isShareable {
     return this is ShareableItem;
+  }
+
+  ShareableItem get toShareableItem {
+    return this as ShareableItem;
+  }
+
+  ReceiveableItem get toReceiveableItem {
+    return this as ReceiveableItem;
+  }
+}
+
+extension DirectorySize on Directory {
+  Future<int> size() async {
+    final completer = Completer<int>();
+    int size = 0;
+    final list = listSync();
+    final stream = _listStream(list);
+    stream.listen((item) {
+      size += item.size;
+      if (item.index == list.length - 1) {
+        completer.complete(size);
+      }
+    });
+    return await completer.future;
+  }
+
+  Stream<({int size, int index})> _listStream(
+      List<FileSystemEntity> list) async* {
+    for (var i = 0; i < list.length; i++) {
+      final element = list[i];
+      if (element is File) {
+        yield (size: (await element.stat()).size, index: i);
+      } else {
+        yield (size: (await (element as Directory).size()), index: i);
+      }
+    }
+  }
+}
+
+extension FileSystemEntitySize on FileSystemEntity {
+  Future<int> size() async {
+    if (this is File) {
+      final stat = await this.stat();
+      return stat.size;
+    } else {
+      return (this as Directory).size();
+    }
   }
 }

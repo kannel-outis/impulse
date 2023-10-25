@@ -42,8 +42,8 @@ class _ReceiveableFolder extends ReceiveableItem {
 
     if (complete) {
       _downloadCompleted = complete;
-      notifyListeners(
-          _downloadedBytes, fileSize, _currentItem?.file as File, "", state);
+      notifyListeners(_downloadedBytes, fileSize,
+          _currentItem?.fileSystemEntity as File, "", state);
     } else if (_downloadPaused) {
       _downloadCanceled = false;
       _downloadFailed = false;
@@ -60,7 +60,7 @@ class _ReceiveableFolder extends ReceiveableItem {
 
     _downloading = false;
 
-    notifyListeners(totalBytes, fileSize, file, "", state);
+    notifyListeners(totalBytes, fileSize, fileSystemEntity, "", state);
 
     startTime = null;
   }
@@ -149,6 +149,7 @@ class _ReceiveableFolder extends ReceiveableItem {
   void _listerner(
       int received, int _, FileSystemEntity? file, String? reason, state) {
     _downloadedBytes += received;
-    notifyListeners(_downloadedBytes, fileSize, this.file, reason, this.state);
+    notifyListeners(
+        _downloadedBytes, fileSize, fileSystemEntity, reason, this.state);
   }
 }

@@ -22,7 +22,7 @@ abstract class ReceiveableItem extends ReceiverItem {
     this.altName,
   }) : super(
           id: id,
-          file: file,
+          fileSystemEntity: file,
           fileSize: fileSize,
           authorId: authorId,
           fileType: fileType,

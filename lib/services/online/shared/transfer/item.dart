@@ -11,7 +11,7 @@ import 'state_listenable.dart';
 // ignore: must_be_immutable
 abstract class Item extends StateListenable with EquatableMixin {
   final String id;
-  final FileSystemEntity file;
+  final FileSystemEntity fileSystemEntity;
   final String fileType;
   final int fileSize;
   final String? fileName;
@@ -19,7 +19,7 @@ abstract class Item extends StateListenable with EquatableMixin {
   (String, int)? homeDestination;
 
   Item({
-    required this.file,
+    required this.fileSystemEntity,
     required this.fileType,
     required this.fileSize,
     required this.id,

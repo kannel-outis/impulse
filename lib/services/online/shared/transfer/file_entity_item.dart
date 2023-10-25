@@ -6,7 +6,7 @@ import 'item.dart';
 
 abstract class FileEntityItem extends Item {
   FileEntityItem({
-    required FileSystemEntity file,
+    required FileSystemEntity fileSystemEntity,
     required String id,
     required String fileType,
     required int fileSize,
@@ -17,18 +17,18 @@ abstract class FileEntityItem extends Item {
           authorId: authorId,
           fileSize: fileSize,
           fileType: fileType,
-          file: file,
+          fileSystemEntity: fileSystemEntity,
           homeDestination: homeDestination,
           id: id,
           fileName: fileName,
         );
 
   @override
-  String? get mime => lookupMimeType(file.path);
+  String? get mime => lookupMimeType(fileSystemEntity.path);
 
   @override
-  String get name => fileName ?? file.path.split("/").last;
+  String get name => fileName ?? fileSystemEntity.path.split("/").last;
 
   @override
-  String get filePath => file.path;
+  String get filePath => fileSystemEntity.path;
 }

@@ -1,10 +1,11 @@
 part of 'receiveable_item.dart';
 
 class _ReceiveableFile extends ReceiveableItem {
+  final File file;
   _ReceiveableFile({
     String? altName,
     required String authorId,
-    required File file,
+    required this.file,
     required int fileSize,
     required String fileType,
     required (String, int) homeDestination,
@@ -36,7 +37,7 @@ class _ReceiveableFile extends ReceiveableItem {
 
   void _readyFileForDownload() {
     _cleanPath();
-    _output = (file as File).openWrite(mode: FileMode.writeOnlyAppend);
+    _output = file.openWrite(mode: FileMode.writeOnlyAppend);
   }
 
   void _cleanPath() {

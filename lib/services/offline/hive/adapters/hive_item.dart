@@ -33,7 +33,7 @@ class HiveItem extends FileEntityItem with HiveObjectMixin {
     this.iState = IState.pending,
   }) : super(
           authorId: homeUserId,
-          file: File(path),
+          fileSystemEntity: File(path),
           fileSize: totalSize,
           fileType: type,
           homeDestination: (homeDestinationAddress, homeDestinationPort),

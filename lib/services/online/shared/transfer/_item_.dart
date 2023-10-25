@@ -5,7 +5,7 @@ abstract class ReceiverItem extends FileEntityItem {
   int start;
   ReceiverItem({
     this.start = 0,
-    required super.file,
+    required super.fileSystemEntity,
     required super.id,
     required super.fileType,
     required super.fileSize,
@@ -21,4 +21,19 @@ abstract class ReceiverItem extends FileEntityItem {
   Future<void> pause();
 
   void changeState(IState newState);
+}
+
+abstract class UploaderItem extends FileEntityItem {
+  UploaderItem({
+    required super.fileSystemEntity,
+    required super.id,
+    required super.fileType,
+    required super.fileSize,
+    required super.fileName,
+    required super.authorId,
+    required super.homeDestination,
+  });
+
+  Future<void> upload(Future<dynamic> Function(Stream<List<int>> data) future,
+      {int start = 0, Function(int)? onDone});
 }
