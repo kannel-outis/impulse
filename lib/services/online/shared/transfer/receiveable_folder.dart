@@ -1,6 +1,7 @@
 part of 'receiveable_item.dart';
 
-class _ReceiveableFolder extends ReceiveableItem {
+class _ReceiveableFolder extends ReceiveableItem
+    with MultipleItemsStart<ReceiverItem> {
   final List<ReceiverItem> items;
   final _MetaData metaData;
   final String groupId;
@@ -29,6 +30,9 @@ class _ReceiveableFolder extends ReceiveableItem {
   //   }
   //   return size;
   // }
+
+  @override
+  List<ReceiverItem> get files => items;
 
   bool _downloadCanceled = false;
   bool _downloadCompleted = false;
@@ -70,21 +74,7 @@ class _ReceiveableFolder extends ReceiveableItem {
   int get currentIndex => _currentIndex;
   int _startIndex = 0;
 
-  ({int index, int fileProccessed}) get _start {
-    late final int index;
-    final folderProccessed = fileSize - start;
-    int fileProcessed = folderProccessed;
-    for (var i = 0; i < items.length; i++) {
-      final item = items[i];
-      if (folderProccessed < item.fileSize) {
-        index = i;
-        break;
-      } else {
-        fileProcessed = fileProcessed - item.fileSize;
-      }
-    }
-    return (index: index, fileProccessed: fileProcessed);
-  }
+  ({int index, int fileProccessed}) get _start => startPosition(start);
 
   @override
   Future<void> receive() async {

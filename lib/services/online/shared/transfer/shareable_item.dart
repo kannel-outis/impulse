@@ -1,4 +1,5 @@
 import 'package:impulse/app/app.dart';
+import 'package:impulse/services/online/shared/transfer/multipl_items_start_mixin.dart';
 import 'package:impulse/services/services.dart';
 import 'package:impulse_utils/impulse_utils.dart';
 import 'package:uuid/uuid.dart';
@@ -79,8 +80,6 @@ abstract class ShareableItem extends UploaderItem {
       );
 
   IState _state = IState.pending;
-
-  int sentBytes = 0;
 
   ///should be called from the server
   void updateProgress(int received, int totalSize, IState state) {

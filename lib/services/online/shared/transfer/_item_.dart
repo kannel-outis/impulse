@@ -34,6 +34,8 @@ abstract class UploaderItem extends FileEntityItem {
     required super.homeDestination,
   });
 
+  int sentBytes = 0;
+
   Future<void> upload(Future<dynamic> Function(Stream<List<int>> data) future,
       {int start = 0, Function(int)? onDone});
 }

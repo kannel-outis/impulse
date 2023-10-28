@@ -24,7 +24,10 @@ abstract class FileEntityItem extends Item {
         );
 
   @override
-  String? get mime => lookupMimeType(fileSystemEntity.path);
+  String? get mime {
+    if (fileSystemEntity is Directory) return "folder";
+    return lookupMimeType(fileSystemEntity.path);
+  }
 
   @override
   String get name => fileName ?? fileSystemEntity.path.split("/").last;

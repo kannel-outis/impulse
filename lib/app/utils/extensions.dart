@@ -154,17 +154,15 @@ extension ToHiveItem on Item {
 
 extension DirectorySize on Directory {
   Future<int> size() async {
-    final completer = Completer<int>();
     int size = 0;
-    final list = listSync();
-    final stream = _listStream(list);
-    stream.listen((item) {
+    if (FileSystemEntity.isLinkSync(path)) return size;
+    final entities = listSync();
+    final stream = _listStream(entities);
+    await for (final item in stream) {
       size += item.size;
-      if (item.index == list.length - 1) {
-        completer.complete(size);
-      }
-    });
-    return await completer.future;
+    }
+
+    return size;
   }
 
   Stream<({int size, int index})> _listStream(
